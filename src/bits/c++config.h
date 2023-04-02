@@ -170,7 +170,7 @@
     }
 
     namespace tr2 { }
-    
+
     namespace decimal { }
 
     namespace chrono { }
@@ -234,7 +234,7 @@ namespace __gnu_cxx
 
 
 // Defined if inline namespaces are used for versioning.
-# define _GLIBCXX_INLINE_VERSION 0 
+# define _GLIBCXX_INLINE_VERSION 0
 
 // Inline namespace for symbol versioning.
 #if _GLIBCXX_INLINE_VERSION
@@ -805,7 +805,7 @@ namespace std
 #define _GLIBCXX_HAVE_MACHINE_PARAM_H 1
 
 /* Define if mbstate_t exists in wchar.h. */
-#define _GLIBCXX_HAVE_MBSTATE_T 1
+/* #define _GLIBCXX_HAVE_MBSTATE_T */
 
 /* Define to 1 if you have the <memory.h> header file. */
 /* #undef _GLIBCXX_HAVE_MEMORY_H */
@@ -1429,7 +1429,7 @@ namespace std
 /* #undef _GLIBCXX_USE_UTIMENSAT */
 
 /* Define if code specialized for wchar_t should be used. */
-#define _GLIBCXX_USE_WCHAR_T 1
+/* #define _GLIBCXX_USE_WCHAR_T 1 */
 
 /* Define to 1 if a verbose library is built, or 0 otherwise. */
 #define _GLIBCXX_VERBOSE 1
