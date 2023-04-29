@@ -76,7 +76,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
       typedef typename __gnu_cxx::__alloc_traits<_Tp_alloc_type>::pointer
        	pointer;
 
-      struct _Vector_impl 
+      struct _Vector_impl
       : public _Tp_alloc_type
       {
 	pointer _M_start;
@@ -105,7 +105,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
 	  std::swap(_M_end_of_storage, __x._M_end_of_storage);
 	}
       };
-      
+
     public:
       typedef _Alloc allocator_type;
 
@@ -217,7 +217,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
       typedef typename _Alloc::value_type                _Alloc_value_type;
       __glibcxx_class_requires(_Tp, _SGIAssignableConcept)
       __glibcxx_class_requires2(_Tp, _Alloc_value_type, _SameTypeConcept)
-      
+
       typedef _Vector_base<_Tp, _Alloc>			 _Base;
       typedef typename _Base::_Tp_alloc_type		 _Tp_alloc_type;
       typedef __gnu_cxx::__alloc_traits<_Tp_alloc_type>  _Alloc_traits;
@@ -799,11 +799,11 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
       void
       _M_range_check(size_type __n) const
       {
-	if (__n >= this->size())
-	  __throw_out_of_range_fmt(__N("vector::_M_range_check: __n "
-				       "(which is %zu) >= this->size() "
-				       "(which is %zu)"),
-				   __n, this->size());
+	// if (__n >= this->size())
+	//   __throw_out_of_range_fmt(__N("vector::_M_range_check: __n "
+	// 			       "(which is %zu) >= this->size() "
+	// 			       "(which is %zu)"),
+	// 			   __n, this->size());
       }
 
     public:
@@ -822,7 +822,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
       at(size_type __n)
       {
 	_M_range_check(__n);
-	return (*this)[__n]; 
+	return (*this)[__n];
       }
 
       /**
@@ -866,7 +866,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
       reference
       back() _GLIBCXX_NOEXCEPT
       { return *(end() - 1); }
-      
+
       /**
        *  Returns a read-only (constant) reference to the data at the
        *  last element of the %vector.
@@ -1019,7 +1019,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CONTAINER
        *  @param  __position  An iterator into the %vector.
        *  @param  __l  An initializer_list.
        *
-       *  This function will insert copies of the data in the 
+       *  This function will insert copies of the data in the
        *  initializer_list @a l into the %vector before the location
        *  specified by @a position.
        *
