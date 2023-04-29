@@ -998,13 +998,13 @@ namespace std
 #define _GLIBCXX_HAVE_VWSCANF 1
 
 /* Define to 1 if you have the <wchar.h> header file. */
-#define _GLIBCXX_HAVE_WCHAR_H 1
+#define _GLIBCXX_HAVE_WCHAR_H 0
 
 /* Defined if wcstof exists. */
 #define _GLIBCXX_HAVE_WCSTOF 1
 
 /* Define to 1 if you have the <wctype.h> header file. */
-#define _GLIBCXX_HAVE_WCTYPE_H 1
+#define _GLIBCXX_HAVE_WCTYPE_H 0
 
 /* Defined if Sleep exists. */
 /* #undef _GLIBCXX_HAVE_WIN32_SLEEP */
