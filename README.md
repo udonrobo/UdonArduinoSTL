@@ -2,6 +2,49 @@
 
 GNU libstdc++ から移植された Arduino 用 C++ STL
 
+## 変更
+
+-   プラットフォームに各種マイコンを追加
+
+-   C++11 のコンパイラを使用するマイコンがあるため変更
+
+    -   変数テンプレート
+
+        > 例
+        >
+        > ```cpp
+        > eastl::is_array_v<T>
+        > ```
+        >
+        > ↓
+        >
+        > ```cpp
+        > eastl::is_array<T>::value
+        > ```
+
+    -   戻り値型推論
+
+        > 例
+        >
+        > ```cpp
+        > template <typename F, typename... Args>
+        > EA_CONSTEXPR decltype(auto) invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...)))
+        > {
+        >     return invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...);
+        > }
+        > ```
+        >
+        > ↓
+        >
+        > ```cpp
+        > template <typename F, typename... Args>
+        > EA_CONSTEXPR auto invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...)))
+        >     -> decltype(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...))
+        > {
+        >     return invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...);
+        > }
+        > ```
+
 ## Usage
 
 ```cpp
