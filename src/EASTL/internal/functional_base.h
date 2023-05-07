@@ -100,7 +100,7 @@ namespace std
 	template <typename F, typename... Args>
 	struct invoke_result : public invoke_result_impl<F, void, Args...> {};
 
-	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+	#if EA_COMPILER_NO_TEMPLATE_ALIASES
 		template <typename F, typename... Args>
 		using invoke_result_t = typename invoke_result<F, Args...>::type;
 	#endif

@@ -38,7 +38,7 @@ namespace std
 	/// 	rb.push_back(0);
 	///
 	///
-#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+#if EA_COMPILER_NO_TEMPLATE_ALIASES
 	template <typename T, size_t N>
 	using fixed_ring_buffer =
 	    ring_buffer<T, fixed_vector<T, N + 1, false>, typename fixed_vector<T, N + 1, false>::overflow_allocator_type>;

@@ -1128,7 +1128,7 @@
 	//
 	//     Dictionary<int> StringIntDictionary;
 	//
-	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+	#if EA_COMPILER_NO_TEMPLATE_ALIASES
 		#if defined(EA_COMPILER_CPP11_ENABLED) && defined(_MSC_VER) && (EA_COMPILER_VERSION >= 1800)     // VS2013+.
 			// supported.
 		#elif defined(EA_COMPILER_CPP11_ENABLED) && defined(__clang__) && (EA_COMPILER_VERSION >= 401) && defined(__apple_build_version__)

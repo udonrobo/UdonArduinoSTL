@@ -41,7 +41,7 @@ namespace std
 		struct underlying_type{ typedef int type; };    // This is of course wrong, but we emulate libstdc++ and typedef it as int.
 	#endif
 
-	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+	#if EA_COMPILER_NO_TEMPLATE_ALIASES
 		template <typename T>
 		using underlying_type_t = typename underlying_type<T>::type;
 	#endif

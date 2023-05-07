@@ -24,7 +24,7 @@ namespace std
 	/// sorted in any particular order.  We provide a template alias here to
 	/// ensure feature parity with the original std::hash_set.
 	///
-	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+	#if EA_COMPILER_NO_TEMPLATE_ALIASES
 		template <typename Value,
 				  typename Hash = std::hash<Value>,
 				  typename Predicate = std::equal_to<Value>,
@@ -38,7 +38,7 @@ namespace std
 	/// Similar template alias as "unordered_set" except the contained elements
 	/// need not be unique. See "hash_multiset" for more details.
 	///
-	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+	#if EA_COMPILER_NO_TEMPLATE_ALIASES
 		template <typename Value,
 				  typename Hash = std::hash<Value>,
 				  typename Predicate = std::equal_to<Value>,

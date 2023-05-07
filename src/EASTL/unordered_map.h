@@ -23,7 +23,7 @@ namespace std
 	/// any particular order.  We provide a template alias here to ensure feature
 	/// parity with the original std::hash_map.
 	///
-	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+	#if EA_COMPILER_NO_TEMPLATE_ALIASES
 		template <typename Key,
 				  typename T,
 				  typename Hash = std::hash<Key>,
@@ -39,7 +39,7 @@ namespace std
 	/// Similar template alias as "unordered_map" except the contained elements
 	/// need not be unique. See "hash_multimap" for more details.
 	///
-	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
+	#if EA_COMPILER_NO_TEMPLATE_ALIASES
 		template <typename Key,
 				  typename T,
 				  typename Hash = std::hash<Key>,
