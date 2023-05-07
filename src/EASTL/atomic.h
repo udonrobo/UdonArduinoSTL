@@ -13,7 +13,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-//  Below is the documentation of the API of the eastl::atomic<T> library.
+//  Below is the documentation of the API of the std::atomic<T> library.
 //  This includes class and free functions.
 //  Anything marked with a '+' in front of the name is an extension to the std API.
 //
@@ -21,22 +21,22 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// eastl::atomic<T> memory_order API
+// std::atomic<T> memory_order API
 //
 //  See below for full explanations on the memory orders and their guarantees.
 //
-//  - eastl::memory_order_relaxed
-//  - eastl::memory_order_acquire
-//  - eastl::memory_order_release
-//  - eastl::memory_order_acq_rel
-//  - eastl::memory_order_seq_cst
-//  - +eastl::memory_order_read_depends
+//  - std::memory_order_relaxed
+//  - std::memory_order_acquire
+//  - std::memory_order_release
+//  - std::memory_order_acq_rel
+//  - std::memory_order_seq_cst
+//  - +std::memory_order_read_depends
 //
 
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// eastl::atomic<T> class API
+// std::atomic<T> class API
 //
 //   All jargon and prerequisite knowledge is explained below.
 //
@@ -175,13 +175,13 @@
 //   #if defined(EASTL_ATOMIC_HAS_128BIT)
 //   #endif
 //
-//   Indicates the support for 128-bit atomic operations on an eastl::atomic<T> object.
+//   Indicates the support for 128-bit atomic operations on an std::atomic<T> object.
 //
 
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// eastl::atomic_flag class API
+// std::atomic_flag class API
 //
 //   Unless otherwise specified all orders except read_depends is a valid order
 //   on the given operation.
@@ -203,7 +203,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////
 //
-// eastl::atomic standalone free function API
+// std::atomic standalone free function API
 //
 //   All class methods have a standalone free function that takes a pointer to the
 //   atomic object as the first argument. These functions just call the correct method
@@ -228,12 +228,12 @@
 //        : Read docs below.
 //   - atomic_signal_fence(order)
 //        : Prevents reordering with a signal handler.
-//   - +atomic_load_cond(const eastl::atomic<T>*, Predicate)
+//   - +atomic_load_cond(const std::atomic<T>*, Predicate)
 //        : continuously loads the atomic object until Predicate is true
 //        : will properly ensure the spin-wait loop is optimal
 //        : very useful when needing to spin-wait for some condition to be true which is common is many lock-free algorithms
 //        : Memory is affected according to seq_cst ordering.
-//   - +atomic_load_cond_explicit(const eastl::atomic<T>*, Predicate, Order)
+//   - +atomic_load_cond_explicit(const std::atomic<T>*, Predicate, Order)
 //        : Same as above but takes an order for how memory is affected
 //
 
@@ -250,7 +250,7 @@
 //
 // 2.
 //   Description: Atomic objects can not be volatile
-//   Reasoning  : Volatile objects do not make sense in the context of eastl::atomic<T>.
+//   Reasoning  : Volatile objects do not make sense in the context of std::atomic<T>.
 //                Use the given memory orders to get the ordering you need.
 //                Atomic objects have to become visible on the bus. See below for details.
 //
@@ -458,7 +458,7 @@
 //
 //   ******** Memory Types && Devices ********
 //
-//   eastl::atomic<T> and accompanying memory barriers ONLY ORDER MEMORY to cpu-to-cpu communication through whatever the
+//   std::atomic<T> and accompanying memory barriers ONLY ORDER MEMORY to cpu-to-cpu communication through whatever the
 //   processor designates as normal cacheable memory. It does not order memory to devices. It does not provide any DMA ordering guarantees.
 //   It does not order memory with other memory types such as Write Combining. It strictly orders memory only to shared memory that is used
 //   to communicate between cpus only.
@@ -807,7 +807,7 @@
 //   to process_tmp() which it would actually never expect to observe. Because if we observed 0, the while loop condition
 //   would never be satisfied. If the compiler under register pressure instead stored and loaded tmp from its stack slot, that is fine
 //   because we are just storing and loading the original observed value from A. Obviously that is slower than just reloading from
-//   A again so an optimizing compiler may not do the stack slot store. This is an unwanted transformation which eastl::atomic<T> prevents
+//   A again so an optimizing compiler may not do the stack slot store. This is an unwanted transformation which std::atomic<T> prevents
 //   even on relaxed loads.
 //
 //   The compiler is allowed to do dead-store elimination if it knows that value has already been stored, or that only the last store
@@ -869,7 +869,7 @@
 //   You are now probably thinking that compiler barriers are useful and are definitely needed to tell the compiler to calm down
 //   and guarantee our hardware guarantees are valid because the code we wrote is the instructions that were emitted.
 //   But there are definitely lots of caveats where compiler barriers do not at all provide the guarantees we still need.
-//   This where eastl::atomic<T> comes into play, and under the relaxed memory ordering section it will be explained
+//   This where std::atomic<T> comes into play, and under the relaxed memory ordering section it will be explained
 //   what the standard guarantees and how we achieve those guarantees, like ensuring the compiler never does dead-store elimination or reloads.
 //
 //   ******** Control Dependencies ********
@@ -877,7 +877,7 @@
 //   Control dependencies are implicit local cpu ordering of memory instructions due to branching instructions, specifically
 //   only conditional branches. The problem is compilers do not understand control dependencies, and control dependencies
 //   are incredibly hard to understand. This is meant to make the reader aware they exist and to never use them
-//   because they shouldn't be needed at all with eastl::atomic<T>. Also control dependencies are categorized as LDLD or LDST,
+//   because they shouldn't be needed at all with std::atomic<T>. Also control dependencies are categorized as LDLD or LDST,
 //   store control dependencies inherently do not make sense since the conditional branch loads and compares two values.
 //
 //   A LDLD control dependency is an anti-pattern since it is not guaranteed that any architecture will detect the memory-order violation.
@@ -1202,7 +1202,7 @@
 //   In the fence version, since the fence is standalone, there is no notion where the release is meant to be attached to thus the fence must prevent all subsequent relaxed stores
 //   from being reordered above the fence. The fence provides a stronger guarantee whereby now the VAR relaxed store cannot be moved up and above the release operation.
 //   Also notice the ARMv8 assembly is different, the release fence must use the stronger dmb ish barrier instead of the dedicated release store instruction.
-//   We dive more into fences provided by eastl::atomic<T> below.
+//   We dive more into fences provided by std::atomic<T> below.
 //
 //   Release-Acquire semantics also have the property that it must chain through multiple dependencies which is where our knowledge from the previous section comes into play.
 //   Everything on the Release-Acquire dependency chain must be visible to the next hop in the chain.
@@ -1226,7 +1226,7 @@
 //   ---------------------------------------------------------------------------------------------------------
 //
 //   You may notice both of these examples from the previous section. We replaced the standalone POWER memory barrier instructions with Release-Acquire semantics attached directly to the operations where we want causality preserved.
-//   We have transformed those examples to use the eastl::atomic<T> memory model.
+//   We have transformed those examples to use the std::atomic<T> memory model.
 //   Take a moment to digest these examples in relation to the definition of Release-Acquire semantics.
 //
 //   The Acquire chain can be satisfied by reading the value from the store release or any later stored headed by that release operation. The following examples will make this clearer.
@@ -1371,8 +1371,8 @@
 //
 //   ******** read_depends use case - Release-ReadDepends Semantics ********
 //
-//   eastl::atomic<T> provides a weaker read_depends operation that only encapsulates the pointer dependency case above. Loading from a pointer and then loading the value from the loaded pointer.
-//   The read_depends operation can be used on loads from only an eastl::atomic<T*> type. The return pointer of the load must and can only be used to then further load values. And that is it.
+//   std::atomic<T> provides a weaker read_depends operation that only encapsulates the pointer dependency case above. Loading from a pointer and then loading the value from the loaded pointer.
+//   The read_depends operation can be used on loads from only an std::atomic<T*> type. The return pointer of the load must and can only be used to then further load values. And that is it.
 //   If you are unsure, upgrade this load to an acquire operation.
 //
 //   MyStruct* ptr = gAtomicPtr.load(memory_order_read_depends);
@@ -1431,7 +1431,7 @@
 //   The return pointer of the load must and can only be used to then further load values. And that is it.
 //   must be respected by the programmer. This memory order is an optimization added for efficient read heavy pointer swapping data structures. IF you are unsure, use memory_order_acquire.
 //
-//   ******** Relaxed && eastl::atomic<T> guarantees ********
+//   ******** Relaxed && std::atomic<T> guarantees ********
 //
 //   We saw various ways that compiler barriers do not help us and that we need something more granular to make sure accesses are not mangled by the compiler to be considered atomic.
 //   Ensuring these guarantees like preventing dead-store elimination or the splitting of stores into smaller sub stores is where the C/C++11
@@ -1440,7 +1440,7 @@
 //   Or on msvc by casting the underlying atomic T to a volatile T*, providing stronger compiler guarantees than the standard requires.
 //   Essentially volatile turns off all possible optimizations on that variable access and ensures all volatile variables cannot be
 //   reordered across sequence points. Again we are not using volatile here to guarantee atomicity, we are using it in its very intended purpose
-//   to tell the compiler it cannot assume anything about the contents of that variable. Now let's dive into the base guarantees of eastl::atomic<T>.
+//   to tell the compiler it cannot assume anything about the contents of that variable. Now let's dive into the base guarantees of std::atomic<T>.
 //
 //   The standard defines the following for all operations on an atomic object M.
 //
@@ -1494,17 +1494,17 @@
 //
 //   Notice in the above example it has appeared as if the two loads from the same address have been reordered. If we first observed the new store of 1, then the next load should not observe a value in the past.
 //   Many programmers, expect same address sequential consistency, all accesses to a single address appear to execute in a sequential order.
-//   Notice this violates the Read-Read Coherence for all atomic objects defined by the std and thus provided by eastl::atomic<T>.
+//   Notice this violates the Read-Read Coherence for all atomic objects defined by the std and thus provided by std::atomic<T>.
 //
-//   All operations on eastl::atomic<T> irrelevant of the memory ordering of the operation provides Same Address Sequential Consistency since it must abide by the coherence rules above.
+//   All operations on std::atomic<T> irrelevant of the memory ordering of the operation provides Same Address Sequential Consistency since it must abide by the coherence rules above.
 //
-//   ******** eastl::atomic_thread_fence ********
+//   ******** std::atomic_thread_fence ********
 //
-//   eastl::atomic_thread_fence(relaxed) : Provides no ordering guarantees
-//   eastl::atomic_thread_fence(acquire) : Prevents all prior loads from being reordered with all later loads and stores, LDLD && LDST memory barrier
-//   eastl::atomic_thread_fence(release) : Prevents all prior loads and stores from being reordered with all later stores, STST && LDST memory barrier
-//   eastl::atomic_thread_fence(acq_rel) : Union of acquire and release, LDLD && STST && LDST memory barrier
-//   eastl::atomic_thread_fence(seq_cst) : Full memory barrier that provides a single total order
+//   std::atomic_thread_fence(relaxed) : Provides no ordering guarantees
+//   std::atomic_thread_fence(acquire) : Prevents all prior loads from being reordered with all later loads and stores, LDLD && LDST memory barrier
+//   std::atomic_thread_fence(release) : Prevents all prior loads and stores from being reordered with all later stores, STST && LDST memory barrier
+//   std::atomic_thread_fence(acq_rel) : Union of acquire and release, LDLD && STST && LDST memory barrier
+//   std::atomic_thread_fence(seq_cst) : Full memory barrier that provides a single total order
 //
 //   See Reference [9] and Fence-Fence, Atomic-Fence, Fence-Atomic Synchronization, Atomics Order and Consistency in the C++ std.
 //
@@ -1536,9 +1536,9 @@
 //   ----------------------------------------------------------------------------------------
 //   Initial State:
 //   x = 0;
-//   eastl::atomic<int> y = 0;
+//   std::atomic<int> y = 0;
 //   z = 0;
-//   eastl::atomic<int> w = 0;
+//   std::atomic<int> w = 0;
 //   ----------------------------------------------------------------------------------------
 //   Thread 0                                   | Thread 1
 //   ----------------------------------------------------------------------------------------
@@ -1560,8 +1560,8 @@
 //
 //   ----------------------------------------------------------------------------------------
 //   Initial State:
-//   eastl::atomic<int> y = 0;
-//   eastl::atomic<int> z = 0;
+//   std::atomic<int> y = 0;
+//   std::atomic<int> z = 0;
 //   ----------------------------------------------------------------------------------------
 //   Thread 0                                   | Thread 1
 //   ----------------------------------------------------------------------------------------
@@ -1577,9 +1577,9 @@
 //
 //   ----------------------------------------------------------------------------------------
 //   Initial State:
-//   eastl::atomic<int> x = 0;
-//   eastl::atomic<int> y = 0;
-//   eastl::atomic<int> z = 0;
+//   std::atomic<int> x = 0;
+//   std::atomic<int> y = 0;
+//   std::atomic<int> z = 0;
 //   ----------------------------------------------------------------------------------------
 //   Thread 0                                   | Thread 1
 //   ----------------------------------------------------------------------------------------
@@ -1597,9 +1597,9 @@
 //
 //   ----------------------------------------------------------------------------------------
 //   Initial State:
-//   eastl::atomic<int> x = 0;
-//   eastl::atomic<int> y = 0;
-//   eastl::atomic<int> z = 0;
+//   std::atomic<int> x = 0;
+//   std::atomic<int> y = 0;
+//   std::atomic<int> z = 0;
 //   ----------------------------------------------------------------------------------------
 //   Thread 0                                   | Thread 1
 //   ----------------------------------------------------------------------------------------
@@ -1612,9 +1612,9 @@
 //
 //   ----------------------------------------------------------------------------------------
 //   Initial State:
-//   eastl::atomic<int> x = 0;
-//   eastl::atomic<int> y = 0;
-//   eastl::atomic<int> z = 0;
+//   std::atomic<int> x = 0;
+//   std::atomic<int> y = 0;
+//   std::atomic<int> z = 0;
 //   ----------------------------------------------------------------------------------------
 //   Thread 0                                   | Thread 1
 //   ----------------------------------------------------------------------------------------
@@ -1725,11 +1725,11 @@
 //
 //   If we have two atomic objects doing RMW operations and they are within the same cacheline, they are unintentionally contending and serializing with each other even
 //   though they are two completely separate objects. This gives us the common name to this phenomona called false sharing.
-//   You can cacheline align your structure or the eastl::atomic<T> object to prevent false sharing.
+//   You can cacheline align your structure or the std::atomic<T> object to prevent false sharing.
 //
-//   ******** union of eastl::atomic<T> ********
+//   ******** union of std::atomic<T> ********
 //
-//   union { eastl::atomic<uint8_t> atomic8; eastl::atomic<uint32_t> atomic32; };
+//   union { std::atomic<uint8_t> atomic8; std::atomic<uint32_t> atomic32; };
 //
 //   While we know that operations operate at the granularity of a processor's cacheline size and so we may expect that storing and loading
 //   from different width atomic variables at the same address to not cause weird observable behaviour but it may.
@@ -1737,7 +1737,7 @@
 //   This means if there is 2 bytes of modified data in the store buffer that overlaps with a 4 byte load, the 2 bytes will be forwarded
 //   from the store buffer. This is even documented behaviour of the x86 store buffer in the x86 architecture manual.
 //   This behaviour can cause processors to observe values that have never and will never be visible on the bus to other processors.
-//   The use of a union with eastl::atomic<T> is not wrong but your code must be able to withstand these effects.
+//   The use of a union with std::atomic<T> is not wrong but your code must be able to withstand these effects.
 //
 //   Assume everything starts out initially as zero.
 //

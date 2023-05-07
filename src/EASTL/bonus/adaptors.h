@@ -25,7 +25,7 @@ EA_DISABLE_VC_WARNING(4512 4626)
 #endif
 
 
-namespace eastl
+namespace std
 {
 	/// reverse
 	///
@@ -38,7 +38,7 @@ namespace eastl
 	{
 		template <typename C>
 		reverse_wrapper(C&& c)
-			: mContainer(eastl::forward<C>(c))
+			: mContainer(std::forward<C>(c))
 		{
 			/**
 			 * NOTE:
@@ -54,31 +54,31 @@ namespace eastl
 			 * Thus we either move the whole container into this object or take a reference to the lvalue avoiding the copy.
 			 * The static_assert below ensures this.
 			 */
-			static_assert(eastl::is_same<C, Container>::value, "Reference collapsed deduced type must be the same as the deduced Container type!");
+			static_assert(std::is_same<C, Container>::value, "Reference collapsed deduced type must be the same as the deduced Container type!");
 		}
 
 		Container mContainer;
 	};
 
 	template <typename Container>
-	auto begin(const reverse_wrapper<Container>& w) -> decltype(eastl::rbegin(w.mContainer))
+	auto begin(const reverse_wrapper<Container>& w) -> decltype(std::rbegin(w.mContainer))
 	{
-		return eastl::rbegin(w.mContainer);
+		return std::rbegin(w.mContainer);
 	}
 
 	template <typename Container>
-	auto end(const reverse_wrapper<Container>& w) -> decltype(eastl::rend(w.mContainer))
+	auto end(const reverse_wrapper<Container>& w) -> decltype(std::rend(w.mContainer))
 	{
-		return eastl::rend(w.mContainer);
+		return std::rend(w.mContainer);
 	}
 
 	template <typename Container>
 	reverse_wrapper<Container> reverse(Container&& c)
 	{
-		return reverse_wrapper<Container>(eastl::forward<Container>(c));
+		return reverse_wrapper<Container>(std::forward<Container>(c));
 	}
 
-} // namespace eastl
+} // namespace std
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900) // VS2015+
 	EA_RESTORE_VC_WARNING()

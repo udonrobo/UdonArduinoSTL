@@ -21,7 +21,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// accumulate
@@ -241,12 +241,12 @@ namespace eastl
 	/// If the operands are floating points, then at most one inexact operation occurs.
 	///
 	template <typename T>
-	constexpr eastl::enable_if_t<eastl::is_arithmetic<T>::value && !eastl::is_same<eastl::remove_cv_t<T>, bool>::value, T> midpoint(const T lhs, const T rhs) EA_NOEXCEPT
+	constexpr std::enable_if_t<std::is_arithmetic<T>::value && !std::is_same<std::remove_cv_t<T>, bool>::value, T> midpoint(const T lhs, const T rhs) EA_NOEXCEPT
 	{
 		// If T is an integral type...
-		if constexpr(eastl::is_integral<T>::value)
+		if constexpr(std::is_integral<T>::value)
 		{
-			using U = eastl::make_unsigned_t<T>;
+			using U = std::make_unsigned_t<T>;
 
 			int sign = 1;
 			U m = lhs;
@@ -265,8 +265,8 @@ namespace eastl
 		// otherwise if T is a floating point
 		else
 		{
-			const T LO = eastl::numeric_limits<T>::min() * 2;
-			const T HI = eastl::numeric_limits<T>::max() / 2;
+			const T LO = std::numeric_limits<T>::min() * 2;
+			const T HI = std::numeric_limits<T>::max() / 2;
 
 			const T lhs_abs = (lhs < 0) ? -lhs : lhs;
 			const T rhs_abs = (rhs < 0) ? -rhs : rhs;
@@ -288,7 +288,7 @@ namespace eastl
 	/// The midpoint address closer to the LHS is chosen.
 	///
 	template <typename T>
-	constexpr eastl::enable_if_t<eastl::is_object<T>::value, T*> midpoint(T* lhs, T* rhs)
+	constexpr std::enable_if_t<std::is_object<T>::value, T*> midpoint(T* lhs, T* rhs)
 	{
 		return lhs + ((rhs - lhs) / 2);
 	}
@@ -331,7 +331,7 @@ namespace eastl
 	constexpr long double lerp(long double a, long double b, long double t) EA_NOEXCEPT { return shared_lerp(a, b, t); }
 	#endif
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

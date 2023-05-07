@@ -29,7 +29,7 @@
 /////////////////////////////////////////////////////////////////////////////////
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -51,11 +51,11 @@ namespace internal
  *
  * void foo()
  * {
- *    eastl::vector<int> v;
+ *    std::vector<int> v;
  *    while (Benchmark.ContinueRunning())
  *    {
  *      v.push_back(0);
- *      eastl::compiler_barrier(); OR eastl::compiler_barrier_data_dependency(v);
+ *      std::compiler_barrier(); OR std::compiler_barrier_data_dependency(v);
  *    }
  * }
  *
@@ -72,13 +72,13 @@ extern EASTL_API volatile CompilerBarrierDataDependencyFuncPtr gCompilerBarrierD
 
 
 #define EASTL_COMPILER_ATOMIC_COMPILER_BARRIER_DATA_DEPENDENCY_FUNC(ptr) \
-	eastl::internal::gCompilerBarrierDataDependencyFunc(ptr)
+	std::internal::gCompilerBarrierDataDependencyFunc(ptr)
 
 
 } // namespace internal
 
 
-} // namespace eastl
+} // namespace std
 
 
 /////////////////////////////////////////////////////////////////////////////////

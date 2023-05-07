@@ -17,7 +17,7 @@
 #include <intrin.h>
 #endif
 
-namespace eastl
+namespace std
 {
 	// fill
 	//
@@ -43,9 +43,9 @@ namespace eastl
 		template <typename ForwardIterator, typename T>
 		static void do_fill(ForwardIterator first, ForwardIterator last, const T& value)
 		{
-			typedef typename eastl::iterator_traits<ForwardIterator>::value_type value_type;
-			// We create a temp and fill from that because value might alias to the 
-			// destination range and so the compiler would be forced into generating 
+			typedef typename std::iterator_traits<ForwardIterator>::value_type value_type;
+			// We create a temp and fill from that because value might alias to the
+			// destination range and so the compiler would be forced into generating
 			// less efficient code.
 			for(const T temp = value; first != last; ++first)
 			{
@@ -57,10 +57,10 @@ namespace eastl
 
 	/// fill
 	///
-	/// fill is like memset in that it assigns a single value repeatedly to a 
+	/// fill is like memset in that it assigns a single value repeatedly to a
 	/// destination range. It allows for any type of iterator (not just an array)
 	/// and the source value can be any type, not just a byte.
-	/// Note that the source value (which is a reference) can come from within 
+	/// Note that the source value (which is a reference) can come from within
 	/// the destination range.
 	///
 	/// Effects: Assigns value through all the iterators in the range [first, last).
@@ -74,14 +74,14 @@ namespace eastl
 	template <typename ForwardIterator, typename T>
 	inline void fill(ForwardIterator first, ForwardIterator last, const T& value)
 	{
-		eastl::fill_imp< is_scalar<T>::value >::do_fill(first, last, value);
+		std::fill_imp< is_scalar<T>::value >::do_fill(first, last, value);
 
 		// Possibly better implementation, as it will deal with small PODs as well as scalars:
-		// bEasyCopy is true if the type has a trivial constructor (e.g. is a POD) and if 
+		// bEasyCopy is true if the type has a trivial constructor (e.g. is a POD) and if
 		// it is small. Thus any built-in type or any small user-defined struct will qualify.
-		//const bool bEasyCopy = eastl::type_and<eastl::has_trivial_constructor<T>::value, 
-		//                                       eastl::integral_constant<bool, (sizeof(T) <= 16)>::value;
-		//eastl::fill_imp<bEasyCopy>::do_fill(first, last, value);
+		//const bool bEasyCopy = std::type_and<std::has_trivial_constructor<T>::value,
+		//                                       std::integral_constant<bool, (sizeof(T) <= 16)>::value;
+		//std::fill_imp<bEasyCopy>::do_fill(first, last, value);
 
 	}
 
@@ -274,10 +274,10 @@ namespace eastl
 		template <typename OutputIterator, typename Size, typename T>
 		static OutputIterator do_fill(OutputIterator first, Size n, const T& value)
 		{
-			typedef typename eastl::iterator_traits<OutputIterator>::value_type value_type;
+			typedef typename std::iterator_traits<OutputIterator>::value_type value_type;
 
-			// We create a temp and fill from that because value might alias to 
-			// the destination range and so the compiler would be forced into 
+			// We create a temp and fill from that because value might alias to
+			// the destination range and so the compiler would be forced into
 			// generating less efficient code.
 			for(const T temp = value; n-- > 0; ++first)
 				*first = static_cast<value_type>(temp);
@@ -288,7 +288,7 @@ namespace eastl
 	/// fill_n
 	///
 	/// The fill_n function is very much like memset in that a copies a source value
-	/// n times into a destination range. The source value may come from within 
+	/// n times into a destination range. The source value may come from within
 	/// the destination range.
 	///
 	/// Effects: Assigns value through all the iterators in the range [first, first + n).
@@ -298,7 +298,7 @@ namespace eastl
 	template <typename OutputIterator, typename Size, typename T>
 	OutputIterator fill_n(OutputIterator first, Size n, const T& value)
 	{
-		return eastl::fill_n_imp<is_scalar<T>::value>::do_fill(first, n, value);
+		return std::fill_n_imp<is_scalar<T>::value>::do_fill(first, n, value);
 	}
 
 	template <typename Size>
@@ -464,7 +464,7 @@ namespace eastl
 		}
 	#endif
 
-} // namespace eastl
+} // namespace std
 
 #endif // Header include guard
 

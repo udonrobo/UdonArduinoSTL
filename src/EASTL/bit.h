@@ -15,9 +15,9 @@
 #include <EASTL/type_traits.h>
 #include <string.h> // memcpy
 
-namespace eastl
+namespace std
 {
-	// eastl::bit_cast
+	// std::bit_cast
 	// Obtains a value of type To by reinterpreting the object representation of 'from'.
 	// Every bit in the value representation of the returned To object is equal to the
 	// corresponding bit in the object representation of 'from'.
@@ -31,10 +31,10 @@ namespace eastl
 	#if defined(EASTL_CONSTEXPR_BIT_CAST_SUPPORTED) && EASTL_CONSTEXPR_BIT_CAST_SUPPORTED
 
 		template<typename To, typename From,
-			typename = eastl::enable_if_t<
+			typename = std::enable_if_t<
 				sizeof(To) == sizeof(From)
-				&& eastl::is_trivially_copyable<To>::value
-				&& eastl::is_trivially_copyable<From>::value
+				&& std::is_trivially_copyable<To>::value
+				&& std::is_trivially_copyable<From>::value
 			>
 		>
 		EA_CONSTEXPR To bit_cast(const From& from) EA_NOEXCEPT
@@ -45,16 +45,16 @@ namespace eastl
 	#else
 
 		template<typename To, typename From,
-			typename = eastl::enable_if_t<
+			typename = std::enable_if_t<
 				sizeof(To) == sizeof(From)
-				&& eastl::is_trivially_copyable<To>::value
-				&& eastl::is_trivially_copyable<From>::value
+				&& std::is_trivially_copyable<To>::value
+				&& std::is_trivially_copyable<From>::value
 			>
 		>
 		inline To bit_cast(const From& from) EA_NOEXCEPT
 		{
-			typename eastl::aligned_storage<sizeof(To), alignof(To)>::type to;
-			::memcpy(eastl::addressof(to), eastl::addressof(from), sizeof(To));
+			typename std::aligned_storage<sizeof(To), alignof(To)>::type to;
+			::memcpy(std::addressof(to), std::addressof(from), sizeof(To));
 			return reinterpret_cast<To&>(to);
 		}
 
@@ -106,12 +106,12 @@ namespace eastl
 		#endif
 	#endif
 
-	template <typename T, typename = eastl::enable_if_t<eastl::is_unsigned<T>::value>>
+	template <typename T, typename = std::enable_if_t<std::is_unsigned<T>::value>>
 	EA_CONSTEXPR int countl_zero(const T num) EA_NOEXCEPT
 	{
-		EA_CONSTEXPR auto DIGITS = eastl::numeric_limits<T>::digits;
-		EA_CONSTEXPR auto DIGITS_U = eastl::numeric_limits<unsigned>::digits;
-		EA_CONSTEXPR auto DIGITS_ULL = eastl::numeric_limits<unsigned long long>::digits;
+		EA_CONSTEXPR auto DIGITS = std::numeric_limits<T>::digits;
+		EA_CONSTEXPR auto DIGITS_U = std::numeric_limits<unsigned>::digits;
+		EA_CONSTEXPR auto DIGITS_ULL = std::numeric_limits<unsigned long long>::digits;
 
 		if (num == 0)
 		{
@@ -130,13 +130,13 @@ namespace eastl
 		}
 	}
 
-	template <typename T, typename = eastl::enable_if_t<eastl::is_unsigned<T>::value>>
+	template <typename T, typename = std::enable_if_t<std::is_unsigned<T>::value>>
 	EA_CONSTEXPR bool has_single_bit(const T num) EA_NOEXCEPT
 	{
 		return num != 0 && (num & (num - 1)) == 0;
 	}
 
-	template <typename T, typename = eastl::enable_if_t<eastl::is_unsigned<T>::value>>
+	template <typename T, typename = std::enable_if_t<std::is_unsigned<T>::value>>
 	EA_CONSTEXPR T bit_ceil(const T num) EA_NOEXCEPT
 	{
 		if (num <= 1U)
@@ -144,11 +144,11 @@ namespace eastl
 			return T(1);
 		}
 
-		const auto shift = eastl::numeric_limits<T>::digits - eastl::countl_zero(static_cast<T>(num - 1));
+		const auto shift = std::numeric_limits<T>::digits - std::countl_zero(static_cast<T>(num - 1));
 		return static_cast<T>(T(1) << shift);
 	}
 
-	template <typename T, typename = eastl::enable_if_t<eastl::is_unsigned<T>::value>>
+	template <typename T, typename = std::enable_if_t<std::is_unsigned<T>::value>>
 	EA_CONSTEXPR T bit_floor(const T num) EA_NOEXCEPT
 	{
 		if (num == 0)
@@ -156,17 +156,17 @@ namespace eastl
 			return T(0);
 		}
 
-		const auto shift = eastl::numeric_limits<T>::digits - eastl::countl_zero(num) - 1;
+		const auto shift = std::numeric_limits<T>::digits - std::countl_zero(num) - 1;
 		return static_cast<T>(T(1) << shift);
 	}
 
-	template <typename T, typename = eastl::enable_if_t<eastl::is_unsigned<T>::value>>
+	template <typename T, typename = std::enable_if_t<std::is_unsigned<T>::value>>
 	EA_CONSTEXPR T bit_width(const T num) EA_NOEXCEPT
 	{
-		return static_cast<T>(eastl::numeric_limits<T>::digits - eastl::countl_zero(num));
+		return static_cast<T>(std::numeric_limits<T>::digits - std::countl_zero(num));
 	}
 	#endif
 
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_BIT_H

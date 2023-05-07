@@ -8,7 +8,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// Note: This code is not yet complete: it isn't tested and doesn't yet 
+// Note: This code is not yet complete: it isn't tested and doesn't yet
 //       support containers other than vector.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@ EA_DISABLE_VC_WARNING(4480); // nonstandard extension used: specifying underlyin
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_BITVECTOR_DEFAULT_NAME
@@ -188,17 +188,17 @@ namespace eastl
 	/// bitvector
 	///
 	/// Implements an array of bits treated as boolean values.
-	/// bitvector is similar to vector<bool> but uses bits instead of bytes and 
+	/// bitvector is similar to vector<bool> but uses bits instead of bytes and
 	/// allows the user to use other containers such as deque instead of vector.
 	/// bitvector is different from bitset in that bitset is less flexible but
 	/// uses less memory and has higher performance.
 	///
-	/// To consider: Rename the Element template parameter to WordType, for 
+	/// To consider: Rename the Element template parameter to WordType, for
 	/// consistency with bitset.
 	///
-	template <typename Allocator = EASTLAllocatorType, 
-			  typename Element   = BitvectorWordType, 
-			  typename Container = eastl::vector<Element, Allocator> >
+	template <typename Allocator = EASTLAllocatorType,
+			  typename Element   = BitvectorWordType,
+			  typename Container = std::vector<Element, Allocator> >
 	class bitvector
 	{
 	public:
@@ -208,8 +208,8 @@ namespace eastl
 		typedef bool                                        const_reference;
 		typedef bitvector_iterator<Element>                 iterator;
 		typedef bitvector_const_iterator<Element>           const_iterator;
-		typedef eastl::reverse_iterator<iterator>           reverse_iterator;
-		typedef eastl::reverse_iterator<const_iterator>     const_reverse_iterator;
+		typedef std::reverse_iterator<iterator>           reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>     const_reverse_iterator;
 		typedef Allocator                                   allocator_type;
 		typedef Element                                     element_type;
 		typedef Container                                   container_type;
@@ -284,7 +284,7 @@ namespace eastl
 		const_reference back() const;
 
 		bool            test(size_type n, bool defaultValue) const; // Returns true if the bit index is < size() and set. Returns defaultValue if the bit is >= size().
-		void            set(size_type n, bool value);               // Resizes the container to accomodate n if necessary. 
+		void            set(size_type n, bool value);               // Resizes the container to accomodate n if necessary.
 
 		reference       at(size_type n);                    // throws an out_of_range exception if n is invalid.
 		const_reference at(size_type n) const;
@@ -307,7 +307,7 @@ namespace eastl
 
 		element_type*       data() EA_NOEXCEPT;
 		const element_type* data() const EA_NOEXCEPT;
-		
+
 		iterator insert(const_iterator position, value_type value);
 		void     insert(const_iterator position, size_type n, value_type value);
 
@@ -339,7 +339,7 @@ namespace eastl
 
 	template <typename Element>
 	bitvector_reference<Element>::bitvector_reference(Element* p, eastl_size_t i)
-	  : mpBitWord(p), 
+	  : mpBitWord(p),
 		mnBitIndex(i)
 	{
 	}
@@ -504,7 +504,7 @@ namespace eastl
 		return copy;
 	}
 
-	
+
 	template <typename Element>
 	bitvector_const_iterator<Element>
 	bitvector_const_iterator<Element>::operator-(difference_type n) const
@@ -540,7 +540,7 @@ namespace eastl
 	template <typename Element>
 	bool bitvector_const_iterator<Element>::operator<(const this_type& rhs) const
 	{
-		return (mReference.mpBitWord < rhs.mReference.mpBitWord) || 
+		return (mReference.mpBitWord < rhs.mReference.mpBitWord) ||
 			   ((mReference.mpBitWord == rhs.mReference.mpBitWord) && (mReference.mnBitIndex < rhs.mReference.mnBitIndex));
 	}
 
@@ -548,7 +548,7 @@ namespace eastl
 	template <typename Element>
 	bool bitvector_const_iterator<Element>::operator<=(const this_type& rhs) const
 	{
-		return (mReference.mpBitWord < rhs.mReference.mpBitWord) || 
+		return (mReference.mpBitWord < rhs.mReference.mpBitWord) ||
 			   ((mReference.mpBitWord == rhs.mReference.mpBitWord) && (mReference.mnBitIndex <= rhs.mReference.mnBitIndex));
 	}
 
@@ -599,27 +599,27 @@ namespace eastl
 			if(nExtraBits == 0)
 			{
 				if(pCurrent == pEnd && mReference)
-					return eastl::isf_valid | eastl::isf_current;
+					return std::isf_valid | std::isf_current;
 				else if(pCurrent < pEnd)
-					return eastl::isf_valid | eastl::isf_current | eastl::isf_can_dereference;
+					return std::isf_valid | std::isf_current | std::isf_can_dereference;
 			}
 			else if(pCurrent == (pEnd - 1))
 			{
 				const size_type bit     = mReference.mnBitIndex;
 				const size_type lastbit = kBitCount - nExtraBits;
-				
+
 				if(bit == lastbit)
-					return eastl::isf_valid | eastl::isf_current;
+					return std::isf_valid | std::isf_current;
 				else if(bit < lastbit)
-					return eastl::isf_valid | eastl::isf_current | eastl::isf_can_dereference;
+					return std::isf_valid | std::isf_current | std::isf_can_dereference;
 			}
 			else if(pCurrent < pEnd)
 			{
-				return eastl::isf_valid | eastl::isf_current | eastl::isf_can_dereference;
+				return std::isf_valid | std::isf_current | std::isf_can_dereference;
 			}
 		}
 
-		return eastl::isf_none;
+		return std::isf_none;
 	}
 
 
@@ -665,8 +665,8 @@ namespace eastl
 
 
 	template <typename Element>
-	void MoveBits(bitvector_iterator<Element> start, 
-				  bitvector_iterator<Element> end, 
+	void MoveBits(bitvector_iterator<Element> start,
+				  bitvector_iterator<Element> end,
 				  bitvector_iterator<Element> dest)
 	{
 		// Slow implemenation; could optimize by moving a word at a time.
@@ -723,7 +723,7 @@ namespace eastl
 		return copy;
 	}
 
-	
+
 	template <typename Element>
 	bitvector_iterator<Element>
 	bitvector_iterator<Element>::operator-(difference_type n) const
@@ -943,7 +943,7 @@ namespace eastl
 		push_back();
 		*--end() = value;
 	}
-	
+
 
 	template <typename Allocator, typename Element, typename Container>
 	void bitvector<Allocator, Element, Container>::pop_back()
@@ -1032,8 +1032,8 @@ namespace eastl
 	typename bitvector<Allocator, Element, Container>::reference
 	bitvector<Allocator, Element, Container>::at(size_type n)
 	{
-		// The difference between at and operator[] is that at signals 
-		// if the requested position is out of range by throwing an 
+		// The difference between at and operator[] is that at signals
+		// if the requested position is out of range by throwing an
 		// out_of_range exception.
 
 		#if EASTL_EXCEPTIONS_ENABLED
@@ -1043,7 +1043,7 @@ namespace eastl
 			if(EASTL_UNLIKELY(n >= size()))
 				EASTL_FAIL_MSG("bitvector::at -- out of range");
 		#endif
-		
+
 		return *(begin() + (difference_type)n);
 	}
 
@@ -1059,7 +1059,7 @@ namespace eastl
 			if(EASTL_UNLIKELY(n >= size()))
 				EASTL_FAIL_MSG("bitvector::at -- out of range");
 		#endif
-		
+
 		return *(begin() + (difference_type)n);
 	}
 
@@ -1083,7 +1083,7 @@ namespace eastl
 /*
 	template <typename Allocator, typename Element, typename Container>
 	template <bool value>
-	typename bitvector<Allocator, Element, Container>::iterator 
+	typename bitvector<Allocator, Element, Container>::iterator
 	bitvector<Allocator, Element, Container>::find_first()
 	{
 		return begin();
@@ -1092,7 +1092,7 @@ namespace eastl
 	template <bool value> iterator find_next(const_iterator it);
 	template <bool value> iterator find_last();
 	template <bool value> iterator find_prev(const_iterator it);
-						
+
 	template <bool value> const_iterator find_first() const;
 	template <bool value> const_iterator find_next(const_iterator it) const;
 	template <bool value> const_iterator find_last() const;
@@ -1144,7 +1144,7 @@ namespace eastl
 	{
 		return mContainer.data();
 	}
-	
+
 
 	template <typename Allocator, typename Element, typename Container>
 	const typename bitvector<Allocator, Element, Container>::element_type*
@@ -1161,7 +1161,7 @@ namespace eastl
 		iterator iPosition(position.get_reference_type()); // This is just a non-const version of position.
 
 		#if EASTL_ASSERT_ENABLED
-			if(EASTL_UNLIKELY(validate_iterator(iPosition) & eastl::isf_valid) == 0)
+			if(EASTL_UNLIKELY(validate_iterator(iPosition) & std::isf_valid) == 0)
 				EASTL_FAIL_MSG("bitvector::insert -- invalid iterator");
 		#endif
 
@@ -1183,7 +1183,7 @@ namespace eastl
 		iterator iPosition(position.get_reference_type()); // This is just a non-const version of position.
 
 		#if EASTL_ASSERT_ENABLED
-			if(EASTL_UNLIKELY(validate_iterator(iPosition) & eastl::isf_valid) == 0)
+			if(EASTL_UNLIKELY(validate_iterator(iPosition) & std::isf_valid) == 0)
 				EASTL_FAIL_MSG("bitvector::insert -- invalid iterator");
 		#endif
 
@@ -1205,12 +1205,12 @@ namespace eastl
 
 
 	/*
-	The following is a placeholder for a future implementation. It turns out that a correct implementation of 
-	insert(pos, first, last) is a non-trivial exercise that would take a few hours to implement and test. 
-	The reasons why involve primarily the problem of handling the case where insertion source comes from 
-	within the container itself, and the case that first and last (note they are templated) might not refer 
-	to iterators might refer to a value/count pair. The C++ Standard requires you to handle this case and 
-	I (Paul Pedriana) believe that it applies even for a bitvector, given that bool is an integral type. 
+	The following is a placeholder for a future implementation. It turns out that a correct implementation of
+	insert(pos, first, last) is a non-trivial exercise that would take a few hours to implement and test.
+	The reasons why involve primarily the problem of handling the case where insertion source comes from
+	within the container itself, and the case that first and last (note they are templated) might not refer
+	to iterators might refer to a value/count pair. The C++ Standard requires you to handle this case and
+	I (Paul Pedriana) believe that it applies even for a bitvector, given that bool is an integral type.
 	So you have to set up a compile-time type traits function chooser. See vector, for example.
 
 	template <typename Allocator, typename Element, typename Container>
@@ -1240,7 +1240,7 @@ namespace eastl
 		iterator iPosition(position.get_reference_type()); // This is just a non-const version of position.
 
 		#if EASTL_ASSERT_ENABLED
-			if(EASTL_UNLIKELY(validate_iterator(iPosition) & eastl::isf_can_dereference) == 0)
+			if(EASTL_UNLIKELY(validate_iterator(iPosition) & std::isf_can_dereference) == 0)
 				EASTL_FAIL_MSG("bitvector::erase -- invalid iterator");
 		#endif
 
@@ -1248,7 +1248,7 @@ namespace eastl
 		resize(size() - 1);
 
 		// Verify that no reallocation occurred.
-		EASTL_ASSERT(validate_iterator(iPosition) & eastl::isf_valid);
+		EASTL_ASSERT(validate_iterator(iPosition) & std::isf_valid);
 		return iPosition;
 	}
 
@@ -1261,14 +1261,14 @@ namespace eastl
 		iterator iLast(last.get_reference_type());   // This is just a non-const version of last.
 
 		#if EASTL_ASSERT_ENABLED
-			if(EASTL_UNLIKELY(validate_iterator(iLast) & eastl::isf_valid) == 0)
+			if(EASTL_UNLIKELY(validate_iterator(iLast) & std::isf_valid) == 0)
 				EASTL_FAIL_MSG("bitvector::erase -- invalid iterator");
 		#endif
 
 		if(!(iFirst == iLast))
 		{
 			#if EASTL_ASSERT_ENABLED
-				if(EASTL_UNLIKELY(validate_iterator(iFirst) & eastl::isf_can_dereference) == 0)
+				if(EASTL_UNLIKELY(validate_iterator(iFirst) & std::isf_can_dereference) == 0)
 					EASTL_FAIL_MSG("bitvector::erase -- invalid iterator");
 			#endif
 
@@ -1278,7 +1278,7 @@ namespace eastl
 
 			// Verify that no reallocation occurred.
 			#if EASTL_ASSERT_ENABLED
-				if(EASTL_UNLIKELY(validate_iterator(iFirst) & eastl::isf_valid) == 0)
+				if(EASTL_UNLIKELY(validate_iterator(iFirst) & std::isf_valid) == 0)
 					EASTL_FAIL_MSG("bitvector::erase -- invalid iterator");
 			#endif
 		}
@@ -1314,7 +1314,7 @@ namespace eastl
 	void bitvector<Allocator, Element, Container>::swap(this_type& rhs)
 	{
 		mContainer.swap(rhs.mContainer);
-		eastl::swap(mFreeBitCount, rhs.mFreeBitCount);
+		std::swap(mFreeBitCount, rhs.mFreeBitCount);
 	}
 
 
@@ -1336,7 +1336,7 @@ namespace eastl
 
 	template <typename Allocator, typename Element, typename Container>
 	bitvector<Allocator, Element, Container>::bitvector()
-	  : mContainer(), 
+	  : mContainer(),
 		mFreeBitCount(0)
 	{
 	}
@@ -1344,7 +1344,7 @@ namespace eastl
 
 	template <typename Allocator, typename Element, typename Container>
 	bitvector<Allocator, Element, Container>::bitvector(const allocator_type& allocator)
-	  : mContainer(allocator), 
+	  : mContainer(allocator),
 		mFreeBitCount(0)
 	{
 	}
@@ -1375,7 +1375,7 @@ namespace eastl
 	template <typename Allocator, typename Element, typename Container>
 	template <typename InputIterator>
 	bitvector<Allocator, Element, Container>::bitvector(InputIterator first, InputIterator last)
-	  : mContainer(), 
+	  : mContainer(),
 		mFreeBitCount(0)
 	{
 		assign(first, last);
@@ -1388,16 +1388,16 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator==(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator==(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		// To do: Replace this with a smart compare implementation. This is much slower than it needs to be.
-		return ((a.size() == b.size()) && eastl::equal(a.begin(), a.end(), b.begin()));
+		return ((a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin()));
 	}
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator!=(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator!=(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		return !operator==(a, b);
@@ -1405,16 +1405,16 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator<(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator<(const bitvector<Allocator, Element, Container>& a,
 						  const bitvector<Allocator, Element, Container>& b)
 	{
 		// To do: Replace this with a smart compare implementation. This is much slower than it needs to be.
-		return eastl::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+		return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
 	}
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator>(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator>(const bitvector<Allocator, Element, Container>& a,
 						  const bitvector<Allocator, Element, Container>& b)
 	{
 		return b < a;
@@ -1422,7 +1422,7 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator<=(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator<=(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		return !(b < a);
@@ -1430,7 +1430,7 @@ namespace eastl
 
 
 	template <typename Allocator, typename Element, typename Container>
-	inline bool operator>=(const bitvector<Allocator, Element, Container>& a, 
+	inline bool operator>=(const bitvector<Allocator, Element, Container>& a,
 						   const bitvector<Allocator, Element, Container>& b)
 	{
 		return !(a < b);
@@ -1444,7 +1444,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 EA_RESTORE_VC_WARNING();

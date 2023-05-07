@@ -14,7 +14,7 @@
 #include "atomic_push_compiler_options.h"
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -180,19 +180,19 @@ namespace internal
 																		\
 	EASTL_ATOMIC_INTEGRAL_FETCH_IMPL(funcName, EASTL_ATOMIC_INTEGRAL_FETCH_OP_JOIN(fetchOp, _SEQ_CST_), bits) \
 																		\
-	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, eastl::internal::memory_order_relaxed_s, \
+	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, std::internal::memory_order_relaxed_s, \
 										   EASTL_ATOMIC_INTEGRAL_FETCH_OP_JOIN(fetchOp, _RELAXED_), bits) \
 																		\
-	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, eastl::internal::memory_order_acquire_s, \
+	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, std::internal::memory_order_acquire_s, \
 										   EASTL_ATOMIC_INTEGRAL_FETCH_OP_JOIN(fetchOp, _ACQUIRE_), bits) \
 																		\
-	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, eastl::internal::memory_order_release_s, \
+	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, std::internal::memory_order_release_s, \
 										   EASTL_ATOMIC_INTEGRAL_FETCH_OP_JOIN(fetchOp, _RELEASE_), bits) \
 																		\
-	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, eastl::internal::memory_order_acq_rel_s, \
+	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, std::internal::memory_order_acq_rel_s, \
 										   EASTL_ATOMIC_INTEGRAL_FETCH_OP_JOIN(fetchOp, _ACQ_REL_), bits) \
 																		\
-	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, eastl::internal::memory_order_seq_cst_s, \
+	EASTL_ATOMIC_INTEGRAL_FETCH_ORDER_IMPL(funcName, std::internal::memory_order_seq_cst_s, \
 										   EASTL_ATOMIC_INTEGRAL_FETCH_OP_JOIN(fetchOp, _SEQ_CST_), bits)
 
 #define EASTL_ATOMIC_INTEGRAL_FETCH_INC_DEC_OPERATOR_IMPL(operatorOp, preFuncName, postFuncName) \
@@ -200,12 +200,12 @@ namespace internal
 																		\
 	T operator operatorOp() EA_NOEXCEPT									\
 	{																	\
-		return preFuncName(1, eastl::memory_order_seq_cst);				\
+		return preFuncName(1, std::memory_order_seq_cst);				\
 	}																	\
 																		\
 	T operator operatorOp(int) EA_NOEXCEPT								\
 	{																	\
-		return postFuncName(1, eastl::memory_order_seq_cst);			\
+		return postFuncName(1, std::memory_order_seq_cst);			\
 	}
 
 #define EASTL_ATOMIC_INTEGRAL_FETCH_ASSIGNMENT_OPERATOR_IMPL(operatorOp, funcName) \
@@ -213,7 +213,7 @@ namespace internal
 																		\
 	T operator operatorOp(T arg) EA_NOEXCEPT							\
 	{																	\
-		return funcName(arg, eastl::memory_order_seq_cst);				\
+		return funcName(arg, std::memory_order_seq_cst);				\
 	}
 
 
@@ -334,7 +334,7 @@ namespace internal
 } // namespace internal
 
 
-} // namespace eastl
+} // namespace std
 
 
 #include "atomic_pop_compiler_options.h"

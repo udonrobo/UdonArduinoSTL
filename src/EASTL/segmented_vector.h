@@ -6,12 +6,12 @@
 #define EASTL_SEGMENTED_VECTOR_H
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
-	#pragma once 
+	#pragma once
 #endif
 
 #include <EASTL/internal/config.h>
 
-namespace eastl
+namespace std
 {
 	template<typename T, size_t Count, typename Allocator = EASTLAllocatorType>
 	class segment
@@ -58,7 +58,7 @@ namespace eastl
 
         this_type&				operator++();
         this_type				operator++(int);
-		
+
 	public:
 		T*						mCurrent;
 		T*						mEnd;

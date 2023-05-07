@@ -12,27 +12,27 @@
 	#pragma once
 #endif
 
-namespace eastl
+namespace std
 {
 
 	/// enable_shared_from_this
 	///
 	/// This is a helper mixin class that allows you to make any class
-	/// export a shared_ptr instance that is associated with the class 
+	/// export a shared_ptr instance that is associated with the class
 	/// instance. Any class that inherits from this class gets two functions:
 	///    shared_ptr<T> shared_from_this();
 	///    shared_ptr<T> shared_from_this() const;
-	/// If you call shared_from_this, you get back a shared_ptr that 
+	/// If you call shared_from_this, you get back a shared_ptr that
 	/// refers to the class. A second call to shared_from_this returns
-	/// another shared_ptr that is shared with the first one. 
+	/// another shared_ptr that is shared with the first one.
 	///
 	/// The trick that happens which is not so obvious here (and which is
 	/// not mentioned at all in the Boost documentation of their version
-	/// of this) is that the shared_ptr constructor detects that the 
+	/// of this) is that the shared_ptr constructor detects that the
 	/// class has an enable_shared_from_this mixin and sets up this system
 	/// automatically for the user. This is done with template tricks.
 	///
-	/// For some additional explanation, see the Boost documentation for 
+	/// For some additional explanation, see the Boost documentation for
 	/// their description of their version of enable_shared_from_this.
 	///
 	template <typename T>
@@ -71,7 +71,7 @@ namespace eastl
 
 	}; // enable_shared_from_this
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

@@ -13,7 +13,7 @@
 
 #include <EASTL/internal/function_detail.h>
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_FUNCTION_DEFAULT_CAPTURE_SSO_SIZE
@@ -49,13 +49,13 @@ namespace eastl
 		}
 
 		function(function&& other)
-			: Base(eastl::move(other))
+			: Base(std::move(other))
 		{
 		}
 
 		template <typename Functor, typename = EASTL_INTERNAL_FUNCTION_VALID_FUNCTION_ARGS(Functor, R, Args..., Base, function)>
 		function(Functor functor)
-			: Base(eastl::move(functor))
+			: Base(std::move(functor))
 		{
 		}
 
@@ -69,7 +69,7 @@ namespace eastl
 
 		function& operator=(function&& other)
 		{
-			Base::operator=(eastl::move(other));
+			Base::operator=(std::move(other));
 			return *this;
 		}
 
@@ -82,12 +82,12 @@ namespace eastl
 		template <typename Functor, typename = EASTL_INTERNAL_FUNCTION_VALID_FUNCTION_ARGS(Functor, R, Args..., Base, function)>
 		function& operator=(Functor&& functor)
 		{
-			Base::operator=(eastl::forward<Functor>(functor));
+			Base::operator=(std::forward<Functor>(functor));
 			return *this;
 		}
 
 		template <typename Functor>
-		function& operator=(eastl::reference_wrapper<Functor> f) EA_NOEXCEPT
+		function& operator=(std::reference_wrapper<Functor> f) EA_NOEXCEPT
 		{
 			Base::operator=(f);
 			return *this;
@@ -105,7 +105,7 @@ namespace eastl
 
 		R operator ()(Args... args) const
 		{
-			return Base::operator ()(eastl::forward<Args>(args)...);
+			return Base::operator ()(std::forward<Args>(args)...);
 		}
 
 	#if EASTL_RTTI_ENABLED
@@ -158,6 +158,6 @@ namespace eastl
 		lhs.swap(rhs);
 	}
 
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_FUNCTION_H

@@ -23,7 +23,7 @@
 // be evaluated at template-parse time, rather than at template instantion time.
 // So instead we just make the assert dependent on the type.
 #define EASTL_ATOMIC_INTERNAL_NOT_IMPLEMENTED_ERROR(...)				\
-	static_assert(!eastl::is_same<T,T>::value, "eastl::atomic<T> atomic macro not implemented!")
+	static_assert(!std::is_same<T,T>::value, "std::atomic<T> atomic macro not implemented!")
 
 
 /* Compiler && Arch Not Implemented */

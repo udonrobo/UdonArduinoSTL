@@ -12,11 +12,11 @@
 	#pragma once
 #endif
 
-namespace eastl
+namespace std
 {
 
 	///////////////////////////////////////////////////////////////////////
-	// void_t 
+	// void_t
 	//
 	// Maps a sequence of any types to void.  This utility class is used in
 	// template meta programming to simplify compile time reflection mechanisms
@@ -29,7 +29,7 @@ namespace eastl
 	//    struct is_iterable : false_type {};
 	//
 	//    template <typename T>
-	//    struct is_iterable<T, void_t<decltype(declval<T>().begin()), 
+	//    struct is_iterable<T, void_t<decltype(declval<T>().begin()),
 	//                                 decltype(declval<T>().end())>> : true_type {};
 	//
 	///////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ namespace eastl
 	using void_t = void;
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

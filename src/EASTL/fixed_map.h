@@ -3,8 +3,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// This file implements a map and multimap which use a fixed size memory 
-// pool for their nodes. 
+// This file implements a map and multimap which use a fixed size memory
+// pool for their nodes.
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -21,13 +21,13 @@
 
 
 
-namespace eastl
+namespace std
 {
 	/// EASTL_FIXED_MAP_DEFAULT_NAME
 	///
 	/// Defines a default container name in the absence of a user-provided name.
 	/// In the case of fixed-size containers, the allocator name always refers
-	/// to overflow allocations. 
+	/// to overflow allocations.
 	///
 	#ifndef EASTL_FIXED_MAP_DEFAULT_NAME
 		#define EASTL_FIXED_MAP_DEFAULT_NAME EASTL_DEFAULT_NAME_PREFIX " fixed_map" // Unless the user overrides something, this is "EASTL fixed_map".
@@ -53,8 +53,8 @@ namespace eastl
 
 	/// fixed_map
 	///
-	/// Implements a map with a fixed block of memory identified by the 
-	/// nodeCount template parameter. 
+	/// Implements a map with a fixed block of memory identified by the
+	/// nodeCount template parameter.
 	///
 	///     Key                    The key object (key in the key/value pair).
 	///     T                      The mapped object (value in the key/value pair).
@@ -63,13 +63,13 @@ namespace eastl
 	///     Compare                Compare function/object for set ordering.
 	///     OverflowAllocator              Overflow allocator, which is only used if bEnableOverflow == true. Defaults to the global heap.
 	///
-	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow = true, typename Compare = eastl::less<Key>, typename OverflowAllocator = EASTLAllocatorType>
-	class fixed_map : public map<Key, T, Compare, fixed_node_allocator<sizeof(typename map<Key, T>::node_type), 
-		nodeCount, EASTL_ALIGN_OF(eastl::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator> >
+	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow = true, typename Compare = std::less<Key>, typename OverflowAllocator = EASTLAllocatorType>
+	class fixed_map : public map<Key, T, Compare, fixed_node_allocator<sizeof(typename map<Key, T>::node_type),
+		nodeCount, EASTL_ALIGN_OF(std::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator> >
 	{
 	public:
-		typedef fixed_node_allocator<sizeof(typename map<Key, T>::node_type), nodeCount, 
-					 EASTL_ALIGN_OF(eastl::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator>                           fixed_allocator_type;
+		typedef fixed_node_allocator<sizeof(typename map<Key, T>::node_type), nodeCount,
+					 EASTL_ALIGN_OF(std::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator>                           fixed_allocator_type;
 		typedef typename fixed_allocator_type::overflow_allocator_type                                                     overflow_allocator_type;
 		typedef fixed_map<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>                                  this_type;
 		typedef map<Key, T, Compare, fixed_allocator_type>                                                                 base_type;
@@ -78,7 +78,7 @@ namespace eastl
 		typedef typename base_type::size_type                                                                              size_type;
 
 		enum { kMaxSize = nodeCount };
-		   
+
 		using base_type::insert;
 
 	protected:
@@ -118,8 +118,8 @@ namespace eastl
 
 	/// fixed_multimap
 	///
-	/// Implements a multimap with a fixed block of memory identified by the 
-	/// nodeCount template parameter. 
+	/// Implements a multimap with a fixed block of memory identified by the
+	/// nodeCount template parameter.
 	///
 	///     Key                    The key object (key in the key/value pair).
 	///     T                      The mapped object (value in the key/value pair).
@@ -128,13 +128,13 @@ namespace eastl
 	///     Compare                Compare function/object for set ordering.
 	///     OverflowAllocator              Overflow allocator, which is only used if bEnableOverflow == true. Defaults to the global heap.
 	///
-	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow = true, typename Compare = eastl::less<Key>, typename OverflowAllocator = EASTLAllocatorType>
-	class fixed_multimap : public multimap<Key, T, Compare, fixed_node_allocator<sizeof(typename multimap<Key, T>::node_type), 
-										   nodeCount, EASTL_ALIGN_OF(eastl::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator> >
+	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow = true, typename Compare = std::less<Key>, typename OverflowAllocator = EASTLAllocatorType>
+	class fixed_multimap : public multimap<Key, T, Compare, fixed_node_allocator<sizeof(typename multimap<Key, T>::node_type),
+										   nodeCount, EASTL_ALIGN_OF(std::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator> >
 	{
 	public:
-		typedef fixed_node_allocator<sizeof(typename multimap<Key, T>::node_type), nodeCount, 
-					EASTL_ALIGN_OF(eastl::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator>                                      fixed_allocator_type;
+		typedef fixed_node_allocator<sizeof(typename multimap<Key, T>::node_type), nodeCount,
+					EASTL_ALIGN_OF(std::pair<Key, T>), 0, bEnableOverflow, OverflowAllocator>                                      fixed_allocator_type;
 		typedef typename fixed_allocator_type::overflow_allocator_type                                                               overflow_allocator_type;
 		typedef multimap<Key, T, Compare, fixed_allocator_type>                                                                      base_type;
 		typedef fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>                                       this_type;
@@ -316,7 +316,7 @@ namespace eastl
 	inline void fixed_map<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::swap(this_type& x)
 	{
 		// Fixed containers use a special swap that can deal with excessively large buffers.
-		eastl::fixed_swap(*this, x);
+		std::fixed_swap(*this, x);
 	}
 
 
@@ -364,11 +364,11 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow, typename Compare, typename OverflowAllocator>
-	inline void swap(fixed_map<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>& a, 
+	inline void swap(fixed_map<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>& a,
 					 fixed_map<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>& b)
 	{
 		// Fixed containers use a special swap that can deal with excessively large buffers.
-		eastl::fixed_swap(a, b);
+		std::fixed_swap(a, b);
 	}
 
 
@@ -477,7 +477,7 @@ namespace eastl
 
 
 	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow, typename Compare, typename OverflowAllocator>
-	inline typename fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::this_type& 
+	inline typename fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::this_type&
 	fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::operator=(const this_type& x)
 	{
 		base_type::operator=(x);
@@ -508,7 +508,7 @@ namespace eastl
 	inline void fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::swap(this_type& x)
 	{
 		// Fixed containers use a special swap that can deal with excessively large buffers.
-		eastl::fixed_swap(*this, x);
+		std::fixed_swap(*this, x);
 	}
 
 
@@ -521,7 +521,7 @@ namespace eastl
 
 
 	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow, typename Compare, typename OverflowAllocator>
-	inline typename fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::size_type 
+	inline typename fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::size_type
 	fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>::max_size() const
 	{
 		return kMaxSize;
@@ -557,15 +557,15 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename Key, typename T, size_t nodeCount, bool bEnableOverflow, typename Compare, typename OverflowAllocator>
-	inline void swap(fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>& a, 
+	inline void swap(fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>& a,
 					 fixed_multimap<Key, T, nodeCount, bEnableOverflow, Compare, OverflowAllocator>& b)
 	{
 		// Fixed containers use a special swap that can deal with excessively large buffers.
-		eastl::fixed_swap(a, b);
+		std::fixed_swap(a, b);
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

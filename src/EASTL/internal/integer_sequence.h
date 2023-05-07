@@ -9,7 +9,7 @@
 #include <EASTL/internal/config.h>
 #include <EASTL/type_traits.h>
 
-namespace eastl
+namespace std
 {
 
 #if EASTL_VARIADIC_TEMPLATES_ENABLED && !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
@@ -20,7 +20,7 @@ class integer_sequence
 {
 public:
 	typedef T value_type;
-	static_assert(is_integral<T>::value, "eastl::integer_sequence can only be instantiated with an integral type");
+	static_assert(is_integral<T>::value, "std::integer_sequence can only be instantiated with an integral type");
 	static EA_CONSTEXPR size_t size() EA_NOEXCEPT { return sizeof...(Ints); }
 };
 
@@ -37,7 +37,7 @@ using make_integer_sequence = integer_sequence<T, __integer_pack(N)...>;
 template <class T, T N>
 using make_integer_sequence = __make_integer_seq<integer_sequence, T, N>;
 
-#else 
+#else
 
 template <size_t N, typename IndexSeq>
 struct make_index_sequence_impl;
@@ -88,17 +88,17 @@ template <typename T>
 struct integer_sequence_size_helper;
 
 template <typename T, T... Ints>
-struct integer_sequence_size_helper<eastl::integer_sequence<T, Ints...>> : public integral_constant<size_t, sizeof...(Ints)>
+struct integer_sequence_size_helper<std::integer_sequence<T, Ints...>> : public integral_constant<size_t, sizeof...(Ints)>
 {
 };
 
 template <typename T>
-struct integer_sequence_size : public integer_sequence_size_helper<eastl::remove_cv_t<T>>
+struct integer_sequence_size : public integer_sequence_size_helper<std::remove_cv_t<T>>
 {
 };
 
 template <typename T>
-struct index_sequence_size : public integer_sequence_size_helper<eastl::remove_cv_t<T>>
+struct index_sequence_size : public integer_sequence_size_helper<std::remove_cv_t<T>>
 {
 };
 
@@ -113,6 +113,6 @@ EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR size_t index_sequence_size_v = index_se
 
 #endif  // EASTL_VARIADIC_TEMPLATES_ENABLED
 
-}  // namespace eastl
+}  // namespace std
 
 #endif  // EASTL_INTEGER_SEQUENCE_H

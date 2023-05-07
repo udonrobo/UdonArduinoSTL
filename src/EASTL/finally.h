@@ -3,8 +3,8 @@
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// eastl::finally is an implementation of the popular cpp idiom RAII - Resource
-// Acquisition Is Initialization. eastl::finally guarantees that the user
+// std::finally is an implementation of the popular cpp idiom RAII - Resource
+// Acquisition Is Initialization. std::finally guarantees that the user
 // provided callable will be executed upon whatever mechanism is used to leave
 // the current scope. This can guard against user errors but this is a popular
 // technique to write robust code in execution environments that have exceptions
@@ -14,11 +14,11 @@
 //     void foo()
 //     {
 //         void* p = malloc(128);
-//         auto _ = eastl::make_finally([&] { free(p); });
+//         auto _ = std::make_finally([&] { free(p); });
 //
 //         // Code that may throw an exception...
 //
-//     }  // eastl::finally guaranteed to call 'free' at scope exit.
+//     }  // std::finally guaranteed to call 'free' at scope exit.
 //
 // References:
 // * https://www.bfilipek.com/2017/04/finalact.html
@@ -35,7 +35,7 @@
 #include <EASTL/internal/move_help.h>
 #include <EASTL/type_traits.h>
 
-namespace eastl
+namespace std
 {
 	///////////////////////////////////////////////////////////////////////////
 	// finally
@@ -45,15 +45,15 @@ namespace eastl
 	template <typename Functor>
 	class finally
 	{
-		static_assert(!eastl::is_lvalue_reference<Functor>::value, "eastl::finally requires the callable is passed as an rvalue reference.");
+		static_assert(!std::is_lvalue_reference<Functor>::value, "std::finally requires the callable is passed as an rvalue reference.");
 
 		Functor m_functor;
 		bool m_engaged = false;
 
 	public:
-		finally(Functor f) : m_functor(eastl::move(f)), m_engaged(true) {}
+		finally(Functor f) : m_functor(std::move(f)), m_engaged(true) {}
 
-		finally(finally&& other) : m_functor(eastl::move(other.m_functor)), m_engaged(other.m_engaged)
+		finally(finally&& other) : m_functor(std::move(other.m_functor)), m_engaged(other.m_engaged)
 		{
 			other.dismiss();
 		}
@@ -86,7 +86,7 @@ namespace eastl
 	template <typename F>
 	auto make_finally(F&& f)
 	{
-		return finally<F>(eastl::forward<F>(f));
+		return finally<F>(std::forward<F>(f));
 	}
 }
 

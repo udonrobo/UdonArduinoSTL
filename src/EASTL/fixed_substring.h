@@ -15,7 +15,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// fixed_substring
@@ -268,7 +268,7 @@ namespace eastl
 	}; // fixed_substring
 
 
-} // namespace eastl
+} // namespace std
 
 
 

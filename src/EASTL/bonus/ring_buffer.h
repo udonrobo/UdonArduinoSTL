@@ -30,7 +30,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 	/// EASTL_RING_BUFFER_DEFAULT_NAME
 	///
@@ -49,7 +49,7 @@ namespace eastl
 
 	/// ring_buffer_iterator
 	///
-	/// We force this iterator to act like a random access iterator even if 
+	/// We force this iterator to act like a random access iterator even if
 	/// the underlying container doesn't support random access iteration.
 	/// Any BidirectionalIterator can be a RandomAccessIterator; it just
 	/// might be inefficient in some cases.
@@ -106,30 +106,30 @@ namespace eastl
 
 	/// ring_buffer
 	///
-	/// Implements a ring buffer via a given container type, which would 
-	/// typically be a vector or array, though any container which supports 
+	/// Implements a ring buffer via a given container type, which would
+	/// typically be a vector or array, though any container which supports
 	/// bidirectional iteration would work.
 	///
 	/// A ring buffer is a FIFO (first-in, first-out) container which acts
 	/// much like a queue. The difference is that a ring buffer is implemented
 	/// via chasing pointers around a container and moving the read and write
-	/// positions forward (and possibly wrapping around) as the container is 
+	/// positions forward (and possibly wrapping around) as the container is
 	/// read and written via pop_front and push_back.
 	///
 	/// The benefit of a ring buffer is that memory allocations don't occur
 	/// and new elements are neither added nor removed from the container.
 	/// Elements in the container are simply assigned values in circles around
 	/// the container.
-	/// 
+	///
 	/// ring_buffer is different from other containers -- including adapter
 	/// containers -- in how iteration is done. Iteration of a ring buffer
 	/// starts at the current begin position, proceeds to the end of the underlying
 	/// container, and continues at the begin of the underlying container until
-	/// the ring buffer's current end position. Thus a ring_buffer does 
-	/// indeed have a begin and an end, though the values of begin and end 
-	/// chase each other around the container. An empty ring_buffer is one 
-	/// in which end == begin, and a full ring_buffer is one in which 
-	/// end + 1 == begin. 
+	/// the ring buffer's current end position. Thus a ring_buffer does
+	/// indeed have a begin and an end, though the values of begin and end
+	/// chase each other around the container. An empty ring_buffer is one
+	/// in which end == begin, and a full ring_buffer is one in which
+	/// end + 1 == begin.
 	///
 	/// Example of a ring buffer layout, where + indicates queued items:
 	///    ++++++++++--------------------------------+++++++++
@@ -141,28 +141,28 @@ namespace eastl
 	///                              ^
 	///                          begin / end
 	///
-	/// Full ring buffer. Note that one item is necessarily unused; it is 
+	/// Full ring buffer. Note that one item is necessarily unused; it is
 	/// analagous to a '\0' at the end of a C string:
 	///    +++++++++++++++++++++++++++++++++++++++++-+++++++++
 	///                                             ^^
 	///                                           end begin
 	///
-	/// A push_back operation on a ring buffer assigns the new value to end.  
+	/// A push_back operation on a ring buffer assigns the new value to end.
 	/// If there is no more space in the buffer, this will result in begin
 	/// being overwritten and the begin position being moved foward one position.
 	/// The user can use the full() function to detect this condition.
-	/// Note that elements in a ring buffer are not created or destroyed as 
-	/// their are added and removed; they are merely assigned. Only on 
-	/// container construction and destruction are any elements created and 
+	/// Note that elements in a ring buffer are not created or destroyed as
+	/// their are added and removed; they are merely assigned. Only on
+	/// container construction and destruction are any elements created and
 	/// destroyed.
 	///
-	/// The ring buffer can be used in either direction. By this we mean that 
+	/// The ring buffer can be used in either direction. By this we mean that
 	/// you can use push_back to add items and pop_front to remove them; or you can
-	/// use push_front to add items and pop_back to remove them. You aren't 
+	/// use push_front to add items and pop_back to remove them. You aren't
 	/// limited to these operations; you can push or pop from either side
 	/// arbitrarily and you can insert or erase anywhere in the container.
 	///
-	/// The ring buffer requires the user to specify a Container type, which 
+	/// The ring buffer requires the user to specify a Container type, which
 	/// by default is vector. However, any container with bidirectional iterators
 	/// will work, such as list, deque, string or any of the fixed_* versions
 	/// of these containers, such as fixed_string. Since ring buffer works via copying
@@ -173,34 +173,34 @@ namespace eastl
 	/// ring buffer size. Changing the size of a ring buffer may cause ring
 	/// buffer iterators to invalidate.
 	///
-	/// An alternative to using a ring buffer is to use a list with a user-created 
+	/// An alternative to using a ring buffer is to use a list with a user-created
 	/// node pool and custom allocator. There are various tradeoffs that result from this.
 	///
 	/// Example usage:
 	///     ring_buffer< int, list<int> > rb(100);
 	///     rb.push_back(1);
-	/// 
+	///
 	/// Example usage:
-	///     // Example of creating an on-screen debug log that shows 16 
+	///     // Example of creating an on-screen debug log that shows 16
 	///     // strings at a time and scrolls older strings away.
 	///
 	///     // Create ring buffer of 16 strings.
 	///     ring_buffer< string, vector<string> > debugLogText(16);
-	///     
-	///     // Reserve 128 chars for each line. This can make it so that no 
+	///
+	///     // Reserve 128 chars for each line. This can make it so that no
 	///     // runtime memory allocations occur.
 	///     for(vector<string>::iterator it = debugLogText.get_container().begin(),
 	///         itEnd = debugLogText.get_container().end(); it != itEnd; ++it)
 	///     {
 	///         (*it).reserve(128);
 	///     }
-	///     
-	///     // Add a new string, using push_front() and front() instead of 
+	///
+	///     // Add a new string, using push_front() and front() instead of
 	///     // push_front(str) in order to avoid creating a temporary str.
 	///     debugLogText.push_front();
 	///     debugLogText.front() = "Player fired weapon";
 	///
-	template <typename T, typename Container = eastl::vector<T>, typename Allocator = typename Container::allocator_type>
+	template <typename T, typename Container = std::vector<T>, typename Allocator = typename Container::allocator_type>
 	class ring_buffer
 	{
 	public:
@@ -217,21 +217,21 @@ namespace eastl
 		typedef typename Container::const_iterator                     container_const_iterator;
 		typedef ring_buffer_iterator<T, T*, T&, Container>             iterator;
 		typedef ring_buffer_iterator<T, const T*, const T&, Container> const_iterator;
-		typedef eastl::reverse_iterator<iterator>                      reverse_iterator;
-		typedef eastl::reverse_iterator<const_iterator>                const_reverse_iterator;    
+		typedef std::reverse_iterator<iterator>                      reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>                const_reverse_iterator;
 
 	public:                             // We declare public so that global comparison operators can be implemented without adding an inline level and without tripping up GCC 2.x friend declaration failures. GCC (through at least v4.0) is poor at inlining and performance wins over correctness.
 		Container          c;           // We follow the naming convention established for stack, queue, priority_queue and name this 'c'. This variable must always have a size of at least 1, as even an empty ring_buffer has an unused terminating element.
 
 	protected:
-		container_iterator mBegin;      // We keep track of where our begin and end are by using Container iterators. 
+		container_iterator mBegin;      // We keep track of where our begin and end are by using Container iterators.
 		container_iterator mEnd;
 		size_type          mSize;
 
 	public:
 		// There currently isn't a ring_buffer constructor that specifies an initial size, unlike other containers.
 		explicit ring_buffer(size_type cap = 0);                                // Construct with an initial capacity (but size of 0).
-		explicit ring_buffer(size_type cap, const allocator_type& allocator); 
+		explicit ring_buffer(size_type cap, const allocator_type& allocator);
 		explicit ring_buffer(const Container& x);
 		explicit ring_buffer(const allocator_type& allocator);
 		ring_buffer(const this_type& x);
@@ -278,7 +278,7 @@ namespace eastl
 		reference       front();
 		const_reference front() const;
 
-		reference       back();              
+		reference       back();
 		const_reference back() const;
 
 		void            push_back(const value_type& value);
@@ -363,7 +363,7 @@ namespace eastl
 
 
 	template <typename T, typename Pointer, typename Reference, typename Container>
-	ring_buffer_iterator<T, Pointer, Reference, Container>& 
+	ring_buffer_iterator<T, Pointer, Reference, Container>&
 	ring_buffer_iterator<T, Pointer, Reference, Container>::operator=(const iterator& x)
 	{
 		mpContainer        = x.mpContainer;
@@ -435,7 +435,7 @@ namespace eastl
 	typename ring_buffer_iterator<T, Pointer, Reference, Container>::this_type&
 	ring_buffer_iterator<T, Pointer, Reference, Container>::operator+=(difference_type n)
 	{
-		typedef typename eastl::iterator_traits<container_iterator>::iterator_category IC;
+		typedef typename std::iterator_traits<container_iterator>::iterator_category IC;
 		increment(n, IC());
 		return *this;
 	}
@@ -445,7 +445,7 @@ namespace eastl
 	typename ring_buffer_iterator<T, Pointer, Reference, Container>::this_type&
 	ring_buffer_iterator<T, Pointer, Reference, Container>::operator-=(difference_type n)
 	{
-		typedef typename eastl::iterator_traits<container_iterator>::iterator_category IC;
+		typedef typename std::iterator_traits<container_iterator>::iterator_category IC;
 		increment(-n, IC());
 		return *this;
 	}
@@ -480,7 +480,7 @@ namespace eastl
 	void ring_buffer_iterator<T, Pointer, Reference, Container>::increment(difference_type n, EASTL_ITC_NS::random_access_iterator_tag)
 	{
 		// We make the assumption here that the user is incrementing from a valid
-		// starting position to a valid ending position. Thus *this + n yields a 
+		// starting position to a valid ending position. Thus *this + n yields a
 		// valid iterator, including if n happens to be a negative value.
 
 		if(n >= 0)
@@ -542,7 +542,7 @@ namespace eastl
 	// require us to support comparisons between reverse_iterators and const_reverse_iterators.
 	template <typename T, typename PointerA, typename ReferenceA, typename ContainerA,
 						  typename PointerB, typename ReferenceB, typename ContainerB>
-	inline bool operator==(const ring_buffer_iterator<T, PointerA, ReferenceA, ContainerA>& a, 
+	inline bool operator==(const ring_buffer_iterator<T, PointerA, ReferenceA, ContainerA>& a,
 						   const ring_buffer_iterator<T, PointerB, ReferenceB, ContainerB>& b)
 	{
 		// Perhaps we should compare the container pointer as well.
@@ -553,7 +553,7 @@ namespace eastl
 
 	template <typename T, typename PointerA, typename ReferenceA, typename ContainerA,
 						  typename PointerB, typename ReferenceB, typename ContainerB>
-	inline bool operator!=(const ring_buffer_iterator<T, PointerA, ReferenceA, ContainerA>& a, 
+	inline bool operator!=(const ring_buffer_iterator<T, PointerA, ReferenceA, ContainerA>& a,
 						   const ring_buffer_iterator<T, PointerB, ReferenceB, ContainerB>& b)
 	{
 		// Perhaps we should compare the container pointer as well.
@@ -562,10 +562,10 @@ namespace eastl
 	}
 
 
-	// We provide a version of operator!= for the case where the iterators are of the 
+	// We provide a version of operator!= for the case where the iterators are of the
 	// same type. This helps prevent ambiguity errors in the presence of rel_ops.
 	template <typename T, typename Pointer, typename Reference, typename Container>
-	inline bool operator!=(const ring_buffer_iterator<T, Pointer, Reference, Container>& a, 
+	inline bool operator!=(const ring_buffer_iterator<T, Pointer, Reference, Container>& a,
 						   const ring_buffer_iterator<T, Pointer, Reference, Container>& b)
 	{
 		return !(a.mContainerIterator == b.mContainerIterator);
@@ -582,11 +582,11 @@ namespace eastl
 	ring_buffer<T, Container, Allocator>::ring_buffer(size_type cap)
 		: c() // Default construction with default allocator for the container.
 	{
-		// To do: This code needs to be amended to deal with possible exceptions 
+		// To do: This code needs to be amended to deal with possible exceptions
 		// that could occur during the resize call below.
 
 		// We add one because the element at mEnd is necessarily unused.
-		c.resize(cap + 1); // Possibly we could construct 'c' with size, but c may not have such a ctor, though we rely on it having a resize function. 
+		c.resize(cap + 1); // Possibly we could construct 'c' with size, but c may not have such a ctor, though we rely on it having a resize function.
 		mBegin = c.begin();
 		mEnd   = mBegin;
 		mSize  = 0;
@@ -597,11 +597,11 @@ namespace eastl
 	ring_buffer<T, Container, Allocator>::ring_buffer(size_type cap, const allocator_type& allocator)
 		: c(allocator)
 	{
-		// To do: This code needs to be amended to deal with possible exceptions 
+		// To do: This code needs to be amended to deal with possible exceptions
 		// that could occur during the resize call below.
 
 		// We add one because the element at mEnd is necessarily unused.
-		c.resize(cap + 1); // Possibly we could construct 'c' with size, but c may not have such a ctor, though we rely on it having a resize function. 
+		c.resize(cap + 1); // Possibly we could construct 'c' with size, but c may not have such a ctor, though we rely on it having a resize function.
 		mBegin = c.begin();
 		mEnd   = mBegin;
 		mSize  = 0;
@@ -612,7 +612,7 @@ namespace eastl
 	ring_buffer<T, Container, Allocator>::ring_buffer(const Container& x)
 		: c(x) // This copies elements from x, but unless the user is doing some tricks, the only thing that matters is that c.size() == x.size().
 	{
-		// To do: This code needs to be amended to deal with possible exceptions 
+		// To do: This code needs to be amended to deal with possible exceptions
 		// that could occur during the resize call below.
 		if(c.empty())
 			c.resize(1);
@@ -626,7 +626,7 @@ namespace eastl
 	ring_buffer<T, Container, Allocator>::ring_buffer(const allocator_type& allocator)
 		: c(allocator)
 	{
-		// To do: This code needs to be amended to deal with possible exceptions 
+		// To do: This code needs to be amended to deal with possible exceptions
 		// that could occur during the resize call below.
 
 		// We add one because the element at mEnd is necessarily unused.
@@ -645,8 +645,8 @@ namespace eastl
 		mEnd   = mBegin;
 		mSize  = x.mSize;
 
-		eastl::advance(mBegin, eastl::distance(const_cast<this_type&>(x).c.begin(), x.mBegin)); // We can do a simple distance algorithm here, as there will be no wraparound.
-		eastl::advance(mEnd,   eastl::distance(const_cast<this_type&>(x).c.begin(), x.mEnd));
+		std::advance(mBegin, std::distance(const_cast<this_type&>(x).c.begin(), x.mBegin)); // We can do a simple distance algorithm here, as there will be no wraparound.
+		std::advance(mEnd,   std::distance(const_cast<this_type&>(x).c.begin(), x.mEnd));
 	}
 
 	template <typename T, typename Container, typename Allocator>
@@ -702,8 +702,8 @@ namespace eastl
 			mEnd   = mBegin;
 			mSize  = x.mSize;
 
-			eastl::advance(mBegin, eastl::distance(const_cast<this_type&>(x).c.begin(), x.mBegin)); // We can do a simple distance algorithm here, as there will be no wraparound.
-			eastl::advance(mEnd,   eastl::distance(const_cast<this_type&>(x).c.begin(), x.mEnd));
+			std::advance(mBegin, std::distance(const_cast<this_type&>(x).c.begin(), x.mBegin)); // We can do a simple distance algorithm here, as there will be no wraparound.
+			std::advance(mEnd,   std::distance(const_cast<this_type&>(x).c.begin(), x.mEnd));
 		}
 
 		return *this;
@@ -732,7 +732,7 @@ namespace eastl
 	template <typename InputIterator>
 	void ring_buffer<T, Container, Allocator>::assign(InputIterator first, InputIterator last)
 	{
-		// To consider: We can make specializations of this for pointer-based 
+		// To consider: We can make specializations of this for pointer-based
 		// iterators to PODs and turn the action into a memcpy.
 		clear();
 
@@ -746,26 +746,26 @@ namespace eastl
 	{
 		if(&x != this)
 		{
-			const difference_type dBegin  = eastl::distance(c.begin(), mBegin); // We can do a simple distance algorithm here, as there will be no wraparound.
-			const difference_type dEnd    = eastl::distance(c.begin(), mEnd);
+			const difference_type dBegin  = std::distance(c.begin(), mBegin); // We can do a simple distance algorithm here, as there will be no wraparound.
+			const difference_type dEnd    = std::distance(c.begin(), mEnd);
 
-			const difference_type dxBegin = eastl::distance(x.c.begin(), x.mBegin);
-			const difference_type dxEnd   = eastl::distance(x.c.begin(), x.mEnd);
+			const difference_type dxBegin = std::distance(x.c.begin(), x.mBegin);
+			const difference_type dxEnd   = std::distance(x.c.begin(), x.mEnd);
 
-			eastl::swap(c, x.c);
-			eastl::swap(mSize, x.mSize);
+			std::swap(c, x.c);
+			std::swap(mSize, x.mSize);
 
 			mBegin = c.begin();
-			eastl::advance(mBegin, dxBegin); // We can do a simple advance algorithm here, as there will be no wraparound.
+			std::advance(mBegin, dxBegin); // We can do a simple advance algorithm here, as there will be no wraparound.
 
 			mEnd = c.begin();
-			eastl::advance(mEnd, dxEnd);
+			std::advance(mEnd, dxEnd);
 
 			x.mBegin = x.c.begin();
-			eastl::advance(x.mBegin, dBegin);
+			std::advance(x.mBegin, dBegin);
 
 			x.mEnd = x.c.begin();
-			eastl::advance(x.mEnd, dEnd);
+			std::advance(x.mEnd, dEnd);
 		}
 	}
 
@@ -819,7 +819,7 @@ namespace eastl
 
 
 	template <typename T, typename Container, typename Allocator>
-	typename ring_buffer<T, Container, Allocator>::reverse_iterator 
+	typename ring_buffer<T, Container, Allocator>::reverse_iterator
 	ring_buffer<T, Container, Allocator>::rbegin() EA_NOEXCEPT
 	{
 		return reverse_iterator(iterator(&c, mEnd));
@@ -893,9 +893,9 @@ namespace eastl
 		return mSize;
 
 		// Alternatives:
-		// return eastl::distance(begin(), end());
+		// return std::distance(begin(), end());
 		// return end() - begin(); // This is more direct than using distance().
-		//typedef typename eastl::iterator_traits<container_iterator>::iterator_category IC;
+		//typedef typename std::iterator_traits<container_iterator>::iterator_category IC;
 		//return DoGetSize(IC()); // This is more direct than using iterator math.
 	}
 
@@ -905,9 +905,9 @@ namespace eastl
 	typename ring_buffer<T, Container, Allocator>::size_type
 	ring_buffer<T, Container, Allocator>::DoGetSize(EASTL_ITC_NS::input_iterator_tag) const
 	{
-		// We could alternatively just use eastl::distance() here, but we happen to
+		// We could alternatively just use std::distance() here, but we happen to
 		// know that such code would boil down to what we have here, and we might
-		// as well remove function calls where possible. 
+		// as well remove function calls where possible.
 		difference_type d = 0;
 
 		for(const_iterator temp(begin()), tempEnd(end()); temp != tempEnd; ++temp)
@@ -923,15 +923,15 @@ namespace eastl
 	ring_buffer<T, Container, Allocator>::DoGetSize(EASTL_ITC_NS::random_access_iterator_tag) const
 	{
 		// A simpler but less efficient implementation fo this function would be:
-		//     return eastl::distance(mBegin, mEnd);
+		//     return std::distance(mBegin, mEnd);
 		//
 		// The calculation of distance here takes advantage of the fact that random
 		// access iterators' distances can be calculated by simple pointer calculation.
 		// Thus the code below boils down to a few subtractions when using a vector,
-		// string, or array as the Container type. 
+		// string, or array as the Container type.
 		//
-		const difference_type dBegin = eastl::distance(const_cast<Container&>(c).begin(), mBegin); // const_cast here solves a little compiler 
-		const difference_type dEnd   = eastl::distance(const_cast<Container&>(c).begin(), mEnd);   // argument matching problem.
+		const difference_type dBegin = std::distance(const_cast<Container&>(c).begin(), mBegin); // const_cast here solves a little compiler
+		const difference_type dEnd   = std::distance(const_cast<Container&>(c).begin(), mEnd);   // argument matching problem.
 
 		if(dEnd >= dBegin)
 			return dEnd - dBegin;
@@ -941,13 +941,13 @@ namespace eastl
 	*/
 
 
-	namespace Internal 
+	namespace Internal
 	{
 		///////////////////////////////////////////////////////////////
 		// has_overflow_allocator
 		//
-		// returns true_type when the specified container type is an 
-		// eastl::fixed_*  container and therefore has an overflow 
+		// returns true_type when the specified container type is an
+		// std::fixed_*  container and therefore has an overflow
 		// allocator type.
 		//
 		template <typename T, typename = void>
@@ -960,8 +960,8 @@ namespace eastl
 		///////////////////////////////////////////////////////////////
 		// GetFixedContainerCtorAllocator
 		//
-		// eastl::fixed_* containers are only constructible via their 
-		// overflow allocator type. This helper select the appropriate 
+		// std::fixed_* containers are only constructible via their
+		// overflow allocator type. This helper select the appropriate
 		// allocator from the specified container.
 		//
 		template <typename Container, bool UseOverflowAllocator = has_overflow_allocator<Container>()()>
@@ -980,10 +980,10 @@ namespace eastl
 
 	///////////////////////////////////////////////////////////////
 	// ContainerTemporary
-	// 
-	// Helper type which prevents utilizing excessive stack space 
-	// when creating temporaries when swapping/copying the underlying 
-	// ring_buffer container type. 
+	//
+	// Helper type which prevents utilizing excessive stack space
+	// when creating temporaries when swapping/copying the underlying
+	// ring_buffer container type.
 	//
 	template <typename Container, bool UseHeapTemporary = (sizeof(Container) >= EASTL_MAX_STACK_USAGE)>
 	struct ContainerTemporary
@@ -1036,7 +1036,7 @@ namespace eastl
 
 		if(n > cap) // If we need to grow in capacity...
 		{
-			// Given that a growing operation will always result in memory allocation, 
+			// Given that a growing operation will always result in memory allocation,
 			// we currently implement this function via the usage of a temp container.
 			// This makes for a simple implementation, but in some cases it is less
 			// efficient. In particular, if the container is a node-based container like
@@ -1044,26 +1044,26 @@ namespace eastl
 			// to ourself. We would do this by inserting the nodes to be after end()
 			// and adjusting the begin() position if it was after end().
 
-			// To do: This code needs to be amended to deal with possible exceptions 
+			// To do: This code needs to be amended to deal with possible exceptions
 			// that could occur during the resize call below.
 
 			ContainerTemporary<Container> cTemp(c);
 			cTemp.get().resize(n + 1);
-			eastl::copy(begin(), end(), cTemp.get().begin());
-			eastl::swap(c, cTemp.get());
+			std::copy(begin(), end(), cTemp.get().begin());
+			std::swap(c, cTemp.get());
 
 			mBegin = c.begin();
 			mEnd   = mBegin;
-			eastl::advance(mEnd, n); // We can do a simple advance algorithm on this because we know that mEnd will not wrap around.
+			std::advance(mEnd, n); // We can do a simple advance algorithm on this because we know that mEnd will not wrap around.
 		}
 		else // We could do a check here for n != size(), but that would be costly and people don't usually resize things to their same size.
 		{
 			mEnd = mBegin;
 
-			// eastl::advance(mEnd, n); // We *cannot* use this because there may be wraparound involved.
+			// std::advance(mEnd, n); // We *cannot* use this because there may be wraparound involved.
 
 			// To consider: Possibly we should implement some more detailed logic to optimize the code here.
-			// We'd need to do different behaviour dending on whether the container iterator type is a 
+			// We'd need to do different behaviour dending on whether the container iterator type is a
 			// random access iterator or otherwise.
 
 			while(n--)
@@ -1099,16 +1099,16 @@ namespace eastl
 
 			if(n < mSize) // If we are shrinking the capacity, to less than our size...
 			{
-				eastl::advance(itCopyBegin, mSize - n);
+				std::advance(itCopyBegin, mSize - n);
 				mSize = n;
 			}
 
-			eastl::copy(itCopyBegin, end(), cTemp.get().begin());  // The begin-end range may in fact be larger than n, in which case values will be overwritten.
-			eastl::swap(c, cTemp.get());
+			std::copy(itCopyBegin, end(), cTemp.get().begin());  // The begin-end range may in fact be larger than n, in which case values will be overwritten.
+			std::swap(c, cTemp.get());
 
 			mBegin = c.begin();
 			mEnd   = mBegin;
-			eastl::advance(mEnd, mSize); // We can do a simple advance algorithm on this because we know that mEnd will not wrap around.
+			std::advance(mEnd, mSize); // We can do a simple advance algorithm on this because we know that mEnd will not wrap around.
 		}
 	}
 
@@ -1123,12 +1123,12 @@ namespace eastl
 		{
 			ContainerTemporary<Container> cTemp(c);
 			cTemp.get().resize(n + 1);
-			eastl::copy(begin(), end(), cTemp.get().begin());
-			eastl::swap(c, cTemp.get());
+			std::copy(begin(), end(), cTemp.get().begin());
+			std::swap(c, cTemp.get());
 
 			mBegin = c.begin();
 			mEnd   = mBegin;
-			eastl::advance(mEnd, mSize); // We can do a simple advance algorithm on this because we know that mEnd will not wrap around.
+			std::advance(mEnd, mSize); // We can do a simple advance algorithm on this because we know that mEnd will not wrap around.
 		}
 	}
 
@@ -1159,7 +1159,7 @@ namespace eastl
 		return *(--temp);       // We can do it by making all our containers' iterators support operator-.
 	}
 
-		
+
 	template <typename T, typename Container, typename Allocator>
 	typename ring_buffer<T, Container, Allocator>::const_reference
 	ring_buffer<T, Container, Allocator>::back() const
@@ -1171,7 +1171,7 @@ namespace eastl
 	}
 
 
-	/// A push_back operation on a ring buffer assigns the new value to end.  
+	/// A push_back operation on a ring buffer assigns the new value to end.
 	/// If there is no more space in the buffer, this will result in begin
 	/// being overwritten and the begin position being moved foward one position.
 	template <typename T, typename Container, typename Allocator>
@@ -1192,7 +1192,7 @@ namespace eastl
 	}
 
 
-	/// A push_back operation on a ring buffer assigns the new value to end.  
+	/// A push_back operation on a ring buffer assigns the new value to end.
 	/// If there is no more space in the buffer, this will result in begin
 	/// being overwritten and the begin position being moved foward one position.
 	template <typename T, typename Container, typename Allocator>
@@ -1201,7 +1201,7 @@ namespace eastl
 	{
 		// We don't do the following assignment, as the value at mEnd is already constructed;
 		// it is merely possibly not default-constructed. However, the spirit of push_back
-		// is that the user intends to do an assignment or data modification after the 
+		// is that the user intends to do an assignment or data modification after the
 		// push_back call. The user can always execute *back() = value_type() if he wants.
 		//*mEnd = value_type();
 
@@ -1294,7 +1294,7 @@ namespace eastl
 		// This should compile to code that is nearly as efficient as that above.
 		// The primary difference is the possible generation of a temporary in this case.
 		iterator temp(begin());
-		eastl::advance(temp, n);
+		std::advance(temp, n);
 		return *(temp.mContainerIterator);
 	}
 
@@ -1308,7 +1308,7 @@ namespace eastl
 		// This should compile to code that is nearly as efficient as that above.
 		// The primary difference is the possible generation of a temporary in this case.
 		const_iterator temp(begin());
-		eastl::advance(temp, n);
+		std::advance(temp, n);
 		return *(temp.mContainerIterator);
 	}
 
@@ -1318,8 +1318,8 @@ namespace eastl
 	ring_buffer<T, Container, Allocator>::insert(const_iterator position, const value_type& value)
 	{
 		// To consider: It would be faster if we could tell that position was in the first
-		// half of the container and instead of moving things after the position back, 
-		// we could move things before the position forward. 
+		// half of the container and instead of moving things after the position back,
+		// we could move things before the position forward.
 
 		iterator afterEnd(end());
 		iterator beforeEnd(afterEnd);
@@ -1332,7 +1332,7 @@ namespace eastl
 			push_back();
 
 		iterator itPosition(position.mpContainer, position.mContainerIterator); // We merely copy from const_iterator to iterator.
-		eastl::copy_backward(itPosition, beforeEnd, end());
+		std::copy_backward(itPosition, beforeEnd, end());
 		*itPosition = value;
 
 		return itPosition;
@@ -1342,9 +1342,9 @@ namespace eastl
 	template <typename T, typename Container, typename Allocator>
 	void ring_buffer<T, Container, Allocator>::insert(const_iterator position, size_type n, const value_type& value)
 	{
-		// To do: This can be improved with a smarter version. However, 
-		// this is a little tricky because we need to deal with the case 
-		// whereby n is greater than the size of the container itself. 
+		// To do: This can be improved with a smarter version. However,
+		// this is a little tricky because we need to deal with the case
+		// whereby n is greater than the size of the container itself.
 		while(n--)
 			insert(position, value);
 	}
@@ -1376,7 +1376,7 @@ namespace eastl
 		iterator itPosition(position.mpContainer, position.mContainerIterator); // We merely copy from const_iterator to iterator.
 		iterator iNext(itPosition);
 
-		eastl::copy(++iNext, end(), itPosition);
+		std::copy(++iNext, end(), itPosition);
 		pop_back();
 
 		return itPosition;
@@ -1390,9 +1390,9 @@ namespace eastl
 		iterator itFirst(first.mpContainer, first.mContainerIterator); // We merely copy from const_iterator to iterator.
 		iterator itLast(last.mpContainer, last.mContainerIterator);
 
-		typename iterator::difference_type d = eastl::distance(itFirst, itLast);
+		typename iterator::difference_type d = std::distance(itFirst, itLast);
 
-		eastl::copy(itLast, end(), itFirst);
+		std::copy(itLast, end(), itFirst);
 
 		while(d--)      // To do: improve this implementation.
 			pop_back();
@@ -1453,8 +1453,8 @@ namespace eastl
 	template <typename T, typename Container, typename Allocator>
 	inline bool ring_buffer<T, Container, Allocator>::validate() const
 	{
-		if(!c.validate())  // This requires that the container implement the validate function. That pretty much 
-			return false;  // means that the container is an EASTL container and not a std STL container. 
+		if(!c.validate())  // This requires that the container implement the validate function. That pretty much
+			return false;  // means that the container is an EASTL container and not a std STL container.
 
 		if(c.empty())      // c must always have a size of at least 1, as even an empty ring_buffer has an unused terminating element.
 			return false;
@@ -1491,7 +1491,7 @@ namespace eastl
 		}
 
 		if(i == end())
-			return (isf_valid | isf_current); 
+			return (isf_valid | isf_current);
 
 		return isf_none;
 	}
@@ -1556,7 +1556,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

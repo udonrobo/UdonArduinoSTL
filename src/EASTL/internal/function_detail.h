@@ -33,7 +33,7 @@
 	EA_RESTORE_ALL_VC_WARNINGS()
 #endif
 
-namespace eastl
+namespace std
 {
 	#if EASTL_EXCEPTIONS_ENABLED
 		class bad_function_call : public std::exception
@@ -97,7 +97,7 @@ namespace eastl
 		{
 			static EA_CONSTEXPR bool value =
 			    sizeof(Functor) <= sizeof(functor_storage<SIZE_IN_BYTES>) &&
-			    (eastl::alignment_of<functor_storage<SIZE_IN_BYTES>>::value % eastl::alignment_of<Functor>::value) == 0;
+			    (std::alignment_of<functor_storage<SIZE_IN_BYTES>>::value % std::alignment_of<Functor>::value) == 0;
 		};
 
 
@@ -135,7 +135,7 @@ namespace eastl
 				template <typename T>
 				static void CreateFunctor(FunctorStorageType& storage, T&& functor)
 				{
-					::new (GetFunctorPtr(storage)) Functor(eastl::forward<T>(functor));
+					::new (GetFunctorPtr(storage)) Functor(std::forward<T>(functor));
 				}
 
 				static void DestructFunctor(FunctorStorageType& storage)
@@ -150,7 +150,7 @@ namespace eastl
 
 				static void MoveFunctor(FunctorStorageType& to, FunctorStorageType& from) EA_NOEXCEPT
 				{
-					::new (GetFunctorPtr(to)) Functor(eastl::move(*GetFunctorPtr(from)));
+					::new (GetFunctorPtr(to)) Functor(std::move(*GetFunctorPtr(from)));
 				}
 
 				static void* Manager(void* to, void* from, typename function_base_detail::ManagerOperations ops) EA_NOEXCEPT
@@ -183,7 +183,7 @@ namespace eastl
 
 			// Functor is allocated on the heap
 			template <typename Functor>
-			class function_manager_base<Functor, typename eastl::enable_if<!is_functor_inplace_allocatable<Functor, SIZE_IN_BYTES>::value>::type>
+			class function_manager_base<Functor, typename std::enable_if<!is_functor_inplace_allocatable<Functor, SIZE_IN_BYTES>::value>::type>
 			{
 			public:
 				static Functor* GetFunctorPtr(const FunctorStorageType& storage) EA_NOEXCEPT
@@ -211,7 +211,7 @@ namespace eastl
 					EASTL_ASSERT_MSG(func != nullptr, "Allocation failed!");
 				#endif
 
-					::new (static_cast<void*>(func)) Functor(eastl::forward<T>(functor));
+					::new (static_cast<void*>(func)) Functor(std::forward<T>(functor));
 					GetFunctorPtrRef(storage) = func;
 				}
 
@@ -331,7 +331,7 @@ namespace eastl
 				 *
 				 * All three arguments to the function including the hidden this pointer, which in C++ is always the first argument
 				 * are passed into the first three registers.
-				 * The function call chain for eastl::function<>() is as follows:
+				 * The function call chain for std::function<>() is as follows:
 				 *  operator ()(this, Args... args) -> Invoker(Args... args, this->mStorage) -> StoredFunction(Args... arg)
 				 *
 				 * Let's look at what is happening at the asm level with the different Invoker function signatures and why.
@@ -342,14 +342,14 @@ namespace eastl
 				 * up being cheaper.
 				 * call -> call -> call versus call -> call
 				 *
-				 * eastl::function<int(int, int)> = FunctionPointer
+				 * std::function<int(int, int)> = FunctionPointer
 				 *
-				 * Assume we have the above eastl::function object that holds a pointer to a function as the internal callable.
+				 * Assume we have the above std::function object that holds a pointer to a function as the internal callable.
 				 *
 				 * Invoker(this->mStorage, Args... args) is called with the follow arguments in registers:
 				 *  RCX = this  |  RDX = a  |  R8 = b
 				 *
-				 * Inside Invoker() we use RCX to deference into the eastl::function object and get the function pointer to call.
+				 * Inside Invoker() we use RCX to deference into the std::function object and get the function pointer to call.
 				 * This function to call has signature Func(int, int) and thus requires its arguments in registers RCX and RDX.
 				 * The compiler must shift all the arguments towards the left. The full asm looks something as follows.
 				 *
@@ -361,7 +361,7 @@ namespace eastl
 				 * call [rcx + offset to Invoker]         jmp [rax]
 				 *
 				 * Notice how the compiler shifts all the arguments before calling the callable and also we only use the this pointer
-				 * to access the internal storage inside the eastl::function object.
+				 * to access the internal storage inside the std::function object.
 				 *
 				 * Invoker(Args... args, this->mStorage) is called with the following arguments in registers:
 				 *  RCX = a  |  RDX = b  |  R8 = this
@@ -385,7 +385,7 @@ namespace eastl
 				 * For a callable with captures there is no perf hit since the callable in the common case is inlined and the pointer to the callable
 				 * buffer is passed in a register which the compiler can use to access the captures.
 				 *
-				 * For eastl::function<void(const T&, int, int)> that a holds a pointer to member function. The this pointers is implicitly
+				 * For std::function<void(const T&, int, int)> that a holds a pointer to member function. The this pointers is implicitly
 				 * the first argument in the argument list, const T&, and the member function pointer will be called on that object.
 				 * This prevents any argument shifting since the this for the member function pointer is already in RCX.
 				 *
@@ -393,7 +393,7 @@ namespace eastl
 				 */
 				static R Invoker(Args... args, const FunctorStorageType& functor)
 				{
-					return eastl::invoke(*Base::GetFunctorPtr(functor), eastl::forward<Args>(args)...);
+					return std::invoke(*Base::GetFunctorPtr(functor), std::forward<Args>(args)...);
 				}
 			};
 
@@ -402,9 +402,9 @@ namespace eastl
 		};
 
 		#define EASTL_INTERNAL_FUNCTION_VALID_FUNCTION_ARGS(FUNCTOR, RET, ARGS, BASE, MYSELF)  \
-			typename eastl::enable_if_t<eastl::is_invocable_r<RET, FUNCTOR, ARGS>::value &&         \
-										!eastl::is_base_of<BASE, eastl::decay_t<FUNCTOR>>::value && \
-										!eastl::is_same<eastl::decay_t<FUNCTOR>, MYSELF>::value>
+			typename std::enable_if_t<std::is_invocable_r<RET, FUNCTOR, ARGS>::value &&         \
+										!std::is_base_of<BASE, std::decay_t<FUNCTOR>>::value && \
+										!std::is_same<std::decay_t<FUNCTOR>, MYSELF>::value>
 
 		#define EASTL_INTERNAL_FUNCTION_DETAIL_VALID_FUNCTION_ARGS(FUNCTOR, RET, ARGS, MYSELF) \
 			EASTL_INTERNAL_FUNCTION_VALID_FUNCTION_ARGS(FUNCTOR, RET, ARGS, MYSELF, MYSELF)
@@ -442,14 +442,14 @@ namespace eastl
 			{
 				if (this != &other)
 				{
-					Move(eastl::move(other));
+					Move(std::move(other));
 				}
 			}
 
 			template <typename Functor, typename = EASTL_INTERNAL_FUNCTION_DETAIL_VALID_FUNCTION_ARGS(Functor, R, Args..., function_detail)>
 			function_detail(Functor functor)
 			{
-				CreateForwardFunctor(eastl::move(functor));
+				CreateForwardFunctor(std::move(functor));
 			}
 
 			~function_detail() EA_NOEXCEPT
@@ -473,7 +473,7 @@ namespace eastl
 				if(this != &other)
 				{
 					Destroy();
-					Move(eastl::move(other));
+					Move(std::move(other));
 				}
 
 				return *this;
@@ -492,12 +492,12 @@ namespace eastl
 			function_detail& operator=(Functor&& functor)
 			{
 				Destroy();
-				CreateForwardFunctor(eastl::forward<Functor>(functor));
+				CreateForwardFunctor(std::forward<Functor>(functor));
 				return *this;
 			}
 
 			template <typename Functor>
-			function_detail& operator=(eastl::reference_wrapper<Functor> f) EA_NOEXCEPT
+			function_detail& operator=(std::reference_wrapper<Functor> f) EA_NOEXCEPT
 			{
 				Destroy();
 				CreateForwardFunctor(f);
@@ -528,8 +528,8 @@ namespace eastl
 											   Base::ManagerOperations::MGROPS_MOVE_FUNCTOR);
 				}
 
-				eastl::swap(mMgrFuncPtr, other.mMgrFuncPtr);
-				eastl::swap(mInvokeFuncPtr, other.mInvokeFuncPtr);
+				std::swap(mMgrFuncPtr, other.mMgrFuncPtr);
+				std::swap(mInvokeFuncPtr, other.mInvokeFuncPtr);
 			}
 
 			explicit operator bool() const EA_NOEXCEPT
@@ -539,7 +539,7 @@ namespace eastl
 
 			EASTL_FORCE_INLINE R operator ()(Args... args) const
 			{
-				return (*mInvokeFuncPtr)(eastl::forward<Args>(args)..., this->mStorage);
+				return (*mInvokeFuncPtr)(std::forward<Args>(args)..., this->mStorage);
 			}
 
 			#if EASTL_RTTI_ENABLED
@@ -623,7 +623,7 @@ namespace eastl
 			template <typename Functor>
 			void CreateForwardFunctor(Functor&& functor)
 			{
-				using DecayedFunctorType = typename eastl::decay<Functor>::type;
+				using DecayedFunctorType = typename std::decay<Functor>::type;
 				using FunctionManagerType = typename Base::template function_manager<DecayedFunctorType, R, Args...>;
 
 				if (internal::is_null(functor))
@@ -635,7 +635,7 @@ namespace eastl
 				{
 					mMgrFuncPtr = &FunctionManagerType::Manager;
 					mInvokeFuncPtr = &FunctionManagerType::Invoker;
-					FunctionManagerType::CreateFunctor(mStorage, eastl::forward<Functor>(functor));
+					FunctionManagerType::CreateFunctor(mStorage, std::forward<Functor>(functor));
 				}
 			}
 
@@ -652,7 +652,7 @@ namespace eastl
 			static R DefaultInvoker(Args... /*args*/, const FunctorStorageType& /*functor*/)
 			{
 				#if EASTL_EXCEPTIONS_ENABLED
-					throw eastl::bad_function_call();
+					throw std::bad_function_call();
 				#else
 					EASTL_ASSERT_MSG(false, "function_detail call on an empty function_detail<R(Args..)>");
 				#endif
@@ -668,6 +668,6 @@ namespace eastl
 
 	} // namespace internal
 
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_FUNCTION_DETAIL_H

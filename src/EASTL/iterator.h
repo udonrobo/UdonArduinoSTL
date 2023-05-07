@@ -22,13 +22,13 @@ EA_RESTORE_ALL_VC_WARNINGS();
 // If the user has specified that we use std iterator
 // categories instead of EASTL iterator categories,
 // then #include <iterator>.
-#if EASTL_STD_ITERATOR_CATEGORY_ENABLED
-	EA_DISABLE_ALL_VC_WARNINGS();
+// #if EASTL_STD_ITERATOR_CATEGORY_ENABLED
+// 	EA_DISABLE_ALL_VC_WARNINGS();
 
-	#include <iterator>
+// 	#include <iterator>
 
-	EA_RESTORE_ALL_VC_WARNINGS();
-#endif
+// 	EA_RESTORE_ALL_VC_WARNINGS();
+// #endif
 
 
 EA_DISABLE_VC_WARNING(4619); // There is no warning number 'number'.
@@ -40,7 +40,7 @@ EA_DISABLE_VC_WARNING(4217); // Member template functions cannot be used for cop
 
 
 
-namespace eastl
+namespace std
 {
 	/// iterator_status_flag
 	///
@@ -71,14 +71,14 @@ namespace eastl
 	// Iterator categories
 	// Every iterator is defined as belonging to one of the iterator categories that
 	// we define here. These categories come directly from the C++ standard.
-	#if !EASTL_STD_ITERATOR_CATEGORY_ENABLED // If we are to use our own iterator category definitions...
+	// #if !EASTL_STD_ITERATOR_CATEGORY_ENABLED // If we are to use our own iterator category definitions...
 		struct input_iterator_tag { };
 		struct output_iterator_tag { };
 		struct forward_iterator_tag       : public input_iterator_tag { };
 		struct bidirectional_iterator_tag : public forward_iterator_tag { };
 		struct random_access_iterator_tag : public bidirectional_iterator_tag { };
 		struct contiguous_iterator_tag    : public random_access_iterator_tag { };  // Extension to the C++ standard. Contiguous ranges are more than random access, they are physically contiguous.
-	#endif
+	// #endif
 
 
 	// struct iterator
@@ -120,10 +120,10 @@ namespace eastl
 			typedef typename Iterator::reference         reference;
 		};
 	}
-	
+
 	template <typename Iterator>
 	struct iterator_traits : internal::default_iterator_traits<Iterator> {};
-	
+
 	template <typename T>
 	struct iterator_traits<T*>
 	{
@@ -163,12 +163,12 @@ namespace eastl
 	///
 	/// Example behavior:
 	///     is_iterator_wrapper(int*)::value												=> false
-	///     is_iterator_wrapper(eastl::array<char>*)::value									=> false
-	///     is_iterator_wrapper(eastl::vector<int>::iterator)::value						=> false
-	///     is_iterator_wrapper(eastl::generic_iterator<int*>)::value						=> true
-	///     is_iterator_wrapper(eastl::move_iterator<eastl::array<int>::iterator>)::value	=> true
-	///     is_iterator_wrapper(eastl::reverse_iterator<int*>)::value						=> false
-	///     is_iterator_wrapper(eastl::reverse_iterator<eastl::move_iterator<int*>>)::value	=> true
+	///     is_iterator_wrapper(std::array<char>*)::value									=> false
+	///     is_iterator_wrapper(std::vector<int>::iterator)::value						=> false
+	///     is_iterator_wrapper(std::generic_iterator<int*>)::value						=> true
+	///     is_iterator_wrapper(std::move_iterator<std::array<int>::iterator>)::value	=> true
+	///     is_iterator_wrapper(std::reverse_iterator<int*>)::value						=> false
+	///     is_iterator_wrapper(std::reverse_iterator<std::move_iterator<int*>>)::value	=> true
 	///
 	template<typename Iterator>
 	class is_iterator_wrapper
@@ -179,17 +179,17 @@ namespace eastl
 		// work when unwrap() is private and this is class is a
 		// friend.
 		// See: https://bugs.llvm.org/show_bug.cgi?id=25334
-		template<typename T, typename U = decltype(eastl::declval<T>().unwrap())>
+		template<typename T, typename U = decltype(std::declval<T>().unwrap())>
 		using detect_has_unwrap = U;
 #else
 		// Note: the above implementation does not work on GCC when
 		// unwrap() is private and this class is a friend. So we're
 		// forced to diverge here to support both GCC and clang.
 		template<typename T>
-		using detect_has_unwrap = decltype(eastl::declval<T>().unwrap());
+		using detect_has_unwrap = decltype(std::declval<T>().unwrap());
 #endif
 	public:
-		static const bool value = eastl::is_detected<detect_has_unwrap, Iterator>::value;
+		static const bool value = std::is_detected<detect_has_unwrap, Iterator>::value;
 	};
 
 
@@ -223,15 +223,15 @@ namespace eastl
 		// it.unwrap(), and `it` will be out of scope as soon as
 		// get_unwrapped returns.
 		using iterator_type =
-		    typename eastl::remove_cvref<decltype(eastl::declval<Iterator>().unwrap())>::type;
+		    typename std::remove_cvref<decltype(std::declval<Iterator>().unwrap())>::type;
 
 		static iterator_type get_unwrapped(Iterator it) { return it.unwrap(); }
 	};
 
 
 	template <typename Iterator>
-	inline typename is_iterator_wrapper_helper<Iterator, eastl::is_iterator_wrapper<Iterator>::value>::iterator_type unwrap_iterator(Iterator it)
-		{ return eastl::is_iterator_wrapper_helper<Iterator, eastl::is_iterator_wrapper<Iterator>::value>::get_unwrapped(it); }
+	inline typename is_iterator_wrapper_helper<Iterator, std::is_iterator_wrapper<Iterator>::value>::iterator_type unwrap_iterator(Iterator it)
+		{ return std::is_iterator_wrapper_helper<Iterator, std::is_iterator_wrapper<Iterator>::value>::get_unwrapped(it); }
 
 
 
@@ -249,22 +249,22 @@ namespace eastl
 	/// beginning of an array.
 	///
 	template <typename Iterator>
-	class reverse_iterator : public iterator<typename eastl::iterator_traits<Iterator>::iterator_category,
-											 typename eastl::iterator_traits<Iterator>::value_type,
-											 typename eastl::iterator_traits<Iterator>::difference_type,
-											 typename eastl::iterator_traits<Iterator>::pointer,
-											 typename eastl::iterator_traits<Iterator>::reference>
+	class reverse_iterator : public iterator<typename std::iterator_traits<Iterator>::iterator_category,
+											 typename std::iterator_traits<Iterator>::value_type,
+											 typename std::iterator_traits<Iterator>::difference_type,
+											 typename std::iterator_traits<Iterator>::pointer,
+											 typename std::iterator_traits<Iterator>::reference>
 	{
 	private:
 		using base_wrapped_iterator_type =
-		    typename eastl::is_iterator_wrapper_helper<Iterator,
-		                                               eastl::is_iterator_wrapper<Iterator>::value>::iterator_type;
+		    typename std::is_iterator_wrapper_helper<Iterator,
+		                                               std::is_iterator_wrapper<Iterator>::value>::iterator_type;
 
 	public:
 		typedef Iterator                                                   iterator_type;
-		typedef typename eastl::iterator_traits<Iterator>::pointer         pointer;
-		typedef typename eastl::iterator_traits<Iterator>::reference       reference;
-		typedef typename eastl::iterator_traits<Iterator>::difference_type difference_type;
+		typedef typename std::iterator_traits<Iterator>::pointer         pointer;
+		typedef typename std::iterator_traits<Iterator>::reference       reference;
+		typedef typename std::iterator_traits<Iterator>::difference_type difference_type;
 
 	protected:
 		Iterator mIterator;
@@ -346,7 +346,7 @@ namespace eastl
 	private:
 		// Unwrapping interface, not part of the public API.
 		template <typename U = iterator_type>
-		EA_CPP14_CONSTEXPR typename eastl::enable_if<eastl::is_iterator_wrapper<U>::value, reverse_iterator<base_wrapped_iterator_type>>::type unwrap() const
+		EA_CPP14_CONSTEXPR typename std::enable_if<std::is_iterator_wrapper<U>::value, reverse_iterator<base_wrapped_iterator_type>>::type unwrap() const
 		{ return reverse_iterator<base_wrapped_iterator_type>(unwrap_iterator(mIterator)); }
 
 		// The unwrapper helpers need access to unwrap() (when it exists).
@@ -423,11 +423,11 @@ namespace eastl
 	///
 	template <typename T>
 	struct is_reverse_iterator
-		: public eastl::false_type {};
+		: public std::false_type {};
 
 	template<typename Iterator>
-	struct is_reverse_iterator< eastl::reverse_iterator<Iterator> >
-		: public eastl::true_type {};
+	struct is_reverse_iterator< std::reverse_iterator<Iterator> >
+		: public std::true_type {};
 
 	/// unwrap_reverse_iterator is not implemented since there's no
 	/// good use case and there's some abiguitiy. Note that
@@ -537,7 +537,7 @@ namespace eastl
 		}
 
 		reference operator[](difference_type n) const
-			{ return eastl::move(mIterator[n]); }
+			{ return std::move(mIterator[n]); }
 
 	private:
 		// Unwrapping interface, not part of the public API.
@@ -608,16 +608,16 @@ namespace eastl
 	// fall back to copies or whatever the default IteratorType::operator* returns for use by copy/move algorithms.
 	// To consider: merge the conditional expression usage here with the one used by move_if_noexcept, as they are the same condition.
 	#if EASTL_EXCEPTIONS_ENABLED
-		template <typename Iterator, typename IteratorType = typename eastl::conditional<eastl::is_nothrow_move_constructible<typename eastl::iterator_traits<Iterator>::value_type>::value ||
-																						 !eastl::is_copy_constructible<typename eastl::iterator_traits<Iterator>::value_type>::value,
-																						 eastl::move_iterator<Iterator>, Iterator>::type>
+		template <typename Iterator, typename IteratorType = typename std::conditional<std::is_nothrow_move_constructible<typename std::iterator_traits<Iterator>::value_type>::value ||
+																						 !std::is_copy_constructible<typename std::iterator_traits<Iterator>::value_type>::value,
+																						 std::move_iterator<Iterator>, Iterator>::type>
 		inline IteratorType make_move_if_noexcept_iterator(Iterator i)
 			{ return IteratorType(i); }
 	#else
 		// Else there are no exceptions and thus we always return a move_iterator.
 		template <typename Iterator>
-		inline eastl::move_iterator<Iterator> make_move_if_noexcept_iterator(Iterator i)
-			{ return eastl::move_iterator<Iterator>(i); }
+		inline std::move_iterator<Iterator> make_move_if_noexcept_iterator(Iterator i)
+			{ return std::move_iterator<Iterator>(i); }
 	#endif
 
 
@@ -628,15 +628,15 @@ namespace eastl
 	/// Given an iterator, tells if it's a move iterator vs anything else.
 	/// Example usage (though somewhat useless):
 	///     template <typename T>
-	///     bool IsMoveIterator() { return typename eastl::is_move_iterator<T>::value; }
+	///     bool IsMoveIterator() { return typename std::is_move_iterator<T>::value; }
 	///
 	template <typename T>
 	struct is_move_iterator
-		: public eastl::false_type {};
+		: public std::false_type {};
 
 	template<typename Iterator>
-	struct is_move_iterator< eastl::move_iterator<Iterator> >
-		: public eastl::true_type {};
+	struct is_move_iterator< std::move_iterator<Iterator> >
+		: public std::true_type {};
 
 
 	/// unwrap_move_iterator
@@ -645,14 +645,14 @@ namespace eastl
 	///
 	/// Example usage:
 	///      vector<int> intVector;
-	///      eastl::move_iterator<vector<int>::iterator> moveIterator(intVector.begin());
+	///      std::move_iterator<vector<int>::iterator> moveIterator(intVector.begin());
 	///      vector<int>::iterator it = unwrap_move_iterator(moveIterator);
 	///
 	template <typename Iterator>
-	inline typename eastl::is_iterator_wrapper_helper<Iterator, eastl::is_move_iterator<Iterator>::value>::iterator_type unwrap_move_iterator(Iterator it)
+	inline typename std::is_iterator_wrapper_helper<Iterator, std::is_move_iterator<Iterator>::value>::iterator_type unwrap_move_iterator(Iterator it)
 	{
 		// get_unwrapped(it) -> it.unwrap() which is equivalent to `it.base()` for move_iterator and to `it` otherwise.
-		return eastl::is_iterator_wrapper_helper<Iterator, eastl::is_move_iterator<Iterator>::value>::get_unwrapped(it);
+		return std::is_iterator_wrapper_helper<Iterator, std::is_move_iterator<Iterator>::value>::get_unwrapped(it);
 	}
 
 
@@ -685,7 +685,7 @@ namespace eastl
 			{ container.push_back(value); return *this; }
 
 		back_insert_iterator& operator=(typename Container::value_type&& value)
-			{ container.push_back(eastl::move(value)); return *this; }
+			{ container.push_back(std::move(value)); return *this; }
 
 		back_insert_iterator& operator*()
 			{ return *this; }
@@ -833,11 +833,11 @@ namespace eastl
 	/// Creates an instance of an insert_iterator.
 	///
 	template <typename Container, typename Iterator>
-	inline eastl::insert_iterator<Container>
+	inline std::insert_iterator<Container>
 	inserter(Container& x, Iterator i)
 	{
 		typedef typename Container::iterator iterator;
-		return eastl::insert_iterator<Container>(x, iterator(i));
+		return std::insert_iterator<Container>(x, iterator(i));
 	}
 
 
@@ -849,11 +849,11 @@ namespace eastl
 	///
 	template <typename T>
 	struct is_insert_iterator
-		: public eastl::false_type {};
+		: public std::false_type {};
 
 	template<typename Iterator>
-	struct is_insert_iterator< eastl::insert_iterator<Iterator> >
-		: public eastl::true_type {};
+	struct is_insert_iterator< std::insert_iterator<Iterator> >
+		: public std::true_type {};
 
 
 
@@ -867,10 +867,10 @@ namespace eastl
 	///
 	template <typename InputIterator>
 	EA_CONSTEXPR
-	inline typename eastl::iterator_traits<InputIterator>::difference_type
+	inline typename std::iterator_traits<InputIterator>::difference_type
 	distance_impl(InputIterator first, InputIterator last, EASTL_ITC_NS::input_iterator_tag)
 	{
-		typename eastl::iterator_traits<InputIterator>::difference_type n = 0;
+		typename std::iterator_traits<InputIterator>::difference_type n = 0;
 
 		while(first != last)
 		{
@@ -882,7 +882,7 @@ namespace eastl
 
 	template <typename RandomAccessIterator>
 	EA_CONSTEXPR
-	inline typename eastl::iterator_traits<RandomAccessIterator>::difference_type
+	inline typename std::iterator_traits<RandomAccessIterator>::difference_type
 	distance_impl(RandomAccessIterator first, RandomAccessIterator last, EASTL_ITC_NS::random_access_iterator_tag)
 	{
 		return last - first;
@@ -893,10 +893,10 @@ namespace eastl
 	// as InputIterators and thus can seriously hamper performance in the case
 	// of large ranges of bidirectional_iterator_tag iterators.
 	//template <typename InputIterator>
-	//inline typename eastl::iterator_traits<InputIterator>::difference_type
+	//inline typename std::iterator_traits<InputIterator>::difference_type
 	//distance_impl(InputIterator first, InputIterator last, ...)
 	//{
-	//    typename eastl::iterator_traits<InputIterator>::difference_type n = 0;
+	//    typename std::iterator_traits<InputIterator>::difference_type n = 0;
 	//
 	//    while(first != last)
 	//    {
@@ -908,12 +908,12 @@ namespace eastl
 
 	template <typename InputIterator>
 	EA_CONSTEXPR
-	inline typename eastl::iterator_traits<InputIterator>::difference_type
+	inline typename std::iterator_traits<InputIterator>::difference_type
 	distance(InputIterator first, InputIterator last)
 	{
-		typedef typename eastl::iterator_traits<InputIterator>::iterator_category IC;
+		typedef typename std::iterator_traits<InputIterator>::iterator_category IC;
 
-		return eastl::distance_impl(first, last, IC());
+		return std::distance_impl(first, last, IC());
 	}
 
 
@@ -968,7 +968,7 @@ namespace eastl
 	inline void
 	advance_impl(BidirectionalIterator& i, Distance n, EASTL_ITC_NS::bidirectional_iterator_tag)
 	{
-		advance_bi_impl<eastl::is_signed<Distance>::value>::advance_impl(i, n);
+		advance_bi_impl<std::is_signed<Distance>::value>::advance_impl(i, n);
 	}
 
 	template <typename RandomAccessIterator, typename Distance>
@@ -994,37 +994,37 @@ namespace eastl
 	inline void
 	advance(InputIterator& i, Distance n)
 	{
-		typedef typename eastl::iterator_traits<InputIterator>::iterator_category IC;
+		typedef typename std::iterator_traits<InputIterator>::iterator_category IC;
 
-		eastl::advance_impl(i, n, IC());
+		std::advance_impl(i, n, IC());
 	}
 
 
-	// eastl::next / eastl::prev
+	// std::next / std::prev
 	// Return the nth/-nth successor of iterator it.
 	//
 	// http://en.cppreference.com/w/cpp/iterator/next
 	//
 	template<typename InputIterator>
 	inline InputIterator
-	next(InputIterator it, typename eastl::iterator_traits<InputIterator>::difference_type n = 1)
+	next(InputIterator it, typename std::iterator_traits<InputIterator>::difference_type n = 1)
 	{
-		eastl::advance(it, n);
+		std::advance(it, n);
 		return it;
 	}
 
 	template<typename InputIterator>
 	inline InputIterator
-	prev(InputIterator it, typename eastl::iterator_traits<InputIterator>::difference_type n = 1)
+	prev(InputIterator it, typename std::iterator_traits<InputIterator>::difference_type n = 1)
 	{
-		eastl::advance(it, -n);
+		std::advance(it, -n);
 		return it;
 	}
 
 
 #if defined(EA_COMPILER_CPP11_ENABLED) && EA_COMPILER_CPP11_ENABLED
 
-	// eastl::data
+	// std::data
 	//
 	// http://en.cppreference.com/w/cpp/iterator/data
 	//
@@ -1045,7 +1045,7 @@ namespace eastl
 		{ return il.begin(); }
 
 
-	// eastl::size
+	// std::size
 	//
 	// http://en.cppreference.com/w/cpp/iterator/size
 	//
@@ -1058,7 +1058,7 @@ namespace eastl
 		{ return N; }
 
 
-	// eastl::ssize
+	// std::ssize
 	//
 	// https://en.cppreference.com/w/cpp/iterator/size
 	//
@@ -1068,14 +1068,14 @@ namespace eastl
 
 	template <class C>
 	EA_CPP14_CONSTEXPR auto ssize(const C& c)
-	    -> eastl::common_type_t<ptrdiff_t, eastl::make_signed_t<decltype(c.size())>>
+	    -> std::common_type_t<ptrdiff_t, std::make_signed_t<decltype(c.size())>>
 	{
-		using R = eastl::common_type_t<ptrdiff_t, eastl::make_signed_t<decltype(c.size())>>;
+		using R = std::common_type_t<ptrdiff_t, std::make_signed_t<decltype(c.size())>>;
 		return static_cast<R>(c.size());
 	}
 
 
-	// eastl::empty
+	// std::empty
 	//
 	// http://en.cppreference.com/w/cpp/iterator/empty
 	//
@@ -1094,10 +1094,10 @@ namespace eastl
 #endif // defined(EA_COMPILER_CPP11_ENABLED) && EA_COMPILER_CPP11_ENABLED
 
 
-	// eastl::begin / eastl::end
+	// std::begin / std::end
 	// http://en.cppreference.com/w/cpp/iterator/begin
 	//
-	// In order to enable eastl::begin and eastl::end, the compiler needs to have conforming support
+	// In order to enable std::begin and std::end, the compiler needs to have conforming support
 	// for argument-dependent lookup if it supports C++11 range-based for loops. The reason for this is
 	// that in C++11 range-based for loops result in usage of std::begin/std::end, but allow that to
 	// be overridden by argument-dependent lookup:
@@ -1134,9 +1134,9 @@ namespace eastl
 		}
 
 		template <typename Container>
-		EA_CPP14_CONSTEXPR inline auto cbegin(const Container& container) -> decltype(eastl::begin(container))
+		EA_CPP14_CONSTEXPR inline auto cbegin(const Container& container) -> decltype(std::begin(container))
 		{
-			return eastl::begin(container);
+			return std::begin(container);
 		}
 
 		template <typename Container>
@@ -1158,9 +1158,9 @@ namespace eastl
 		}
 
 		template <typename Container>
-		EA_CPP14_CONSTEXPR inline auto cend(const Container& container) -> decltype(eastl::end(container))
+		EA_CPP14_CONSTEXPR inline auto cend(const Container& container) -> decltype(std::end(container))
 		{
-			return eastl::end(container);
+			return std::end(container);
 		}
 
 		template <typename Container>
@@ -1188,13 +1188,13 @@ namespace eastl
 		}
 
 		template <typename Container>
-		EA_CPP14_CONSTEXPR inline auto crbegin(const Container& container) -> decltype(eastl::rbegin(container))
+		EA_CPP14_CONSTEXPR inline auto crbegin(const Container& container) -> decltype(std::rbegin(container))
 		{
 			return container.rbegin();
 		}
 
 		template <typename Container>
-		EA_CPP14_CONSTEXPR inline auto crend(const Container& container) -> decltype(eastl::rend(container))
+		EA_CPP14_CONSTEXPR inline auto crend(const Container& container) -> decltype(std::rend(container))
 		{
 			return container.rend();
 		}
@@ -1215,13 +1215,13 @@ namespace eastl
 		template <typename E>
 		EA_CPP14_CONSTEXPR inline reverse_iterator<const E*> rbegin(std::initializer_list<E> ilist)
 		{
-			return eastl::reverse_iterator<const E*>(ilist.end());
+			return std::reverse_iterator<const E*>(ilist.end());
 		}
 
 		template <typename E>
 		EA_CPP14_CONSTEXPR inline reverse_iterator<const E*> rend(std::initializer_list<E> ilist)
 		{
-			return eastl::reverse_iterator<const E*>(ilist.begin());
+			return std::reverse_iterator<const E*>(ilist.begin());
 		}
 
 		template <typename Iterator>
@@ -1230,7 +1230,7 @@ namespace eastl
 
 	#endif // EASTL_BEGIN_END_ENABLED
 
-} // namespace eastl
+} // namespace std
 
 
 

@@ -34,7 +34,7 @@ EA_DISABLE_VC_WARNING(4275); // non dll-interface class used as base for DLL-int
 
 
 
-namespace eastl
+namespace std
 {
 
 	///////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ namespace eastl
 	/// example code below uses IntListNode.
 	///
 	/// Example usage:
-	///     typedef eastl::list<int, fixed_allocator> IntList;
+	///     typedef std::list<int, fixed_allocator> IntList;
 	///     typedef IntList::node_type                IntListNode;
 	///
 	///     IntListNode buffer[200];
@@ -251,7 +251,7 @@ namespace eastl
 	/// own swap whereby you provide an explicitly created temporary object.
 	///
 	/// Example usage:
-	///     typedef eastl::list<int, fixed_allocator_with_overflow> IntList;
+	///     typedef std::list<int, fixed_allocator_with_overflow> IntList;
 	///     typedef IntList::node_type                              IntListNode;
 	///
 	///     IntListNode buffer[200];
@@ -447,7 +447,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 EA_RESTORE_VC_WARNING();

@@ -3,16 +3,16 @@
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// The compressed pair class is very similar to std::pair, but if either of the 
-// template arguments are empty classes, then the "empty base-class optimization" 
+// The compressed pair class is very similar to std::pair, but if either of the
+// template arguments are empty classes, then the "empty base-class optimization"
 // is applied to compress the size of the pair.
 //
 // The design for compressed_pair here is very similar to that found in template
-// metaprogramming libraries such as Boost, GCC, and Metrowerks, given that  
-// these libraries have established this interface as a defacto standard for 
-// solving this problem. Also, these are described in various books on the 
+// metaprogramming libraries such as Boost, GCC, and Metrowerks, given that
+// these libraries have established this interface as a defacto standard for
+// solving this problem. Also, these are described in various books on the
 // topic of template metaprogramming, such as "Modern C++ Design".
-// 
+//
 // template <typename T1, typename T2>
 // class compressed_pair
 // {
@@ -25,33 +25,33 @@
 //     typedef typename call_traits<second_type>::reference       second_reference;
 //     typedef typename call_traits<first_type>::const_reference  first_const_reference;
 //     typedef typename call_traits<second_type>::const_reference second_const_reference;
-// 
+//
 //     compressed_pair() : base() {}
 //     compressed_pair(first_param_type x, second_param_type y);
 //     explicit compressed_pair(first_param_type x);
 //     explicit compressed_pair(second_param_type y);
-// 
+//
 //     compressed_pair& operator=(const compressed_pair&);
-// 
+//
 //     first_reference       first();
 //     first_const_reference first() const;
-// 
+//
 //     second_reference       second();
 //     second_const_reference second() const;
-// 
+//
 //     void swap(compressed_pair& y);
 // };
-// 
-// The two members of the pair can be accessed using the member functions first() 
-// and second(). Note that not all member functions can be instantiated for all 
-// template parameter types. In particular compressed_pair can be instantiated for 
-// reference and array types, however in these cases the range of constructors that 
-// can be used are limited. If types T1 and T2 are the same type, then there is 
-// only one version of the single-argument constructor, and this constructor 
+//
+// The two members of the pair can be accessed using the member functions first()
+// and second(). Note that not all member functions can be instantiated for all
+// template parameter types. In particular compressed_pair can be instantiated for
+// reference and array types, however in these cases the range of constructors that
+// can be used are limited. If types T1 and T2 are the same type, then there is
+// only one version of the single-argument constructor, and this constructor
 // initialises both values in the pair to the passed value.
-// 
-// Note that compressed_pair can not be instantiated if either of the template 
-// arguments is a union type, unless there is compiler support for is_union, 
+//
+// Note that compressed_pair can not be instantiated if either of the template
+// arguments is a union type, unless there is compiler support for is_union,
 // or if is_union is specialised for the union type.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -61,18 +61,18 @@
 
 
 #include <EASTL/internal/config.h>
-#include <EASTL/type_traits.h>     
-#include <EASTL/bonus/call_traits.h>     
+#include <EASTL/type_traits.h>
+#include <EASTL/bonus/call_traits.h>
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
 	#pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900)  // VS2015 or later
-	EA_DISABLE_VC_WARNING(4626 5027) // warning C4626: 'eastl::compressed_pair_imp<T1,T2,0>': assignment operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted
+	EA_DISABLE_VC_WARNING(4626 5027) // warning C4626: 'std::compressed_pair_imp<T1,T2,0>': assignment operator was implicitly defined as deleted because a base class assignment operator is inaccessible or deleted
 #endif
 
-namespace eastl
+namespace std
 {
 
 	template <typename T1, typename T2>
@@ -128,7 +128,7 @@ namespace eastl
 		typedef typename call_traits<first_type>::const_reference  first_const_reference;
 		typedef typename call_traits<second_type>::const_reference second_const_reference;
 
-		compressed_pair_imp() {} 
+		compressed_pair_imp() {}
 
 		compressed_pair_imp(first_param_type x, second_param_type y)
 			: mFirst(x), mSecond(y) {}
@@ -275,7 +275,7 @@ namespace eastl
 		second_const_reference second() const { return *this; }
 
 		// No need to swap empty bases
-		void swap(compressed_pair<T1, T2>&) 
+		void swap(compressed_pair<T1, T2>&)
 			{ }
 	};
 
@@ -448,7 +448,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1900)  // VS2015 or later
 	EA_RESTORE_VC_WARNING()

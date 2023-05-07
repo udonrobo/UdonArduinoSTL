@@ -14,7 +14,7 @@
 #include "atomic_push_compiler_options.h"
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -80,7 +80,7 @@ namespace internal
 		{
 		}
 
-		EA_CONSTEXPR atomic_size_aligned() EA_NOEXCEPT_IF(eastl::is_nothrow_default_constructible<T>::value)
+		EA_CONSTEXPR atomic_size_aligned() EA_NOEXCEPT_IF(std::is_nothrow_default_constructible<T>::value)
 			: mAtomic{} /* Value-Initialize which will Zero-Initialize Trivial Constructible types */
 		{
 		}
@@ -166,7 +166,7 @@ namespace internal
 
 		T* GetAtomicAddress() const EA_NOEXCEPT
 		{
-			return eastl::addressof(mAtomic);
+			return std::addressof(mAtomic);
 		}
 
 	private:
@@ -188,7 +188,7 @@ namespace internal
 } // namespace internal
 
 
-} // namespace eastl
+} // namespace std
 
 
 #include "atomic_pop_compiler_options.h"

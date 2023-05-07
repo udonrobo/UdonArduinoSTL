@@ -11,7 +11,7 @@
 #endif
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -38,7 +38,7 @@ EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR auto memory_order_acq_rel = internal::m
 EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR auto memory_order_seq_cst = internal::memory_order_seq_cst_s{};
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif /* EASTL_ATOMIC_INTERNAL_MEMORY_ORDER_H */

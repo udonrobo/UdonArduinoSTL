@@ -13,13 +13,13 @@ GNU libstdc++ から移植された Arduino 用 C++ STL
         > 例
         >
         > ```cpp
-        > eastl::is_array_v<T>
+        > std::is_array_v<T>
         > ```
         >
         > ↓
         >
         > ```cpp
-        > eastl::is_array<T>::value
+        > std::is_array<T>::value
         > ```
 
     -   戻り値型推論
@@ -28,9 +28,9 @@ GNU libstdc++ から移植された Arduino 用 C++ STL
         >
         > ```cpp
         > template <typename F, typename... Args>
-        > EA_CONSTEXPR decltype(auto) invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...)))
+        > EA_CONSTEXPR decltype(auto) invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(std::forward<F>(func), std::forward<Args>(args)...)))
         > {
-        >     return invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...);
+        >     return invoke_impl(std::forward<F>(func), std::forward<Args>(args)...);
         > }
         > ```
         >
@@ -38,10 +38,10 @@ GNU libstdc++ から移植された Arduino 用 C++ STL
         >
         > ```cpp
         > template <typename F, typename... Args>
-        > EA_CONSTEXPR auto invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...)))
-        >     -> decltype(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...))
+        > EA_CONSTEXPR auto invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(std::forward<F>(func), std::forward<Args>(args)...)))
+        >     -> decltype(invoke_impl(std::forward<F>(func), std::forward<Args>(args)...))
         > {
-        >     return invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...);
+        >     return invoke_impl(std::forward<F>(func), std::forward<Args>(args)...);
         > }
         > ```
 

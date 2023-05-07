@@ -14,7 +14,7 @@
 
 #include <EASTL/type_traits.h>
 
-namespace eastl
+namespace std
 {
 	///////////////////////////////////////////////////////////////////////
 	// nonesuch
@@ -175,6 +175,6 @@ namespace eastl
 	EA_CONSTEXPR bool is_detected_convertible_v = is_detected_convertible<To, Op, Args...>::value;
 #endif
 
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_INTERNAL_TYPE_DETECTED_H

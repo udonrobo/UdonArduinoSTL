@@ -19,7 +19,7 @@ EA_DISABLE_VC_WARNING(4510) // warning C4510: default constructor could not be g
 
 #if EASTL_TUPLE_ENABLED
 
-namespace eastl
+namespace std
 {
 // non-recursive tuple implementation based on libc++ tuple implementation and description at
 // http://mitchnull.blogspot.ca/2012/06/c11-tuple-implementation-details-part-1.html
@@ -187,7 +187,7 @@ namespace Internal
 	template <size_t I, typename ValueType, bool IsEmpty>
 	inline void swap(TupleLeaf<I, ValueType, IsEmpty>& a, TupleLeaf<I, ValueType, IsEmpty>& b)
 	{
-		eastl::swap(a.getInternal(), b.getInternal());
+		std::swap(a.getInternal(), b.getInternal());
 	}
 
 	template <size_t I, typename ValueType, bool IsEmpty>
@@ -200,11 +200,11 @@ namespace Internal
 
 		// We shouldn't need this explicit constructor as it should be handled by the template below but OSX clang
 		// is_constructible type trait incorrectly gives false for is_constructible<T&&, T&&>::value
-		explicit TupleLeaf(ValueType&& v) : mValue(eastl::forward<ValueType>(v)) {}
+		explicit TupleLeaf(ValueType&& v) : mValue(std::forward<ValueType>(v)) {}
 
 		template <typename T, typename = typename enable_if<is_constructible<ValueType, T&&>::value>::type>
 		explicit TupleLeaf(T&& t)
-			: mValue(eastl::forward<T>(t))
+			: mValue(std::forward<T>(t))
 		{
 		}
 
@@ -217,13 +217,13 @@ namespace Internal
 		template <typename T>
 		TupleLeaf& operator=(T&& t)
 		{
-			mValue = eastl::forward<T>(t);
+			mValue = std::forward<T>(t);
 			return *this;
 		}
 
 		int swap(TupleLeaf& t)
 		{
-			eastl::Internal::swap(*this, t);
+			std::Internal::swap(*this, t);
 			return 0;
 		}
 
@@ -245,7 +245,7 @@ namespace Internal
 
 		template <typename T, typename = typename enable_if<is_constructible<ValueType, T&&>::value>::type>
 		explicit TupleLeaf(T&& t)
-			: ValueType(eastl::forward<T>(t))
+			: ValueType(std::forward<T>(t))
 		{
 		}
 
@@ -258,13 +258,13 @@ namespace Internal
 		template <typename T>
 		TupleLeaf& operator=(T&& t)
 		{
-			ValueType::operator=(eastl::forward<T>(t));
+			ValueType::operator=(std::forward<T>(t));
 			return *this;
 		}
 
 		int swap(TupleLeaf& t)
 		{
-			eastl::Internal::swap(*this, t);
+			std::Internal::swap(*this, t);
 			return 0;
 		}
 
@@ -338,13 +338,13 @@ namespace Internal
 		//
 		template <typename... Us, typename... ValueTypes>
 		explicit TupleImpl(integer_sequence<size_t, Indices...>, TupleTypes<Us...>, ValueTypes&&... values)
-			: TupleLeaf<Indices, Ts>(eastl::forward<ValueTypes>(values))...
+			: TupleLeaf<Indices, Ts>(std::forward<ValueTypes>(values))...
 		{
 		}
 
 		template <typename OtherTuple>
 		TupleImpl(OtherTuple&& t)
-			: TupleLeaf<Indices, Ts>(eastl::forward<tuple_element_t<Indices, MakeTupleTypes_t<OtherTuple>>>(get<Indices>(t)))...
+			: TupleLeaf<Indices, Ts>(std::forward<tuple_element_t<Indices, MakeTupleTypes_t<OtherTuple>>>(get<Indices>(t)))...
 		{
 		}
 
@@ -352,7 +352,7 @@ namespace Internal
 		TupleImpl& operator=(OtherTuple&& t)
 		{
 			swallow(TupleLeaf<Indices, Ts>::operator=(
-						eastl::forward<tuple_element_t<Indices, MakeTupleTypes_t<OtherTuple>>>(get<Indices>(t)))...);
+						std::forward<tuple_element_t<Indices, MakeTupleTypes_t<OtherTuple>>>(get<Indices>(t)))...);
 			return *this;
 		}
 
@@ -410,7 +410,7 @@ namespace Internal
 
 	// TupleLike
 	//
-	// type-trait that determines if a type is an eastl::tuple or an eastl::pair.
+	// type-trait that determines if a type is an std::tuple or an std::pair.
 	//
 	template <typename T> struct TupleLike                   : public false_type {};
 	template <typename T> struct TupleLike<const T>          : public TupleLike<T> {};
@@ -421,7 +421,7 @@ namespace Internal
 	struct TupleLike<tuple<Ts...>> : public true_type {};
 
 	template <typename First, typename Second>
-	struct TupleLike<eastl::pair<First, Second>> : public true_type {};
+	struct TupleLike<std::pair<First, Second>> : public true_type {};
 
 
 	// TupleConvertible
@@ -620,7 +620,7 @@ namespace Internal
 		template <typename Tuple1, typename Tuple2>
 		static inline ResultType DoCat2(Tuple1&& t1, Tuple2&& t2)
 		{
-			return ResultType(get<I1s>(eastl::forward<Tuple1>(t1))..., get<I2s>(eastl::forward<Tuple2>(t2))...);
+			return ResultType(get<I1s>(std::forward<Tuple1>(t1))..., get<I2s>(std::forward<Tuple2>(t2))...);
 		}
 	};
 
@@ -639,7 +639,7 @@ namespace Internal
 		template <typename Tuple1, typename Tuple2>
 		static inline ResultType DoCat2(Tuple1&& t1, Tuple2&& t2)
 		{
-			return TCI::DoCat2(eastl::forward<Tuple1>(t1), eastl::forward<Tuple2>(t2));
+			return TCI::DoCat2(std::forward<Tuple1>(t1), std::forward<Tuple2>(t2));
 		}
 	};
 
@@ -657,8 +657,8 @@ namespace Internal
 		static inline ResultType DoCat(TupleArg1&& t1, TupleArg2&& t2, TupleArgsRest&&... ts)
 		{
 			return TupleCat<FirstResultType, TuplesRest...>::DoCat(
-				TupleCat2<TupleArg1, TupleArg2>::DoCat2(eastl::forward<TupleArg1>(t1), eastl::forward<TupleArg2>(t2)),
-				eastl::forward<TupleArgsRest>(ts)...);
+				TupleCat2<TupleArg1, TupleArg2>::DoCat2(std::forward<TupleArg1>(t1), std::forward<TupleArg2>(t2)),
+				std::forward<TupleArgsRest>(ts)...);
 		}
 	};
 
@@ -671,7 +671,7 @@ namespace Internal
 		template <typename TupleArg1, typename TupleArg2>
 		static inline ResultType DoCat(TupleArg1&& t1, TupleArg2&& t2)
 		{
-			return TC2::DoCat2(eastl::forward<TupleArg1>(t1), eastl::forward<TupleArg2>(t2));
+			return TC2::DoCat2(std::forward<TupleArg1>(t1), std::forward<TupleArg2>(t2));
 		}
 	};
 
@@ -690,8 +690,8 @@ namespace Internal
 
 // tuple
 //
-// eastl::tuple is a fixed-size container of heterogeneous values. It is a
-// generalization of eastl::pair which hold only two heterogeneous values.
+// std::tuple is a fixed-size container of heterogeneous values. It is a
+// generalization of std::pair which hold only two heterogeneous values.
 //
 // https://en.cppreference.com/w/cpp/utility/tuple
 //
@@ -721,23 +721,23 @@ public:
 	template <typename U, typename... Us,
 		Internal::TupleImplicitlyConvertible_t<tuple, U, Us...> = 0>
 		EA_CONSTEXPR tuple(U&& u, Us&&... us)
-			: mImpl(make_index_sequence<sizeof...(Us) + 1>{}, Internal::MakeTupleTypes_t<tuple>{}, eastl::forward<U>(u),
-					eastl::forward<Us>(us)...)
+			: mImpl(make_index_sequence<sizeof...(Us) + 1>{}, Internal::MakeTupleTypes_t<tuple>{}, std::forward<U>(u),
+					std::forward<Us>(us)...)
 	{
 	}
 
 	template <typename U, typename... Us,
 		Internal::TupleExplicitlyConvertible_t<tuple, U, Us...> = 0>
 		explicit EA_CONSTEXPR tuple(U&& u, Us&&... us)
-			: mImpl(make_index_sequence<sizeof...(Us) + 1>{}, Internal::MakeTupleTypes_t<tuple>{}, eastl::forward<U>(u),
-					eastl::forward<Us>(us)...)
+			: mImpl(make_index_sequence<sizeof...(Us) + 1>{}, Internal::MakeTupleTypes_t<tuple>{}, std::forward<U>(u),
+					std::forward<Us>(us)...)
 	{
 	}
 
 	template <typename OtherTuple,
 			  typename enable_if<Internal::TupleConvertible<OtherTuple, tuple>::value, bool>::type = false>
 	tuple(OtherTuple&& t)
-		: mImpl(eastl::forward<OtherTuple>(t))
+		: mImpl(std::forward<OtherTuple>(t))
 	{
 	}
 
@@ -745,7 +745,7 @@ public:
 			  typename enable_if<Internal::TupleAssignable<tuple, OtherTuple>::value, bool>::type = false>
 	tuple& operator=(OtherTuple&& t)
 	{
-		mImpl.operator=(eastl::forward<OtherTuple>(t));
+		mImpl.operator=(std::forward<OtherTuple>(t));
 		return *this;
 	}
 
@@ -797,7 +797,7 @@ inline const_tuple_element_t<I, tuple<Ts...>>& get(const tuple<Ts...>& t)
 template <size_t I, typename... Ts>
 inline tuple_element_t<I, tuple<Ts...>>&& get(tuple<Ts...>&& t)
 {
-	return get<I>(eastl::move(t.mImpl));
+	return get<I>(std::move(t.mImpl));
 }
 
 template <typename T, typename... Ts>
@@ -815,7 +815,7 @@ inline const T& get(const tuple<Ts...>& t)
 template <typename T, typename... Ts>
 inline T&& get(tuple<Ts...>&& t)
 {
-	return get<T>(eastl::move(t.mImpl));
+	return get<T>(std::move(t.mImpl));
 }
 
 template <typename... Ts>
@@ -859,7 +859,7 @@ template <typename... T1s, typename... T2s> inline bool operator>=(const tuple<T
 template <typename... Tuples>
 inline typename Internal::TupleCat<Tuples...>::ResultType tuple_cat(Tuples&&... ts)
 {
-	return Internal::TupleCat<Tuples...>::DoCat(eastl::forward<Tuples>(ts)...);
+	return Internal::TupleCat<Tuples...>::DoCat(std::forward<Tuples>(ts)...);
 }
 
 
@@ -869,7 +869,7 @@ inline typename Internal::TupleCat<Tuples...>::ResultType tuple_cat(Tuples&&... 
 template <typename... Ts>
 inline EA_CONSTEXPR tuple<Internal::MakeTupleReturn_t<Ts>...> make_tuple(Ts&&... values)
 {
-	return tuple<Internal::MakeTupleReturn_t<Ts>...>(eastl::forward<Ts>(values)...);
+	return tuple<Internal::MakeTupleReturn_t<Ts>...>(std::forward<Ts>(values)...);
 }
 
 
@@ -879,7 +879,7 @@ inline EA_CONSTEXPR tuple<Internal::MakeTupleReturn_t<Ts>...> make_tuple(Ts&&...
 template <typename... Ts>
 inline EA_CONSTEXPR tuple<Ts&&...> forward_as_tuple(Ts&&... ts) EA_NOEXCEPT
 {
-	return tuple<Ts&&...>(eastl::forward<Ts&&>(ts)...);
+	return tuple<Ts&&...>(std::forward<Ts&&>(ts)...);
 }
 
 
@@ -908,7 +908,7 @@ static const Internal::ignore_t ignore;
 
 // tie
 //
-// Creates a tuple of lvalue references to its arguments or instances of eastl::ignore.
+// Creates a tuple of lvalue references to its arguments or instances of std::ignore.
 //
 // https://en.cppreference.com/w/cpp/utility/tuple/tie
 //
@@ -930,22 +930,22 @@ namespace detail
 	template <class F, class Tuple, size_t... I>
 	EA_CONSTEXPR decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>)
 	{
-		return invoke(eastl::forward<F>(f), get<I>(eastl::forward<Tuple>(t))...);
+		return invoke(std::forward<F>(f), get<I>(std::forward<Tuple>(t))...);
 	}
 } // namespace detail
 
 template <class F, class Tuple>
 EA_CONSTEXPR decltype(auto) apply(F&& f, Tuple&& t)
 {
-	return detail::apply_impl(eastl::forward<F>(f), eastl::forward<Tuple>(t),
+	return detail::apply_impl(std::forward<F>(f), std::forward<Tuple>(t),
 		                      make_index_sequence<tuple_size<remove_reference_t<Tuple>>::value>{});
 }
 
-}  // namespace eastl
+}  // namespace std
 
 
 ///////////////////////////////////////////////////////////////
-// C++17 structured bindings support for eastl::tuple
+// C++17 structured bindings support for std::tuple
 //
 #ifndef EA_COMPILER_NO_STRUCTURED_BINDING
 	#include <tuple>
@@ -958,12 +958,12 @@ EA_CONSTEXPR decltype(auto) apply(F&& f, Tuple&& t)
 		EA_DISABLE_CLANG_WARNING(-Wmismatched-tags)
 
 		template <class... Ts>
-		class tuple_size<::eastl::tuple<Ts...>> : public ::eastl::integral_constant<size_t, sizeof...(Ts)>
+		class tuple_size<::std::tuple<Ts...>> : public ::std::integral_constant<size_t, sizeof...(Ts)>
 		{
 		};
 
 		template <size_t I, class... Ts>
-		class tuple_element<I, ::eastl::tuple<Ts...>> : public ::eastl::tuple_element<I, ::eastl::tuple<Ts...>>
+		class tuple_element<I, ::std::tuple<Ts...>> : public ::std::tuple_element<I, ::std::tuple<Ts...>>
 		{
 		};
 

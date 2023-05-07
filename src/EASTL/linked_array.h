@@ -14,7 +14,7 @@
 
 #include <EASTL/internal/config.h>
 #include <EASTL/internal/smart_ptr.h>   // Defines smart_array_deleter
-#include <EASTL/linked_ptr.h>           // Defines linked_ptr_base 
+#include <EASTL/linked_ptr.h>           // Defines linked_ptr_base
 #include <stddef.h>                     // Definition of ptrdiff_t
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
@@ -23,7 +23,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// class linked_array
@@ -34,9 +34,9 @@ namespace eastl
 	template <typename T, typename Deleter = smart_array_deleter<T> >
 	class linked_array
 	{
-	
+
 	protected:
-	
+
 		/// this_type
 		/// This is an alias for linked_array<T>, this class.
 		typedef linked_array<T> this_type;
@@ -59,14 +59,14 @@ namespace eastl
 
 	public:
 		/// element_type
-		/// Synonym for type T, useful for external code to reference the 
+		/// Synonym for type T, useful for external code to reference the
 		/// type in a generic way.
 		typedef T element_type;
 
 
 		/// linked_array
 		/// Takes ownership of the pointer. It is OK if the input pointer is null.
-		explicit linked_array(T* pArray = NULL) 
+		explicit linked_array(T* pArray = NULL)
 			: mpArray(pArray)
 		{
 			mpPrev = mpNext = this;
@@ -87,9 +87,9 @@ namespace eastl
 
 		/// ~linked_array
 		/// Removes this object from the of objects using the shared pointer.
-		/// If this object is the last owner of the shared pointer, the shared 
+		/// If this object is the last owner of the shared pointer, the shared
 		/// pointer is deleted.
-		~linked_array() 
+		~linked_array()
 		{
 			reset();
 		}
@@ -99,7 +99,7 @@ namespace eastl
 		/// Copies another linked_array to this object. Note that this object
 		/// may already own a shared pointer with another different pointer
 		/// (but still of the same type) before this call. In that case,
-		/// this function removes ownership of the old pointer and takes shared 
+		/// this function removes ownership of the old pointer and takes shared
 		/// ownership of the new pointer and increments its reference count.
 		linked_array& operator=(const linked_array& linkedArray)
 		{
@@ -115,7 +115,7 @@ namespace eastl
 
 		/// operator=
 		/// Assigns a new pointer. If the new pointer is equivalent
-		/// to the current pointer, nothing is done. Otherwise the 
+		/// to the current pointer, nothing is done. Otherwise the
 		/// current pointer is unlinked and possibly destroyed.
 		/// The new pointer can be NULL.
 		linked_array& operator=(T* pArray)
@@ -126,7 +126,7 @@ namespace eastl
 
 
 		/// reset
-		/// Releases the owned pointer and takes ownership of the 
+		/// Releases the owned pointer and takes ownership of the
 		/// passed in pointer. If the passed in pointer is the same
 		/// as the owned pointer, nothing is done. The passed in pointer
 		/// can be null, in which case the use count is set to 1.
@@ -155,10 +155,10 @@ namespace eastl
 		///
 		/// This function is disabled as it is currently deemed unsafe.
 		/// The problem is that the only way to implement this function
-		/// is to transfer pointers between the objects; you cannot 
-		/// transfer the linked list membership between the objects. 
-		/// Thus unless both linked_array objects were 'unique()', the 
-		/// shared pointers would be duplicated amongst containers, 
+		/// is to transfer pointers between the objects; you cannot
+		/// transfer the linked list membership between the objects.
+		/// Thus unless both linked_array objects were 'unique()', the
+		/// shared pointers would be duplicated amongst containers,
 		/// resulting in a crash.
 		//void swap(linked_array& linkedArray)
 		//{
@@ -172,7 +172,7 @@ namespace eastl
 
 
 		/// operator[]
-		/// Returns a reference to the specified item in the owned pointer array. 
+		/// Returns a reference to the specified item in the owned pointer array.
 		T& operator[](ptrdiff_t i) const
 		{
 			// assert(mpArray && (i >= 0));
@@ -197,7 +197,7 @@ namespace eastl
 
 
 		/// get
-		/// Returns the owned pointer. Note that this class does 
+		/// Returns the owned pointer. Note that this class does
 		/// not provide an operator T() function. This is because such
 		/// a thing (automatic conversion) is deemed unsafe.
 		T* get() const
@@ -209,14 +209,14 @@ namespace eastl
 		/// use_count
 		/// Returns the use count of the shared pointer.
 		/// The return value is one if the owned pointer is null.
-		/// This function is provided for compatibility with the 
+		/// This function is provided for compatibility with the
 		/// proposed C++ standard and for debugging purposes. It is not
 		/// intended for runtime use given that its execution time is
 		/// not constant.
 		int use_count() const
 		{
 			int useCount(1);
-			
+
 			for(const linked_ptr_base* pCurrent = this; pCurrent->mpNext != this; pCurrent = pCurrent->mpNext)
 				++useCount;
 
@@ -234,7 +234,7 @@ namespace eastl
 
 
 		/// Implicit operator bool
-		/// Allows for using a linked_array as a boolean. 
+		/// Allows for using a linked_array as a boolean.
 		/// Note that below we do not use operator bool(). The reason for this
 		/// is that booleans automatically convert up to short, int, float, etc.
 		/// The result is that this: if(linkedArray == 1) would yield true (bad).
@@ -248,7 +248,7 @@ namespace eastl
 
 
 		/// operator!
-		/// This returns the opposite of operator bool; it returns true if 
+		/// This returns the opposite of operator bool; it returns true if
 		/// the owned pointer is null. Some compilers require this and some don't.
 		bool operator!()
 		{
@@ -257,7 +257,7 @@ namespace eastl
 
 
 		/// force_delete
-		/// Forces deletion of the shared pointer. Fixes all references to the 
+		/// Forces deletion of the shared pointer. Fixes all references to the
 		/// pointer by any other owners to be NULL.
 		void force_delete()
 		{
@@ -292,7 +292,7 @@ namespace eastl
 
 
 	/// operator==
-	/// Compares two linked_array objects for equality. Equality is defined as 
+	/// Compares two linked_array objects for equality. Equality is defined as
 	/// being true when the pointer shared between two linked_array objects is equal.
 	template <typename T, typename TD, typename U, typename UD>
 	inline bool operator==(const linked_array<T, TD>& linkedArray1, const linked_array<U, UD>& linkedArray2)
@@ -302,7 +302,7 @@ namespace eastl
 
 
 	/// operator!=
-	/// Compares two linked_array objects for inequality. Equality is defined as 
+	/// Compares two linked_array objects for inequality. Equality is defined as
 	/// being true when the pointer shared between two linked_array objects is equal.
 	template <typename T, typename TD, typename U, typename UD>
 	inline bool operator!=(const linked_array<T, TD>& linkedArray1, const linked_array<U, UD>& linkedArray2)
@@ -321,7 +321,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

@@ -12,14 +12,14 @@
 //   is done by deriving the object from intrusive_list_node.
 //
 // * The container does no memory allocation -- it works entirely with
-//   the submitted nodes. This does mean that it is the client's job to 
+//   the submitted nodes. This does mean that it is the client's job to
 //   free the nodes in an intrusive list, though.
 //
 // * Valid node pointers can be converted back to iterators in O(1).
 //   This is because objects in the list are also nodes in the list.
 //
-// * intrusive_list does not support copy construction or assignment; 
-//   the push, pop, and insert operations take ownership of the 
+// * intrusive_list does not support copy construction or assignment;
+//   the push, pop, and insert operations take ownership of the
 //   passed object.
 //
 // Usage notes:
@@ -48,12 +48,12 @@
 //      listB.push_back(obj);
 //
 // * find() vs. locate()
-//   The find(v) algorithm returns an iterator p such that *p == v; intrusive_list::locate(v) 
-//   returns an iterator p such that &*p == &v. intrusive_list<> doesn't have find() mainly 
+//   The find(v) algorithm returns an iterator p such that *p == v; intrusive_list::locate(v)
+//   returns an iterator p such that &*p == &v. intrusive_list<> doesn't have find() mainly
 //   because list<> doesn't have it either, but there's no reason it couldn't. intrusive_list
 //   uses the name 'find' because:
 //      - So as not to confuse the member function with the well-defined free function from algorithm.h.
-//      - Because it is not API-compatible with eastl::find().
+//      - Because it is not API-compatible with std::find().
 //      - Because it simply locates an object within the list based on its node entry and doesn't perform before any value-based searches or comparisons.
 //
 // Differences between intrusive_list and std::list:
@@ -91,15 +91,15 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// intrusive_list_node
 	///
-	/// By design this must be a POD, as user structs will be inheriting from 
-	/// it and they may wish to remain POD themselves. However, if the 
+	/// By design this must be a POD, as user structs will be inheriting from
+	/// it and they may wish to remain POD themselves. However, if the
 	/// EASTL_VALIDATE_INTRUSIVE_LIST option is enabled
-	/// 
+	///
 	struct intrusive_list_node
 	{
 		intrusive_list_node* mpNext;
@@ -192,19 +192,19 @@ namespace eastl
 	/// intrusive_list
 	///
 	/// Example usage:
-	///    struct IntNode : public eastl::intrusive_list_node {
+	///    struct IntNode : public std::intrusive_list_node {
 	///        int mX;
 	///        IntNode(int x) : mX(x) { }
 	///    };
-	///    
+	///
 	///    IntNode nodeA(0);
 	///    IntNode nodeB(1);
-	///    
+	///
 	///    intrusive_list<IntNode> intList;
 	///    intList.push_back(nodeA);
 	///    intList.push_back(nodeB);
 	///    intList.remove(nodeA);
-	///    
+	///
 	template <typename T = intrusive_list_node>
 	class intrusive_list : public intrusive_list_base
 	{
@@ -221,8 +221,8 @@ namespace eastl
 		typedef const T*                                        const_pointer;
 		typedef intrusive_list_iterator<T, T*, T&>              iterator;
 		typedef intrusive_list_iterator<T, const T*, const T&>  const_iterator;
-		typedef eastl::reverse_iterator<iterator>               reverse_iterator;
-		typedef eastl::reverse_iterator<const_iterator>         const_reverse_iterator;
+		typedef std::reverse_iterator<iterator>               reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>         const_reverse_iterator;
 
 	public:
 		intrusive_list();                                ///< Creates an empty list.
@@ -247,7 +247,7 @@ namespace eastl
 		reverse_iterator        rend() EA_NOEXCEPT;                  ///< Returns a reverse_iterator pointing at the start of the list (end of the reverse sequence).
 		const_reverse_iterator  rend() const EA_NOEXCEPT;            ///< Returns a const_reverse_iterator pointing at the start of the list (end of the reverse sequence).
 		const_reverse_iterator  crend() const EA_NOEXCEPT;           ///< Returns a const_reverse_iterator pointing at the start of the list (end of the reverse sequence).
-		
+
 		reference               front();                 ///< Returns a reference to the first element. The list must be non-empty.
 		const_reference         front() const;           ///< Returns a const reference to the first element. The list must be non-empty.
 		reference               back();                  ///< Returns a reference to the last element. The list must be non-empty.
@@ -289,7 +289,7 @@ namespace eastl
 
 	public:
 		// Sorting functionality
-		// This is independent of the global sort algorithms, as lists are 
+		// This is independent of the global sort algorithms, as lists are
 		// linked nodes and can be sorted more efficiently by moving nodes
 		// around in ways that global sort algorithms aren't privy to.
 
@@ -322,9 +322,9 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	// Moved to be inline within the class because the may-alias attribute is
-	// triggering what appears to be a bug in GCC that effectively requires 
+	// triggering what appears to be a bug in GCC that effectively requires
 	// may-alias structs to implement inline member functions within the class
-	// declaration. We don't have a .cpp file for 
+	// declaration. We don't have a .cpp file for
 	// #if EASTL_VALIDATE_INTRUSIVE_LIST
 	//     inline intrusive_list_node::intrusive_list_node()
 	//     {
@@ -435,7 +435,7 @@ namespace eastl
 	// Thus we provide additional template paremeters here to support this. The defect report does not
 	// require us to support comparisons between reverse_iterators and const_reverse_iterators.
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB>
-	inline bool operator==(const intrusive_list_iterator<T, PointerA, ReferenceA>& a, 
+	inline bool operator==(const intrusive_list_iterator<T, PointerA, ReferenceA>& a,
 							const intrusive_list_iterator<T, PointerB, ReferenceB>& b)
 	{
 		return a.mpNode == b.mpNode;
@@ -443,17 +443,17 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB>
-	inline bool operator!=(const intrusive_list_iterator<T, PointerA, ReferenceA>& a, 
+	inline bool operator!=(const intrusive_list_iterator<T, PointerA, ReferenceA>& a,
 							const intrusive_list_iterator<T, PointerB, ReferenceB>& b)
 	{
 		return a.mpNode != b.mpNode;
 	}
 
 
-	// We provide a version of operator!= for the case where the iterators are of the 
+	// We provide a version of operator!= for the case where the iterators are of the
 	// same type. This helps prevent ambiguity errors in the presence of rel_ops.
 	template <typename T, typename Pointer, typename Reference>
-	inline bool operator!=(const intrusive_list_iterator<T, Pointer, Reference>& a, 
+	inline bool operator!=(const intrusive_list_iterator<T, Pointer, Reference>& a,
 						   const intrusive_list_iterator<T, Pointer, Reference>& b)
 	{
 		return a.mpNode != b.mpNode;
@@ -466,7 +466,7 @@ namespace eastl
 	// intrusive_list_base
 	///////////////////////////////////////////////////////////////////////
 
-	inline intrusive_list_base::intrusive_list_base() 
+	inline intrusive_list_base::intrusive_list_base()
 	{
 		mAnchor.mpNext = mAnchor.mpPrev = &mAnchor;
 	}
@@ -583,7 +583,7 @@ namespace eastl
 
 	template <typename T>
 	inline typename intrusive_list<T>::this_type& intrusive_list<T>::operator=(const this_type& /*x*/)
-	{ 
+	{
 		// We intentionally ignore argument x.
 		// See notes above in the copy constructor about questioning the existence of this function.
 		return *this;
@@ -887,7 +887,7 @@ namespace eastl
 		mAnchor   = x.mAnchor;
 		x.mAnchor = temp;
 
-		// Fixup node pointers into the anchor, since the addresses of 
+		// Fixup node pointers into the anchor, since the addresses of
 		// the anchors must stay the same with each list.
 		if(mAnchor.mpNext == &x.mAnchor)
 			mAnchor.mpNext = mAnchor.mpPrev = &mAnchor;
@@ -959,7 +959,7 @@ namespace eastl
 		// Note that splice(pos, x, pos) and splice(pos + 1, x, pos)
 		// are valid and need to be handled correctly.
 
-		// We don't need to check if the source list is empty, because 
+		// We don't need to check if the source list is empty, because
 		// this function expects a valid iterator from the source list,
 		// and thus the list cannot be empty in such a situation.
 
@@ -1147,13 +1147,13 @@ namespace eastl
 			this_type leftList;     // This should cause no memory allocation.
 			this_type rightList;
 
-			// We find an iterator which is in the middle of the list. The fastest way to do 
-			// this is to iterate from the base node both forwards and backwards with two 
-			// iterators and stop when they meet each other. Recall that our size() function 
+			// We find an iterator which is in the middle of the list. The fastest way to do
+			// this is to iterate from the base node both forwards and backwards with two
+			// iterators and stop when they meet each other. Recall that our size() function
 			// is not O(1) but is instead O(n), at least when EASTL_LIST_SIZE_CACHE is disabled.
 			#if EASTL_LIST_SIZE_CACHE
 				iterator mid(begin());
-				eastl::advance(mid, size() / 2);
+				std::advance(mid, size() / 2);
 			#else
 				iterator mid(begin()), tail(end());
 
@@ -1196,13 +1196,13 @@ namespace eastl
 			this_type leftList;     // This should cause no memory allocation.
 			this_type rightList;
 
-			// We find an iterator which is in the middle of the list. The fastest way to do 
-			// this is to iterate from the base node both forwards and backwards with two 
-			// iterators and stop when they meet each other. Recall that our size() function 
+			// We find an iterator which is in the middle of the list. The fastest way to do
+			// this is to iterate from the base node both forwards and backwards with two
+			// iterators and stop when they meet each other. Recall that our size() function
 			// is not O(1) but is instead O(n), at least when EASTL_LIST_SIZE_CACHE is disabled.
 			#if EASTL_LIST_SIZE_CACHE
 				iterator mid(begin());
-				eastl::advance(mid, size() / 2);
+				std::advance(mid, size() / 2);
 			#else
 				iterator mid(begin()), tail(end());
 
@@ -1237,7 +1237,7 @@ namespace eastl
 		}
 
 		if(i == end())
-			return (isf_valid | isf_current); 
+			return (isf_valid | isf_current);
 
 		return isf_none;
 	}
@@ -1274,7 +1274,7 @@ namespace eastl
 	template <typename T>
 	bool operator<(const intrusive_list<T>& a, const intrusive_list<T>& b)
 	{
-		return eastl::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+		return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
 	}
 
 	template <typename T>
@@ -1302,7 +1302,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

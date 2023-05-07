@@ -14,7 +14,7 @@
 #include "atomic_push_compiler_options.h"
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -87,94 +87,94 @@ namespace internal
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _RELAXED_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_acquire_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_acquire_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _ACQUIRE_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_release_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_release_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _RELEASE_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_acq_rel_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_acq_rel_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _ACQ_REL_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _SEQ_CST_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_relaxed_s,				\
-				  eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_relaxed_s,				\
+				  std::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _RELAXED_RELAXED_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_acquire_s,				\
-				  eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_acquire_s,				\
+				  std::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _ACQUIRE_RELAXED_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_acquire_s,				\
-				  eastl::internal::memory_order_acquire_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_acquire_s,				\
+				  std::internal::memory_order_acquire_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _ACQUIRE_ACQUIRE_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_release_s,				\
-				  eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_release_s,				\
+				  std::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _RELEASE_RELAXED_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_acq_rel_s,				\
-				  eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_acq_rel_s,				\
+				  std::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _ACQ_REL_RELAXED_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_acq_rel_s,				\
-				  eastl::internal::memory_order_acquire_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_acq_rel_s,				\
+				  std::internal::memory_order_acquire_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _ACQ_REL_ACQUIRE_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_seq_cst_s,				\
-				  eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_seq_cst_s,				\
+				  std::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _SEQ_CST_RELAXED_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_seq_cst_s,				\
-				  eastl::internal::memory_order_acquire_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_seq_cst_s,				\
+				  std::internal::memory_order_acquire_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _SEQ_CST_ACQUIRE_), bits); \
 	}																	\
 																		\
 	bool funcName(T& expected, T desired,								\
-				  eastl::internal::memory_order_seq_cst_s,				\
-				  eastl::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
+				  std::internal::memory_order_seq_cst_s,				\
+				  std::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
 	{																	\
 		EASTL_ATOMIC_CMPXCHG_FUNC_IMPL(EASTL_ATOMIC_BASE_OP_JOIN(cmpxchgOp, _SEQ_CST_SEQ_CST_), bits); \
 	}
@@ -192,8 +192,8 @@ namespace internal
 	{																	\
 	private:															\
 																		\
-		static_assert(EA_ALIGN_OF(atomic_size_aligned<T>) == bytes, "eastl::atomic<T> must be sizeof(T) aligned!"); \
-		static_assert(EA_ALIGN_OF(atomic_size_aligned<T>) == sizeof(T), "eastl::atomic<T> must be sizeof(T) aligned!"); \
+		static_assert(EA_ALIGN_OF(atomic_size_aligned<T>) == bytes, "std::atomic<T> must be sizeof(T) aligned!"); \
+		static_assert(EA_ALIGN_OF(atomic_size_aligned<T>) == sizeof(T), "std::atomic<T> must be sizeof(T) aligned!"); \
 		using Base = atomic_size_aligned<T>;							\
 																		\
 	public: /* ctors */													\
@@ -203,7 +203,7 @@ namespace internal
 		{																\
 		}																\
 																		\
-		EA_CONSTEXPR atomic_base_width() EA_NOEXCEPT_IF(eastl::is_nothrow_default_constructible<T>::value) = default; \
+		EA_CONSTEXPR atomic_base_width() EA_NOEXCEPT_IF(std::is_nothrow_default_constructible<T>::value) = default; \
 																		\
 		atomic_base_width(const atomic_base_width&) EA_NOEXCEPT = delete; \
 																		\
@@ -216,17 +216,17 @@ namespace internal
 			EASTL_ATOMIC_STORE_FUNC_IMPL(EASTL_ATOMIC_STORE_SEQ_CST_, bits); \
 		}																\
 																		\
-		void store(T desired, eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
+		void store(T desired, std::internal::memory_order_relaxed_s) EA_NOEXCEPT	\
 		{																\
 			EASTL_ATOMIC_STORE_FUNC_IMPL(EASTL_ATOMIC_STORE_RELAXED_, bits); \
 		}																\
 																		\
-		void store(T desired, eastl::internal::memory_order_release_s) EA_NOEXCEPT	\
+		void store(T desired, std::internal::memory_order_release_s) EA_NOEXCEPT	\
 		{																\
 			EASTL_ATOMIC_STORE_FUNC_IMPL(EASTL_ATOMIC_STORE_RELEASE_, bits); \
 		}																\
 																		\
-		void store(T desired, eastl::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
+		void store(T desired, std::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
 		{																\
 			EASTL_ATOMIC_STORE_FUNC_IMPL(EASTL_ATOMIC_STORE_SEQ_CST_, bits); \
 		}																\
@@ -240,17 +240,17 @@ namespace internal
 			EASTL_ATOMIC_LOAD_FUNC_IMPL(EASTL_ATOMIC_LOAD_SEQ_CST_, bits); \
 		}																\
 																		\
-		T load(eastl::internal::memory_order_relaxed_s) const EA_NOEXCEPT \
+		T load(std::internal::memory_order_relaxed_s) const EA_NOEXCEPT \
 		{																\
 			EASTL_ATOMIC_LOAD_FUNC_IMPL(EASTL_ATOMIC_LOAD_RELAXED_, bits); \
 		}																\
 																		\
-		T load(eastl::internal::memory_order_acquire_s) const EA_NOEXCEPT \
+		T load(std::internal::memory_order_acquire_s) const EA_NOEXCEPT \
 		{																\
 			EASTL_ATOMIC_LOAD_FUNC_IMPL(EASTL_ATOMIC_LOAD_ACQUIRE_, bits); \
 		}																\
 																		\
-		T load(eastl::internal::memory_order_seq_cst_s) const EA_NOEXCEPT \
+		T load(std::internal::memory_order_seq_cst_s) const EA_NOEXCEPT \
 		{																\
 			EASTL_ATOMIC_LOAD_FUNC_IMPL(EASTL_ATOMIC_LOAD_SEQ_CST_, bits); \
 		}																\
@@ -264,27 +264,27 @@ namespace internal
 			EASTL_ATOMIC_EXCHANGE_FUNC_IMPL(EASTL_ATOMIC_EXCHANGE_SEQ_CST_, bits); \
 		}																\
 																		\
-		T exchange(T desired, eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT \
+		T exchange(T desired, std::internal::memory_order_relaxed_s) EA_NOEXCEPT \
 		{																\
 			EASTL_ATOMIC_EXCHANGE_FUNC_IMPL(EASTL_ATOMIC_EXCHANGE_RELAXED_, bits); \
 		}																\
 																		\
-		T exchange(T desired, eastl::internal::memory_order_acquire_s) EA_NOEXCEPT	\
+		T exchange(T desired, std::internal::memory_order_acquire_s) EA_NOEXCEPT	\
 		{																\
 			EASTL_ATOMIC_EXCHANGE_FUNC_IMPL(EASTL_ATOMIC_EXCHANGE_ACQUIRE_, bits); \
 		}																\
 																		\
-		T exchange(T desired, eastl::internal::memory_order_release_s) EA_NOEXCEPT	\
+		T exchange(T desired, std::internal::memory_order_release_s) EA_NOEXCEPT	\
 		{																\
 			EASTL_ATOMIC_EXCHANGE_FUNC_IMPL(EASTL_ATOMIC_EXCHANGE_RELEASE_, bits); \
 		}																\
 																		\
-		T exchange(T desired, eastl::internal::memory_order_acq_rel_s) EA_NOEXCEPT	\
+		T exchange(T desired, std::internal::memory_order_acq_rel_s) EA_NOEXCEPT	\
 		{																\
 			EASTL_ATOMIC_EXCHANGE_FUNC_IMPL(EASTL_ATOMIC_EXCHANGE_ACQ_REL_, bits); \
 		}																\
 																		\
-		T exchange(T desired, eastl::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
+		T exchange(T desired, std::internal::memory_order_seq_cst_s) EA_NOEXCEPT	\
 		{																\
 			EASTL_ATOMIC_EXCHANGE_FUNC_IMPL(EASTL_ATOMIC_EXCHANGE_SEQ_CST_, bits); \
 		}																\
@@ -303,7 +303,7 @@ namespace internal
 																		\
 		T operator=(T desired) EA_NOEXCEPT								\
 		{																\
-			store(desired, eastl::memory_order_seq_cst);				\
+			store(desired, std::memory_order_seq_cst);				\
 			return desired;												\
 		}																\
 																		\
@@ -337,7 +337,7 @@ namespace internal
 } // namespace internal
 
 
-} // namespace eastl
+} // namespace std
 
 
 #include "atomic_pop_compiler_options.h"

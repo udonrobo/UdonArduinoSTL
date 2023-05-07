@@ -5,8 +5,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // *** Note ***
-// *** This code is deprecated in favor of the C++11-conforming             *** 
-// *** eastl::unique_ptr template class found in <EASTL/unique_ptr.h>       *** 
+// *** This code is deprecated in favor of the C++11-conforming             ***
+// *** std::unique_ptr template class found in <EASTL/unique_ptr.h>       ***
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -24,35 +24,35 @@
 
 
 
-namespace eastl
+namespace std
 {
 	/// class scoped_ptr
 	///
-	/// This class is intended to be the same as the C++11 unique_ptr class, 
-	/// but was created before there was such a thing. 
+	/// This class is intended to be the same as the C++11 unique_ptr class,
+	/// but was created before there was such a thing.
 	///
-	/// This class implements a scoped_ptr template. This is a class which is 
-	/// similar to the C++ auto_ptr template, except that it prohibits copying 
+	/// This class implements a scoped_ptr template. This is a class which is
+	/// similar to the C++ auto_ptr template, except that it prohibits copying
 	/// of itself, for safety.
 	///
-	/// More specifically, the scoped_ptr class template stores a pointer to a 
-	/// dynamically allocated object.  The object pointed to is automatically 
-	/// deleted on destructor of scoped_ptr or can be manually deleted via the 
-	/// scopted_ptr::reset function. 
+	/// More specifically, the scoped_ptr class template stores a pointer to a
+	/// dynamically allocated object.  The object pointed to is automatically
+	/// deleted on destructor of scoped_ptr or can be manually deleted via the
+	/// scopted_ptr::reset function.
 	///
-	/// scoped_ptr cannot be used in C++ Standard Library containers; you'll need 
+	/// scoped_ptr cannot be used in C++ Standard Library containers; you'll need
 	/// to use the shared_ptr template if you want to do this. The reason you can't
 	/// use scoped_ptr is that it prohibits copying. You can't (safely) use auto_ptr
-	/// in C++ Standard Library containers because copying of an auto_ptr will 
+	/// in C++ Standard Library containers because copying of an auto_ptr will
 	/// create a situation whereby objects are multiply freed.
-	/// 
+	///
 	/// scoped_ptr cannot be used with arrays of objects. The reason for this is
 	/// that it calls delete on the owned pointer and not delete[]. The latter
 	/// allows for the calling of the destructors for the objects of the owned pointer.
 	/// If you want to use scoped_ptr with a dynamically allocated array, use the
 	/// scoped_array function instead.
-	/// 
-	template <typename T, typename Deleter = smart_ptr_deleter<T> > 
+	///
+	template <typename T, typename Deleter = smart_ptr_deleter<T> >
 	class scoped_ptr
 	{
 	protected:
@@ -99,7 +99,7 @@ namespace eastl
 		}
 
 		/// reset
-		/// Deletes the owned pointer and takes ownership of the 
+		/// Deletes the owned pointer and takes ownership of the
 		/// passed in pointer. If the passed in pointer is the same
 		/// as the owned pointer, nothing is done.
 		/// Example usage:
@@ -117,7 +117,7 @@ namespace eastl
 		}
 
 		/// detach
-		/// This simply forgets the owned pointer. It doesn't 
+		/// This simply forgets the owned pointer. It doesn't
 		/// free it but rather assumes that the user does.
 		/// Example usage:
 		///    scoped_ptr<int> ptr(new int(3));
@@ -131,7 +131,7 @@ namespace eastl
 		}
 
 		/// swap
-		/// Exchanges the owned pointer beween two scoped_ptr objects. 
+		/// Exchanges the owned pointer beween two scoped_ptr objects.
 		void swap(this_type& scopedPtr)
 		{
 			// std::swap(mpValue, scopedPtr.mpValue); // Not used so that we can reduce a dependency.
@@ -154,7 +154,7 @@ namespace eastl
 		/// operator->
 		/// Allows access to the owned pointer via operator->()
 		/// Example usage:
-		///    struct X{ void DoSomething(); }; 
+		///    struct X{ void DoSomething(); };
 		///    scoped_ptr<int> ptr(new X);
 		///    ptr->DoSomething();
 		T* operator->() const
@@ -164,11 +164,11 @@ namespace eastl
 		}
 
 		/// get
-		/// Returns the owned pointer. Note that this class does 
+		/// Returns the owned pointer. Note that this class does
 		/// not provide an operator T() function. This is because such
 		/// a thing (automatic conversion) is deemed unsafe.
 		/// Example usage:
-		///    struct X{ void DoSomething(); }; 
+		///    struct X{ void DoSomething(); };
 		///    scoped_ptr<int> ptr(new X);
 		///    X* pX = ptr.get();
 		///    pX->DoSomething();
@@ -178,7 +178,7 @@ namespace eastl
 		}
 
 		/// Implicit operator bool
-		/// Allows for using a scoped_ptr as a boolean. 
+		/// Allows for using a scoped_ptr as a boolean.
 		/// Example usage:
 		///    scoped_ptr<int> ptr(new int(3));
 		///    if(ptr)
@@ -196,7 +196,7 @@ namespace eastl
 		}
 
 		/// operator!
-		/// This returns the opposite of operator bool; it returns true if 
+		/// This returns the opposite of operator bool; it returns true if
 		/// the owned pointer is null. Some compilers require this and some don't.
 		///    scoped_ptr<int> ptr(new int(3));
 		///    if(!ptr)
@@ -211,7 +211,7 @@ namespace eastl
 
 
 	/// get_pointer
-	/// returns scoped_ptr::get() via the input scoped_ptr. 
+	/// returns scoped_ptr::get() via the input scoped_ptr.
 	template <typename T, typename D>
 	inline T* get_pointer(const scoped_ptr<T, D>& scopedPtr)
 	{
@@ -240,7 +240,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

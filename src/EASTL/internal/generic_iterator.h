@@ -4,7 +4,7 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // Implements a generic iterator from a given iteratable type, such as a pointer.
-// We cannot put this file into our own iterator.h file because we need to 
+// We cannot put this file into our own iterator.h file because we need to
 // still be able to use this file when we have our iterator.h disabled.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -28,14 +28,14 @@
 EA_DISABLE_VC_WARNING(4619 4217);
 
 
-namespace eastl
+namespace std
 {
 
 	/// generic_iterator
 	///
 	/// Converts something which can be iterated into a formal iterator.
-	/// While this class' primary purpose is to allow the conversion of 
-	/// a pointer to an iterator, you can convert anything else to an 
+	/// While this class' primary purpose is to allow the conversion of
+	/// a pointer to an iterator, you can convert anything else to an
 	/// iterator by defining an iterator_traits<> specialization for that
 	/// object type. See EASTL iterator.h for this.
 	///
@@ -50,11 +50,11 @@ namespace eastl
 		Iterator mIterator;
 
 	public:
-		typedef typename eastl::iterator_traits<Iterator>::iterator_category iterator_category;
-		typedef typename eastl::iterator_traits<Iterator>::value_type        value_type;
-		typedef typename eastl::iterator_traits<Iterator>::difference_type   difference_type;
-		typedef typename eastl::iterator_traits<Iterator>::reference         reference;
-		typedef typename eastl::iterator_traits<Iterator>::pointer           pointer;
+		typedef typename std::iterator_traits<Iterator>::iterator_category iterator_category;
+		typedef typename std::iterator_traits<Iterator>::value_type        value_type;
+		typedef typename std::iterator_traits<Iterator>::difference_type   difference_type;
+		typedef typename std::iterator_traits<Iterator>::reference         reference;
+		typedef typename std::iterator_traits<Iterator>::pointer           pointer;
 		typedef Iterator                                                     iterator_type;
 		typedef Container                                                    container_type;
 		typedef generic_iterator<Iterator, Container>                        this_type;
@@ -182,7 +182,7 @@ namespace eastl
 
 	/// is_generic_iterator
 	///
-	/// Tells if an iterator is one of these generic_iterators. This is useful if you want to 
+	/// Tells if an iterator is one of these generic_iterators. This is useful if you want to
 	/// write code that uses miscellaneous iterators but wants to tell if they are generic_iterators.
 	/// A primary reason to do so is that you can get at the pointer within the generic_iterator.
 	///
@@ -199,18 +199,18 @@ namespace eastl
 	///
 	/// Example usage:
 	///      vector<int> intVector;
-	///      eastl::generic_iterator<vector<int>::iterator> genericIterator(intVector.begin());
+	///      std::generic_iterator<vector<int>::iterator> genericIterator(intVector.begin());
 	///      vector<int>::iterator it = unwrap_generic_iterator(genericIterator);
 	///
 	template <typename Iterator>
-	inline typename eastl::is_iterator_wrapper_helper<Iterator, eastl::is_generic_iterator<Iterator>::value>::iterator_type unwrap_generic_iterator(Iterator it)
+	inline typename std::is_iterator_wrapper_helper<Iterator, std::is_generic_iterator<Iterator>::value>::iterator_type unwrap_generic_iterator(Iterator it)
 	{
 		// get_unwrapped(it) -> it.unwrap() which is equivalent to `it.base()` for generic_iterator and to `it` otherwise.
-		return eastl::is_iterator_wrapper_helper<Iterator, eastl::is_generic_iterator<Iterator>::value>::get_unwrapped(it);
+		return std::is_iterator_wrapper_helper<Iterator, std::is_generic_iterator<Iterator>::value>::get_unwrapped(it);
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 EA_RESTORE_VC_WARNING();

@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// This file implements an slist which uses a fixed size memory pool for its nodes. 
+// This file implements an slist which uses a fixed size memory pool for its nodes.
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -20,13 +20,13 @@
 
 
 
-namespace eastl
+namespace std
 {
 	/// EASTL_FIXED_SLIST_DEFAULT_NAME
 	///
 	/// Defines a default container name in the absence of a user-provided name.
 	/// In the case of fixed-size containers, the allocator name always refers
-	/// to overflow allocations. 
+	/// to overflow allocations.
 	///
 	#ifndef EASTL_FIXED_SLIST_DEFAULT_NAME
 		#define EASTL_FIXED_SLIST_DEFAULT_NAME EASTL_DEFAULT_NAME_PREFIX " fixed_slist" // Unless the user overrides something, this is "EASTL fixed_slist".
@@ -43,9 +43,9 @@ namespace eastl
 
 	/// fixed_slist
 	///
-	/// fixed_slist is an slist which uses a single block of contiguous memory 
+	/// fixed_slist is an slist which uses a single block of contiguous memory
 	/// for its nodes. The purpose of this is to reduce memory usage relative
-	/// to a conventional memory allocation system (with block headers), to 
+	/// to a conventional memory allocation system (with block headers), to
 	/// increase allocation speed (often due to avoidance of mutex locks),
 	/// to increase performance (due to better memory locality), and to decrease
 	/// memory fragmentation due to the way that fixed block allocators work.
@@ -107,7 +107,7 @@ namespace eastl
 		void      swap(this_type& x);
 		void      reset_lose_memory();      // This is a unilateral reset to an initially empty state. No destructors are called, no deallocation occurs.
 		size_type max_size() const;         // Returns the max fixed size, which is the user-supplied nodeCount parameter.
-		bool      full() const;             // Returns true if the fixed space has been fully allocated. Note that if overflow is enabled, the container size can be greater than nodeCount but full() could return true because the fixed space may have a recently freed slot. 
+		bool      full() const;             // Returns true if the fixed space has been fully allocated. Note that if overflow is enabled, the container size can be greater than nodeCount but full() could return true because the fixed space may have a recently freed slot.
 		bool      has_overflowed() const;   // Returns true if the allocations spilled over into the overflow allocator. Meaningful only if overflow is enabled.
 		bool      can_overflow() const;     // Returns the value of the bEnableOverflow template parameter.
 
@@ -186,7 +186,7 @@ namespace eastl
 	inline fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::fixed_slist(this_type&& x)
 		: base_type(fixed_allocator_type(mBuffer))
 	{
-		// Since we are a fixed_list, we can't normally swap pointers unless both this and 
+		// Since we are a fixed_list, we can't normally swap pointers unless both this and
 		// x are using using overflow and the overflow allocators are equal. To do:
 		//if(has_overflowed() && x.has_overflowed() && (get_overflow_allocator() == x.get_overflow_allocator()))
 		//{
@@ -284,7 +284,7 @@ namespace eastl
 	inline void fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::swap(this_type& x)
 	{
 		// Fixed containers use a special swap that can deal with excessively large buffers.
-		eastl::fixed_swap(*this, x);
+		std::fixed_swap(*this, x);
 	}
 
 
@@ -307,8 +307,8 @@ namespace eastl
 	template <typename T, size_t nodeCount, bool bEnableOverflow, typename OverflowAllocator>
 	inline bool fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::full() const
 	{
-		// Note: This implementation isn't right in the case of bEnableOverflow = true because it will return 
-		// false for the case that  there are free nodes from the buffer but also nodes from the dynamic heap. 
+		// Note: This implementation isn't right in the case of bEnableOverflow = true because it will return
+		// false for the case that  there are free nodes from the buffer but also nodes from the dynamic heap.
 		// This can happen if the container exceeds the fixed size and then frees some of the nodes from the fixed buffer.
 		return !internalAllocator().can_allocate(); // This is the quickest way of detecting this. has_overflowed uses a different method because it can't use this quick method.
 	}
@@ -333,7 +333,7 @@ namespace eastl
 
 
 	template <typename T, size_t nodeCount, bool bEnableOverflow, typename OverflowAllocator>
-	inline const typename fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::overflow_allocator_type& 
+	inline const typename fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::overflow_allocator_type&
 	fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::get_overflow_allocator() const EA_NOEXCEPT
 	{
 		return internalAllocator().get_overflow_allocator();
@@ -341,7 +341,7 @@ namespace eastl
 
 
 	template <typename T, size_t nodeCount, bool bEnableOverflow, typename OverflowAllocator>
-	inline typename fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::overflow_allocator_type& 
+	inline typename fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::overflow_allocator_type&
 	fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::get_overflow_allocator() EA_NOEXCEPT
 	{
 		return internalAllocator().get_overflow_allocator();
@@ -349,7 +349,7 @@ namespace eastl
 
 
 	template <typename T, size_t nodeCount, bool bEnableOverflow, typename OverflowAllocator>
-	inline void 
+	inline void
 	fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>::set_overflow_allocator(const overflow_allocator_type& allocator)
 	{
 		internalAllocator().set_overflow_allocator(allocator);
@@ -362,16 +362,16 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename T, size_t nodeCount, bool bEnableOverflow, typename OverflowAllocator>
-	inline void swap(fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>& a, 
+	inline void swap(fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>& a,
 					 fixed_slist<T, nodeCount, bEnableOverflow, OverflowAllocator>& b)
 	{
 		// Fixed containers use a special swap that can deal with excessively large buffers.
-		eastl::fixed_swap(a, b);
+		std::fixed_swap(a, b);
 	}
 
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

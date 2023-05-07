@@ -14,19 +14,19 @@
 			 // improvements in apps as a result.
 #endif
 
-namespace eastl
+namespace std
 {
 	///////////////////////////////////////////////////////////////////////////
 	/// overloaded
-	/// 
+	///
 	/// A helper class that permits you to combine multiple function objects into one.
-	/// Typically, this helper is really handy when visiting an eastl::variant with multiple lambdas.
+	/// Typically, this helper is really handy when visiting an std::variant with multiple lambdas.
 	/// Example:
 	///
-	/// eastl::variant<int, string> v{42};
-	/// 
-	/// eastl::visit(
-	///	 eastl::overloaded{
+	/// std::variant<int, string> v{42};
+	///
+	/// std::visit(
+	///	 std::overloaded{
 	///		  [](const int& x) { std::cout << "Visited an integer: " << x  << "\n"; }, // Will reach that lambda with x == 42.
 	///		  [](const string& s) { std::cout << "Visited an string: " << s  << "\n"; }
 	///	 },
@@ -40,7 +40,7 @@ namespace eastl
 	struct overloaded<T> : T
 	{
 		template <class U>
-		EA_CPP14_CONSTEXPR overloaded(U&& u) : T(eastl::forward<U>(u))
+		EA_CPP14_CONSTEXPR overloaded(U&& u) : T(std::forward<U>(u))
 		{
 		}
 
@@ -51,7 +51,7 @@ namespace eastl
 	struct overloaded<T, R...> : T, overloaded<R...>
 	{
 		template <class U, class... V>
-		EA_CPP14_CONSTEXPR overloaded(U&& u, V&&... v) : T(eastl::forward<U>(u)), overloaded<R...>(eastl::forward<V>(v)...)
+		EA_CPP14_CONSTEXPR overloaded(U&& u, V&&... v) : T(std::forward<U>(u)), overloaded<R...>(std::forward<V>(v)...)
 		{
 		}
 
@@ -71,11 +71,11 @@ namespace eastl
 	/// make_overloaded(f1, f2, f3) == overloaded{f1, f2, f3}
 	///////////////////////////////////////////////////////////////////////////
 	template <class... T>
-	EA_CPP14_CONSTEXPR overloaded<typename eastl::remove_cvref<T>::type...> make_overloaded(T&&... t)
+	EA_CPP14_CONSTEXPR overloaded<typename std::remove_cvref<T>::type...> make_overloaded(T&&... t)
 	{
-		return overloaded<typename eastl::remove_cvref<T>::type...>{eastl::forward<T>(t)...};
+		return overloaded<typename std::remove_cvref<T>::type...>{std::forward<T>(t)...};
 	}
 
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_OVERLOADED_H

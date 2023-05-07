@@ -34,7 +34,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	///////////////////////////////////////////////////////////////////////
@@ -64,8 +64,8 @@ namespace eastl
 		typedef const value_type&                             const_reference;
 		typedef value_type*                                   iterator;
 		typedef const value_type*                             const_iterator;
-		typedef eastl::reverse_iterator<iterator>             reverse_iterator;
-		typedef eastl::reverse_iterator<const_iterator>       const_reverse_iterator;
+		typedef std::reverse_iterator<iterator>             reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>       const_reverse_iterator;
 		typedef eastl_size_t                                  size_type;        // See config.h for the definition of eastl_size_t, which defaults to size_t.
 		typedef ptrdiff_t                                     difference_type;
 
@@ -87,7 +87,7 @@ namespace eastl
 
 		// Unlike the swap function for other containers, array::swap takes linear time,
 		// may exit via an exception, and does not cause iterators to become associated with the other container.
-		void swap(this_type& x) EA_NOEXCEPT_IF(eastl::is_nothrow_swappable<value_type>::value);
+		void swap(this_type& x) EA_NOEXCEPT_IF(std::is_nothrow_swappable<value_type>::value);
 
 		EA_CPP14_CONSTEXPR iterator       begin() EA_NOEXCEPT;
 		EA_CPP14_CONSTEXPR const_iterator begin() const EA_NOEXCEPT;
@@ -145,14 +145,14 @@ namespace eastl
 	template <typename T, size_t N>
 	inline void array<T, N>::fill(const value_type& value)
 	{
-		eastl::fill_n(&mValue[0], N, value);
+		std::fill_n(&mValue[0], N, value);
 	}
 
 
 	template <typename T, size_t N>
-	inline void array<T, N>::swap(this_type& x) EA_NOEXCEPT_IF(eastl::is_nothrow_swappable<value_type>::value)
+	inline void array<T, N>::swap(this_type& x) EA_NOEXCEPT_IF(std::is_nothrow_swappable<value_type>::value)
 	{
-		eastl::swap_ranges(&mValue[0], &mValue[N], &x.mValue[0]);
+		std::swap_ranges(&mValue[0], &mValue[N], &x.mValue[0]);
 	}
 
 
@@ -398,56 +398,56 @@ namespace eastl
 	template <typename T, size_t N>
 	EA_CPP14_CONSTEXPR inline bool operator==(const array<T, N>& a, const array<T, N>& b)
 	{
-		return eastl::equal(&a.mValue[0], &a.mValue[N], &b.mValue[0]);
+		return std::equal(&a.mValue[0], &a.mValue[N], &b.mValue[0]);
 	}
 
 #if defined(EA_COMPILER_HAS_THREE_WAY_COMPARISON)
 	template <typename T, size_t N>
 	inline synth_three_way_result<T> operator<=>(const array<T, N>& a, const array<T,N>& b)
 	{
-	    return eastl::lexicographical_compare_three_way(&a.mValue[0], &a.mValue[N], &b.mValue[0], &b.mValue[N], synth_three_way{});
+	    return std::lexicographical_compare_three_way(&a.mValue[0], &a.mValue[N], &b.mValue[0], &b.mValue[N], synth_three_way{});
 	}
 #else
 
 	template <typename T, size_t N>
 	EA_CPP14_CONSTEXPR inline bool operator<(const array<T, N>& a, const array<T, N>& b)
 	{
-		return eastl::lexicographical_compare(&a.mValue[0], &a.mValue[N], &b.mValue[0], &b.mValue[N]);
+		return std::lexicographical_compare(&a.mValue[0], &a.mValue[N], &b.mValue[0], &b.mValue[N]);
 	}
 
 
 	template <typename T, size_t N>
 	EA_CPP14_CONSTEXPR inline bool operator!=(const array<T, N>& a, const array<T, N>& b)
 	{
-		return !eastl::equal(&a.mValue[0], &a.mValue[N], &b.mValue[0]);
+		return !std::equal(&a.mValue[0], &a.mValue[N], &b.mValue[0]);
 	}
 
 
 	template <typename T, size_t N>
 	EA_CPP14_CONSTEXPR inline bool operator>(const array<T, N>& a, const array<T, N>& b)
 	{
-		return eastl::lexicographical_compare(&b.mValue[0], &b.mValue[N], &a.mValue[0], &a.mValue[N]);
+		return std::lexicographical_compare(&b.mValue[0], &b.mValue[N], &a.mValue[0], &a.mValue[N]);
 	}
 
 
 	template <typename T, size_t N>
 	EA_CPP14_CONSTEXPR inline bool operator<=(const array<T, N>& a, const array<T, N>& b)
 	{
-		return !eastl::lexicographical_compare(&b.mValue[0], &b.mValue[N], &a.mValue[0], &a.mValue[N]);
+		return !std::lexicographical_compare(&b.mValue[0], &b.mValue[N], &a.mValue[0], &a.mValue[N]);
 	}
 
 
 	template <typename T, size_t N>
 	EA_CPP14_CONSTEXPR inline bool operator>=(const array<T, N>& a, const array<T, N>& b)
 	{
-		return !eastl::lexicographical_compare(&a.mValue[0], &a.mValue[N], &b.mValue[0], &b.mValue[N]);
+		return !std::lexicographical_compare(&a.mValue[0], &a.mValue[N], &b.mValue[0], &b.mValue[N]);
 	}
 #endif
 
 	template <typename T, size_t N>
 	inline void swap(array<T, N>& a, array<T, N>& b)
 	{
-		eastl::swap_ranges(&a.mValue[0], &a.mValue[N], &b.mValue[0]);
+		std::swap_ranges(&a.mValue[0], &a.mValue[N], &b.mValue[0]);
 	}
 
 
@@ -459,30 +459,30 @@ namespace eastl
 		template<class T, size_t N, size_t... I>
 		EA_CONSTEXPR auto to_array(T (&a)[N], index_sequence<I...>)
 		{
-			return eastl::array<eastl::remove_cv_t<T>, N>{{a[I]...}};
+			return std::array<std::remove_cv_t<T>, N>{{a[I]...}};
 		}
 
 		template<class T, size_t N, size_t... I>
 		EA_CONSTEXPR auto to_array(T (&&a)[N], index_sequence<I...>)
 		{
-			return eastl::array<eastl::remove_cv_t<T>, N>{{eastl::move(a[I])...}};
+			return std::array<std::remove_cv_t<T>, N>{{std::move(a[I])...}};
 		}
 	}
 
 	template<class T, size_t N>
-	EA_CONSTEXPR eastl::array<eastl::remove_cv_t<T>, N> to_array(T (&a)[N])
+	EA_CONSTEXPR std::array<std::remove_cv_t<T>, N> to_array(T (&a)[N])
 	{
-		static_assert(eastl::is_constructible<T, T&>::value, "element type T must be copy-initializable");
-		static_assert(!eastl::is_array<T>::value, "passing multidimensional arrays to to_array is ill-formed");
-		return internal::to_array(a, eastl::make_index_sequence<N>{});
+		static_assert(std::is_constructible<T, T&>::value, "element type T must be copy-initializable");
+		static_assert(!std::is_array<T>::value, "passing multidimensional arrays to to_array is ill-formed");
+		return internal::to_array(a, std::make_index_sequence<N>{});
 	}
 
 	template<class T, size_t N>
-	EA_CONSTEXPR eastl::array<eastl::remove_cv_t<T>, N> to_array(T (&&a)[N])
+	EA_CONSTEXPR std::array<std::remove_cv_t<T>, N> to_array(T (&&a)[N])
 	{
-		static_assert(eastl::is_move_constructible<T>::value, "element type T must be move-constructible");
-		static_assert(!eastl::is_array<T>::value, "passing multidimensional arrays to to_array is ill-formed");
-		return internal::to_array(eastl::move(a), eastl::make_index_sequence<N>{});
+		static_assert(std::is_move_constructible<T>::value, "element type T must be move-constructible");
+		static_assert(!std::is_array<T>::value, "passing multidimensional arrays to to_array is ill-formed");
+		return internal::to_array(std::move(a), std::make_index_sequence<N>{});
 	}
 
 #if EASTL_TUPLE_ENABLED
@@ -529,7 +529,7 @@ namespace eastl
 		template <typename T, size_t N>
 		static EA_CONSTEXPR T&& getInternal(array<T, N>&& a)
 		{
-			return eastl::forward<T>(a[I]);
+			return std::forward<T>(a[I]);
 		}
 	};
 
@@ -548,27 +548,27 @@ namespace eastl
 	template <size_t I, typename T, size_t N>
 	EA_CONSTEXPR tuple_element_t<I, array<T, N>>&& get(array<T, N>&& p)
 	{
-		return GetArray<I>::getInternal(eastl::move(p));
+		return GetArray<I>::getInternal(std::move(p));
 	}
 
 #endif  // EASTL_TUPLE_ENABLED
 
 
-} // namespace eastl
+} // namespace std
 
 ///////////////////////////////////////////////////////////////
-// C++17 structured binding support for eastl::array
+// C++17 structured binding support for std::array
 //
 #ifndef EA_COMPILER_NO_STRUCTURED_BINDING
 	#include <tuple>
 
 	template <typename T, size_t N>
-	class std::tuple_size<::eastl::array<T, N>> : public ::eastl::integral_constant<size_t, N>
+	class std::tuple_size<::std::array<T, N>> : public ::std::integral_constant<size_t, N>
 	{
 	};
 
 	template <size_t I, typename T, size_t N>
-	struct std::tuple_element<I, ::eastl::array<T, N>>
+	struct std::tuple_element<I, ::std::array<T, N>>
 	{
 		static_assert(I < N, "index is out of bounds");
 		using type = T;

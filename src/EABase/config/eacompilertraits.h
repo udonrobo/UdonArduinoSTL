@@ -2032,7 +2032,7 @@
 	//
 	// Example usage:
 	//
-	// EA_CONSTEXPR_IF(eastl::is_copy_constructible<T>::value)
+	// EA_CONSTEXPR_IF(std::is_copy_constructible<T>::value)
 	// 	{ ... }
 	//
 	#if !defined(EA_CONSTEXPR_IF)

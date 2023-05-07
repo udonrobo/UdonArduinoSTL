@@ -15,7 +15,7 @@
 #include <limits.h>
 #include <EASTL/type_traits.h>
 
-namespace eastl
+namespace std
 {
 	///////////////////////////////////////////////////////////////////////
 	// is_empty
@@ -39,22 +39,22 @@ namespace eastl
 
 		// The inheritance in empty_helper_t1 will not work with non-class types
 		template <typename T, bool is_a_class = false>
-		struct is_empty_helper : public eastl::false_type{};
+		struct is_empty_helper : public std::false_type{};
 
 		template <typename T>
-		struct is_empty_helper<T, true> : public eastl::integral_constant<bool,
+		struct is_empty_helper<T, true> : public std::integral_constant<bool,
 			sizeof(is_empty_helper_t1<T>) == sizeof(is_empty_helper_t2)
 		>{};
 
 		template <typename T>
 		struct is_empty_helper2
 		{
-			typedef typename eastl::remove_cv<T>::type _T;
-			typedef eastl::is_empty_helper<_T, eastl::is_class<_T>::value> type;
+			typedef typename std::remove_cv<T>::type _T;
+			typedef std::is_empty_helper<_T, std::is_class<_T>::value> type;
 		};
 
 		template <typename T>
-		struct is_empty : public eastl::is_empty_helper2<T>::type {};
+		struct is_empty : public std::is_empty_helper2<T>::type {};
 	#endif
 
 
@@ -87,19 +87,19 @@ namespace eastl
 
 		EA_DISABLE_VC_WARNING(4647)
 		template <typename T> // We check for has_trivial_constructor only because the VC++ is_pod does. Is it due to some compiler bug?
-		struct is_pod : public eastl::integral_constant<bool, (__has_trivial_constructor(T) && __is_pod(T) && !eastl::is_hat_type<T>::value) || eastl::is_void<T>::value || eastl::is_scalar<T>::value>{};
+		struct is_pod : public std::integral_constant<bool, (__has_trivial_constructor(T) && __is_pod(T) && !std::is_hat_type<T>::value) || std::is_void<T>::value || std::is_scalar<T>::value>{};
 		EA_RESTORE_VC_WARNING()
 
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(EA_COMPILER_GNUC) || (defined(__clang__) && EA_COMPILER_HAS_FEATURE(is_pod)))
 		#define EASTL_TYPE_TRAIT_is_pod_CONFORMANCE 1    // is_pod is conforming.
 
 		template <typename T>
-		struct is_pod : public eastl::integral_constant<bool, __is_pod(T) || eastl::is_void<T>::value || eastl::is_scalar<T>::value>{};
+		struct is_pod : public std::integral_constant<bool, __is_pod(T) || std::is_void<T>::value || std::is_scalar<T>::value>{};
 	#else
 		#define EASTL_TYPE_TRAIT_is_pod_CONFORMANCE 0    // is_pod is not conforming. Can return false negatives.
 
 		template <typename T> // There's not much we can do here without some compiler extension.
-		struct is_pod : public eastl::integral_constant<bool, eastl::is_void<T>::value || eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value>{};
+		struct is_pod : public std::integral_constant<bool, std::is_void<T>::value || std::is_scalar<typename std::remove_all_extents<T>::type>::value>{};
 	#endif
 
 	template <typename T, size_t N>
@@ -109,15 +109,15 @@ namespace eastl
 	struct is_POD : public is_pod<T>{};  // Backwards compatibility.
 
 	#define EASTL_DECLARE_IS_POD(T, isPod)                                                                   \
-		namespace eastl {                                                                                    \
-			template <> struct is_pod<T>                : public eastl::integral_constant<bool, isPod>  { }; \
-			template <> struct is_pod<const T>          : public eastl::integral_constant<bool, isPod>  { }; \
-			template <> struct is_pod<volatile T>       : public eastl::integral_constant<bool, isPod>  { }; \
-			template <> struct is_pod<const volatile T> : public eastl::integral_constant<bool, isPod>  { }; \
+		namespace std {                                                                                    \
+			template <> struct is_pod<T>                : public std::integral_constant<bool, isPod>  { }; \
+			template <> struct is_pod<const T>          : public std::integral_constant<bool, isPod>  { }; \
+			template <> struct is_pod<volatile T>       : public std::integral_constant<bool, isPod>  { }; \
+			template <> struct is_pod<const volatile T> : public std::integral_constant<bool, isPod>  { }; \
 		}
 
 	// Old style macro, for bacwards compatibility:
-	#define EASTL_DECLARE_POD(T) namespace eastl{ template <> struct is_pod<T> : public true_type{}; template <> struct is_pod<const T> : public true_type{}; }
+	#define EASTL_DECLARE_POD(T) namespace std{ template <> struct is_pod<T> : public true_type{}; template <> struct is_pod<const T> : public true_type{}; }
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -132,12 +132,12 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_is_standard_layout_CONFORMANCE 1    // is_standard_layout is conforming.
 
 		template <typename T>
-		struct is_standard_layout : public eastl::integral_constant<bool, __is_standard_layout(T) || eastl::is_void<T>::value || eastl::is_scalar<T>::value>{};
+		struct is_standard_layout : public std::integral_constant<bool, __is_standard_layout(T) || std::is_void<T>::value || std::is_scalar<T>::value>{};
 	#else
 		#define EASTL_TYPE_TRAIT_is_standard_layout_CONFORMANCE 0    // is_standard_layout is not conforming. Can return false negatives.
 
 		template <typename T> // There's not much we can do here without some compiler extension.
-		struct is_standard_layout : public eastl::integral_constant<bool, is_void<T>::value || is_scalar<T>::value>{};
+		struct is_standard_layout : public std::integral_constant<bool, is_void<T>::value || is_scalar<T>::value>{};
 	#endif
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -146,15 +146,15 @@ namespace eastl
     #endif
 
 	#define EASTL_DECLARE_IS_STANDARD_LAYOUT(T, isStandardLayout)                                                    \
-		namespace eastl {                                                                                            \
-			template <> struct is_standard_layout<T>                : public eastl::integral_constant<bool, isStandardLayout>  { }; \
-			template <> struct is_standard_layout<const T>          : public eastl::integral_constant<bool, isStandardLayout>  { }; \
-			template <> struct is_standard_layout<volatile T>       : public eastl::integral_constant<bool, isStandardLayout>  { }; \
-			template <> struct is_standard_layout<const volatile T> : public eastl::integral_constant<bool, isStandardLayout>  { }; \
+		namespace std {                                                                                            \
+			template <> struct is_standard_layout<T>                : public std::integral_constant<bool, isStandardLayout>  { }; \
+			template <> struct is_standard_layout<const T>          : public std::integral_constant<bool, isStandardLayout>  { }; \
+			template <> struct is_standard_layout<volatile T>       : public std::integral_constant<bool, isStandardLayout>  { }; \
+			template <> struct is_standard_layout<const volatile T> : public std::integral_constant<bool, isStandardLayout>  { }; \
 		}
 
 	// Old style macro, for bacwards compatibility:
-	#define EASTL_DECLARE_STANDARD_LAYOUT(T) namespace eastl{ template <> struct is_standard_layout<T> : public true_type{}; template <> struct is_standard_layout<const T> : public true_type{}; }
+	#define EASTL_DECLARE_STANDARD_LAYOUT(T) namespace std{ template <> struct is_standard_layout<T> : public true_type{}; template <> struct is_standard_layout<const T> : public true_type{}; }
 
 
 
@@ -186,27 +186,27 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_trivial_constructor_CONFORMANCE 1    // has_trivial_constructor is conforming.
 
 		template <typename T>
-		struct has_trivial_constructor : public eastl::integral_constant<bool, (__has_trivial_constructor(T) || eastl::is_pod<T>::value) && !eastl::is_hat_type<T>::value>{};
+		struct has_trivial_constructor : public std::integral_constant<bool, (__has_trivial_constructor(T) || std::is_pod<T>::value) && !std::is_hat_type<T>::value>{};
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(_MSC_VER) || defined(EA_COMPILER_GNUC) || defined(__clang__))
 		#define EASTL_TYPE_TRAIT_has_trivial_constructor_CONFORMANCE 1    // has_trivial_constructor is conforming.
 
 		template <typename T>
-		struct has_trivial_constructor : public eastl::integral_constant<bool, __has_trivial_constructor(T) || eastl::is_pod<T>::value>{};
+		struct has_trivial_constructor : public std::integral_constant<bool, __has_trivial_constructor(T) || std::is_pod<T>::value>{};
 	#else
 		#define EASTL_TYPE_TRAIT_has_trivial_constructor_CONFORMANCE 0    // has_trivial_constructor is not fully conforming. Can return false negatives.
 
 		// With current compilers, this is all we can do.
 		template <typename T>
-		struct has_trivial_constructor : public eastl::is_pod<T> {};
+		struct has_trivial_constructor : public std::is_pod<T> {};
 	#endif
 
 	#define EASTL_DECLARE_HAS_TRIVIAL_CONSTRUCTOR(T, hasTrivialConstructor)                                                     \
-		namespace eastl {                                                                                                       \
-			template <> struct has_trivial_constructor<T>  : public eastl::integral_constant<bool, hasTrivialConstructor>  { }; \
+		namespace std {                                                                                                       \
+			template <> struct has_trivial_constructor<T>  : public std::integral_constant<bool, hasTrivialConstructor>  { }; \
 		}
 
 	// Old style macro, for bacwards compatibility:
-	#define EASTL_DECLARE_TRIVIAL_CONSTRUCTOR(T) namespace eastl{ template <> struct has_trivial_constructor<T> : public true_type{}; template <> struct has_trivial_constructor<const T> : public true_type{}; }
+	#define EASTL_DECLARE_TRIVIAL_CONSTRUCTOR(T) namespace std{ template <> struct has_trivial_constructor<T> : public true_type{}; template <> struct has_trivial_constructor<const T> : public true_type{}; }
 
 
 
@@ -246,26 +246,26 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_trivial_copy_CONFORMANCE 1    // has_trivial_copy is conforming.
 
 		template <typename T>
-		struct has_trivial_copy : public eastl::integral_constant<bool, (__has_trivial_copy(T) || eastl::is_pod<T>::value) && !eastl::is_volatile<T>::value && !eastl::is_hat_type<T>::value>{};
+		struct has_trivial_copy : public std::integral_constant<bool, (__has_trivial_copy(T) || std::is_pod<T>::value) && !std::is_volatile<T>::value && !std::is_hat_type<T>::value>{};
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(EA_COMPILER_GNUC) || defined(__clang__))
 		#define EASTL_TYPE_TRAIT_has_trivial_copy_CONFORMANCE 1    // has_trivial_copy is conforming.
 
 		template <typename T>
-		struct has_trivial_copy : public eastl::integral_constant<bool, (__has_trivial_copy(T) || eastl::is_pod<T>::value) && (!eastl::is_volatile<T>::value && !eastl::is_reference<T>::value)>{};
+		struct has_trivial_copy : public std::integral_constant<bool, (__has_trivial_copy(T) || std::is_pod<T>::value) && (!std::is_volatile<T>::value && !std::is_reference<T>::value)>{};
 	#else
 		#define EASTL_TYPE_TRAIT_has_trivial_copy_CONFORMANCE 0   // has_trivial_copy is not fully conforming. Can return false negatives.
 
 		template <typename T>
-		struct has_trivial_copy : public eastl::integral_constant<bool, eastl::is_pod<T>::value && !eastl::is_volatile<T>::value>{};
+		struct has_trivial_copy : public std::integral_constant<bool, std::is_pod<T>::value && !std::is_volatile<T>::value>{};
 	#endif
 
 	#define EASTL_DECLARE_HAS_TRIVIAL_COPY(T, hasTrivialCopy)                                                    \
-		namespace eastl {                                                                                        \
-			template <> struct has_trivial_copy<T> : public eastl::integral_constant<bool, hasTrivialCopy>  { }; \
+		namespace std {                                                                                        \
+			template <> struct has_trivial_copy<T> : public std::integral_constant<bool, hasTrivialCopy>  { }; \
 		}
 
 	// Old style macro, for bacwards compatibility:
-	#define EASTL_DECLARE_TRIVIAL_COPY(T) namespace eastl{ template <> struct has_trivial_copy<T> : public true_type{}; template <> struct has_trivial_copy<const T> : public true_type{}; }
+	#define EASTL_DECLARE_TRIVIAL_COPY(T) namespace std{ template <> struct has_trivial_copy<T> : public true_type{}; template <> struct has_trivial_copy<const T> : public true_type{}; }
 
 
 
@@ -296,12 +296,12 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_trivial_assign_CONFORMANCE 1    // has_trivial_assign is conforming.
 
 		template <typename T>
-		struct has_trivial_assign : public integral_constant<bool, (__has_trivial_assign(T) || eastl::is_pod<T>::value) && !eastl::is_const<T>::value && !eastl::is_volatile<T>::value && !eastl::is_hat_type<T>::value>{};
+		struct has_trivial_assign : public integral_constant<bool, (__has_trivial_assign(T) || std::is_pod<T>::value) && !std::is_const<T>::value && !std::is_volatile<T>::value && !std::is_hat_type<T>::value>{};
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(_MSC_VER) || defined(EA_COMPILER_GNUC) || defined(__clang__))
 		#define EASTL_TYPE_TRAIT_has_trivial_assign_CONFORMANCE 1    // has_trivial_assign is conforming.
 
 		template <typename T>
-		struct has_trivial_assign : public integral_constant<bool, (__has_trivial_assign(T) || eastl::is_pod<T>::value) && !eastl::is_const<T>::value && !eastl::is_volatile<T>::value>{};
+		struct has_trivial_assign : public integral_constant<bool, (__has_trivial_assign(T) || std::is_pod<T>::value) && !std::is_const<T>::value && !std::is_volatile<T>::value>{};
 	#else
 		#define EASTL_TYPE_TRAIT_has_trivial_assign_CONFORMANCE 0  // is_pod is not fully conforming. Can return false negatives.
 
@@ -312,12 +312,12 @@ namespace eastl
 	#endif
 
 	#define EASTL_DECLARE_HAS_TRIVIAL_ASSIGN(T, hasTrivialAssign)                                                    \
-		namespace eastl {                                                                                            \
-			template <> struct has_trivial_assign<T> : public eastl::integral_constant<bool, hasTrivialAssign>  { }; \
+		namespace std {                                                                                            \
+			template <> struct has_trivial_assign<T> : public std::integral_constant<bool, hasTrivialAssign>  { }; \
 		}
 
 	// Old style macro, for bacwards compatibility:
-	#define EASTL_DECLARE_TRIVIAL_ASSIGN(T) namespace eastl{ template <> struct has_trivial_assign<T> : public true_type{}; template <> struct has_trivial_assign<const T> : public true_type{}; }
+	#define EASTL_DECLARE_TRIVIAL_ASSIGN(T) namespace std{ template <> struct has_trivial_assign<T> : public true_type{}; template <> struct has_trivial_assign<const T> : public true_type{}; }
 
 
 
@@ -345,27 +345,27 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_trivial_destructor_CONFORMANCE 1    // has_trivial_destructor is conforming.
 
 		template <typename T>
-		struct has_trivial_destructor : public eastl::integral_constant<bool, (__has_trivial_destructor(T) || eastl::is_pod<T>::value) && !eastl::is_hat_type<T>::value>{};
+		struct has_trivial_destructor : public std::integral_constant<bool, (__has_trivial_destructor(T) || std::is_pod<T>::value) && !std::is_hat_type<T>::value>{};
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(_MSC_VER) || defined(EA_COMPILER_GNUC) || defined(__clang__))
 		#define EASTL_TYPE_TRAIT_has_trivial_destructor_CONFORMANCE 1    // has_trivial_destructor is conforming.
 
 		template <typename T>
-		struct has_trivial_destructor : public eastl::integral_constant<bool, __has_trivial_destructor(T) || eastl::is_pod<T>::value>{};
+		struct has_trivial_destructor : public std::integral_constant<bool, __has_trivial_destructor(T) || std::is_pod<T>::value>{};
 	#else
 		#define EASTL_TYPE_TRAIT_has_trivial_destructor_CONFORMANCE 0  // is_pod is not fully conforming. Can return false negatives.
 
 		// With current compilers, this is all we can do.
 		template <typename T>
-		struct has_trivial_destructor : public eastl::is_pod<T>{};
+		struct has_trivial_destructor : public std::is_pod<T>{};
 	#endif
 
 	#define EASTL_DECLARE_HAS_TRIVIAL_DESTRUCTOR(T, hasTrivialDestructor)                                                    \
-		namespace eastl {                                                                                                    \
-			template <> struct has_trivial_destructor<T> : public eastl::integral_constant<bool, hasTrivialDestructor>  { }; \
+		namespace std {                                                                                                    \
+			template <> struct has_trivial_destructor<T> : public std::integral_constant<bool, hasTrivialDestructor>  { }; \
 		}
 
 	// Old style macro, for bacwards compatibility:
-	#define EASTL_DECLARE_TRIVIAL_DESTRUCTOR(T) namespace eastl{ template <> struct has_trivial_destructor<T> : public true_type{}; template <> struct has_trivial_destructor<const T> : public true_type{}; }
+	#define EASTL_DECLARE_TRIVIAL_DESTRUCTOR(T) namespace std{ template <> struct has_trivial_destructor<T> : public true_type{}; template <> struct has_trivial_destructor<const T> : public true_type{}; }
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -395,9 +395,9 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_has_trivial_relocate_CONFORMANCE 0  // is_pod is not fully conforming. Can return false negatives.
 
 	template <typename T>
-	struct has_trivial_relocate : public eastl::bool_constant<eastl::is_pod<T>::value && !eastl::is_volatile<T>::value> {};
+	struct has_trivial_relocate : public std::bool_constant<std::is_pod<T>::value && !std::is_volatile<T>::value> {};
 
-    #define EASTL_DECLARE_TRIVIAL_RELOCATE(T) namespace eastl{ template <> struct has_trivial_relocate<T> : public true_type{}; template <> struct has_trivial_relocate<const T> : public true_type{}; }
+    #define EASTL_DECLARE_TRIVIAL_RELOCATE(T) namespace std{ template <> struct has_trivial_relocate<T> : public true_type{}; template <> struct has_trivial_relocate<const T> : public true_type{}; }
 
 
 
@@ -417,7 +417,7 @@ namespace eastl
 
 		template <typename T>
 		struct has_nothrow_constructor
-			: public eastl::integral_constant<bool, __has_nothrow_constructor(T)>{};
+			: public std::integral_constant<bool, __has_nothrow_constructor(T)>{};
 
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && defined(_MSC_VER)
 		// Microsoft's implementation of __has_nothrow_constructor is crippled and returns true only if T is a class that has an explicit constructor.
@@ -425,19 +425,19 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_nothrow_constructor_CONFORMANCE 0
 
 		template <typename T> // This is mistakenly returning true for an unbounded array of scalar type.
-		struct has_nothrow_constructor : public eastl::integral_constant<bool, __has_nothrow_constructor(T) || eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value || eastl::is_reference<T>::value>{};
+		struct has_nothrow_constructor : public std::integral_constant<bool, __has_nothrow_constructor(T) || std::is_scalar<typename std::remove_all_extents<T>::type>::value || std::is_reference<T>::value>{};
 
 	#else
 		#define EASTL_TYPE_TRAIT_has_nothrow_constructor_CONFORMANCE 0  // has_nothrow_constructor is not fully conforming. Can return false negatives.
 
 		template <typename T>
 		struct has_nothrow_constructor // To do: Improve this to include other types that can work.
-			{ static const bool value = eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value || eastl::is_reference<T>::value; };
+			{ static const bool value = std::is_scalar<typename std::remove_all_extents<T>::type>::value || std::is_reference<T>::value; };
 	#endif
 
 	#define EASTL_DECLARE_HAS_NOTHROW_CONSTRUCTOR(T, hasNothrowConstructor)                                                    \
-		namespace eastl {                                                                                                      \
-			template <> struct has_nothrow_constructor<T> : public eastl::integral_constant<bool, hasNothrowConstructor>  { }; \
+		namespace std {                                                                                                      \
+			template <> struct has_nothrow_constructor<T> : public std::integral_constant<bool, hasNothrowConstructor>  { }; \
 		}
 
 
@@ -456,7 +456,7 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_nothrow_copy_CONFORMANCE 1
 
 		template <typename T>
-		struct has_nothrow_copy : public eastl::integral_constant<bool, __has_nothrow_copy(T)>{};
+		struct has_nothrow_copy : public std::integral_constant<bool, __has_nothrow_copy(T)>{};
 
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && defined(_MSC_VER)
 		// Microsoft's implementation of __has_nothrow_copy is crippled and returns true only if T is a class that has a copy constructor.
@@ -464,19 +464,19 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_nothrow_copy_CONFORMANCE 0
 
 		template <typename T>
-		struct has_nothrow_copy : public eastl::integral_constant<bool, __has_nothrow_copy(T) || eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value || eastl::is_reference<T>::value>{};
+		struct has_nothrow_copy : public std::integral_constant<bool, __has_nothrow_copy(T) || std::is_scalar<typename std::remove_all_extents<T>::type>::value || std::is_reference<T>::value>{};
 
 	#else
 		#define EASTL_TYPE_TRAIT_has_nothrow_copy_CONFORMANCE 0  // has_nothrow_copy is not fully conforming. Can return false negatives.
 
 		template <typename T>
 		struct has_nothrow_copy // To do: Improve this to include other types that can work.
-			{ static const bool value = eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value || eastl::is_reference<T>::value; };
+			{ static const bool value = std::is_scalar<typename std::remove_all_extents<T>::type>::value || std::is_reference<T>::value; };
 	#endif
 
 	#define EASTL_DECLARE_HAS_NOTHROW_COPY(T, hasNothrowCopy)                                                    \
-		namespace eastl {                                                                                        \
-			template <> struct has_nothrow_copy<T> : public eastl::integral_constant<bool, hasNothrowCopy>  { }; \
+		namespace std {                                                                                        \
+			template <> struct has_nothrow_copy<T> : public std::integral_constant<bool, hasNothrowCopy>  { }; \
 		}
 
 
@@ -495,7 +495,7 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_nothrow_assign_CONFORMANCE 1
 
 		template <typename T>
-		struct has_nothrow_assign : public eastl::integral_constant<bool, __has_nothrow_assign(T)>{};
+		struct has_nothrow_assign : public std::integral_constant<bool, __has_nothrow_assign(T)>{};
 
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && defined(_MSC_VER)
 		// Microsoft's implementation of __has_nothrow_assign is crippled and returns true only if T is a class that has an assignment operator.
@@ -503,18 +503,18 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_nothrow_assign_CONFORMANCE 0
 
 		template <typename T> // This is mistakenly returning true for an unbounded array of scalar type.
-		struct has_nothrow_assign : public eastl::integral_constant<bool, __has_nothrow_assign(T) || eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value || eastl::is_reference<T>::value>{};
+		struct has_nothrow_assign : public std::integral_constant<bool, __has_nothrow_assign(T) || std::is_scalar<typename std::remove_all_extents<T>::type>::value || std::is_reference<T>::value>{};
 	#else
 		#define EASTL_TYPE_TRAIT_has_nothrow_assign_CONFORMANCE 0  // has_nothrow_assign is not fully conforming. Can return false negatives.
 
 		template <typename T>
 		struct has_nothrow_assign // To do: Improve this to include other types that can work.
-			{ static const bool value = eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value || eastl::is_reference<T>::value; } ;
+			{ static const bool value = std::is_scalar<typename std::remove_all_extents<T>::type>::value || std::is_reference<T>::value; } ;
 	#endif
 
 	#define EASTL_DECLARE_HAS_NOTHROW_ASSIGN(T, hasNothrowAssign)                                                    \
-		namespace eastl {                                                                                            \
-			template <> struct has_nothrow_assign<T> : public eastl::integral_constant<bool, hasNothrowAssign>  { }; \
+		namespace std {                                                                                            \
+			template <> struct has_nothrow_assign<T> : public std::integral_constant<bool, hasNothrowAssign>  { }; \
 		}
 
 
@@ -533,12 +533,12 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_has_virtual_destructor_CONFORMANCE 1
 
 		template <typename T>
-		struct has_virtual_destructor : public eastl::integral_constant<bool, __has_virtual_destructor(T)>{};
+		struct has_virtual_destructor : public std::integral_constant<bool, __has_virtual_destructor(T)>{};
 	#else
 		#define EASTL_TYPE_TRAIT_has_virtual_destructor_CONFORMANCE 0   // has_virtual_destructor is not fully conforming. Can return false negatives.
 
 		template <typename T>
-		struct has_virtual_destructor : public eastl::false_type{};
+		struct has_virtual_destructor : public std::false_type{};
 	#endif
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -547,11 +547,11 @@ namespace eastl
     #endif
 
 	#define EASTL_DECLARE_HAS_VIRTUAL_DESTRUCTOR(T, hasVirtualDestructor)                                                                   \
-		namespace eastl {                                                                                                                   \
-			template <> struct has_virtual_destructor<T>                : public eastl::integral_constant<bool, hasVirtualDestructor>  { }; \
-			template <> struct has_virtual_destructor<const T>          : public eastl::integral_constant<bool, hasVirtualDestructor>  { }; \
-			template <> struct has_virtual_destructor<volatile T>       : public eastl::integral_constant<bool, hasVirtualDestructor>  { }; \
-			template <> struct has_virtual_destructor<const volatile T> : public eastl::integral_constant<bool, hasVirtualDestructor>  { }; \
+		namespace std {                                                                                                                   \
+			template <> struct has_virtual_destructor<T>                : public std::integral_constant<bool, hasVirtualDestructor>  { }; \
+			template <> struct has_virtual_destructor<const T>          : public std::integral_constant<bool, hasVirtualDestructor>  { }; \
+			template <> struct has_virtual_destructor<volatile T>       : public std::integral_constant<bool, hasVirtualDestructor>  { }; \
+			template <> struct has_virtual_destructor<const volatile T> : public std::integral_constant<bool, hasVirtualDestructor>  { }; \
 		}
 
 
@@ -575,7 +575,7 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_is_literal_type_CONFORMANCE 1
 
 		template <typename T>
-		struct is_literal_type : public eastl::integral_constant<bool, __is_literal(T)>{};
+		struct is_literal_type : public std::integral_constant<bool, __is_literal(T)>{};
 
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && ((defined(EA_COMPILER_GNUC) && (EA_COMPILER_VERSION >= 4006)) || (defined(_MSC_VER) && (_MSC_VER >= 1700))) // VS2012+
 		#if defined(EA_COMPILER_GNUC) && (!defined(EA_COMPILER_CPP11_ENABLED) || (EA_COMPILER_VERSION < 4007))
@@ -585,7 +585,7 @@ namespace eastl
 		#endif
 
 		template <typename T>
-		struct is_literal_type : public eastl::integral_constant<bool, __is_literal_type(T)>{};
+		struct is_literal_type : public std::integral_constant<bool, __is_literal_type(T)>{};
 
 	#else
 		#define EASTL_TYPE_TRAIT_is_literal_type_CONFORMANCE 0
@@ -596,7 +596,7 @@ namespace eastl
 		// while false positives are not OK for us to generate.
 
 		template <typename T> // This is not a complete implementation and will be true for only some literal types (the basic ones).
-		struct is_literal_type : public eastl::integral_constant<bool, eastl::is_scalar<typename eastl::remove_reference<typename eastl::remove_all_extents<T>::type>::type>::value>{};
+		struct is_literal_type : public std::integral_constant<bool, std::is_scalar<typename std::remove_reference<typename std::remove_all_extents<T>::type>::type>::value>{};
 	#endif
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -623,17 +623,17 @@ namespace eastl
 	#else
 		#define EASTL_TYPE_TRAIT_is_abstract_CONFORMANCE 0
 
-		template<typename T, bool = !eastl::is_object<T>::value>
+		template<typename T, bool = !std::is_object<T>::value>
 		class is_abstract_helper
 		{
 			template<typename>
-			static eastl::yes_type test(...);
+			static std::yes_type test(...);
 
 			template<typename T1>
-			static eastl::no_type test(T1(*)[1]);  // The following: 'typedef SomeAbstractClass (*SomeFunctionType)[1];' is invalid (can't have an array of abstract types) and thus doesn't choose this path.
+			static std::no_type test(T1(*)[1]);  // The following: 'typedef SomeAbstractClass (*SomeFunctionType)[1];' is invalid (can't have an array of abstract types) and thus doesn't choose this path.
 
 		public:
-			static const bool value = (sizeof(test<T>(NULL)) == sizeof(eastl::yes_type));
+			static const bool value = (sizeof(test<T>(NULL)) == sizeof(std::yes_type));
 		};
 
 		template <typename T>
@@ -647,11 +647,11 @@ namespace eastl
 	#endif
 
 	#define EASTL_DECLARE_IS_ABSTRACT(T, isAbstract)                                                                   \
-		namespace eastl {                                                                                              \
-			template <> struct is_abstract<T>                : public eastl::integral_constant<bool, isAbstract>  { }; \
-			template <> struct is_abstract<const T>          : public eastl::integral_constant<bool, isAbstract>  { }; \
-			template <> struct is_abstract<volatile T>       : public eastl::integral_constant<bool, isAbstract>  { }; \
-			template <> struct is_abstract<const volatile T> : public eastl::integral_constant<bool, isAbstract>  { }; \
+		namespace std {                                                                                              \
+			template <> struct is_abstract<T>                : public std::integral_constant<bool, isAbstract>  { }; \
+			template <> struct is_abstract<const T>          : public std::integral_constant<bool, isAbstract>  { }; \
+			template <> struct is_abstract<volatile T>       : public std::integral_constant<bool, isAbstract>  { }; \
+			template <> struct is_abstract<const volatile T> : public std::integral_constant<bool, isAbstract>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -700,20 +700,20 @@ namespace eastl
 
 		// Micrsoft (prior to VS2012) and GCC have __has_trivial_copy, but it may not be identical with the goals of this type trait.
 		template <typename T>
-		struct is_trivially_copyable : public integral_constant<bool, (__has_trivial_copy(T) || eastl::is_pod<typename eastl::remove_all_extents<T>::type>::value) && (!eastl::is_void<T>::value && !eastl::is_volatile<T>::value && !eastl::is_reference<T>::value)>{};
+		struct is_trivially_copyable : public integral_constant<bool, (__has_trivial_copy(T) || std::is_pod<typename std::remove_all_extents<T>::type>::value) && (!std::is_void<T>::value && !std::is_volatile<T>::value && !std::is_reference<T>::value)>{};
 	#else
 		#define EASTL_TYPE_TRAIT_is_trivially_copyable_CONFORMANCE 0  // Generates false negatives.
 
 		template <typename T>
-		struct is_trivially_copyable { static const bool value = eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value; };
+		struct is_trivially_copyable { static const bool value = std::is_scalar<typename std::remove_all_extents<T>::type>::value; };
 	#endif
 
 	#define EASTL_DECLARE_IS_TRIVIALLY_COPYABLE(T, isTriviallyCopyable)                                                                   \
-		namespace eastl {                                                                                                                 \
-			template <> struct is_trivially_copyable<T>                : public eastl::integral_constant<bool, isTriviallyCopyable>  { }; \
-			template <> struct is_trivially_copyable<const T>          : public eastl::integral_constant<bool, isTriviallyCopyable>  { }; \
-			template <> struct is_trivially_copyable<volatile T>       : public eastl::integral_constant<bool, isTriviallyCopyable>  { }; \
-			template <> struct is_trivially_copyable<const volatile T> : public eastl::integral_constant<bool, isTriviallyCopyable>  { }; \
+		namespace std {                                                                                                                 \
+			template <> struct is_trivially_copyable<T>                : public std::integral_constant<bool, isTriviallyCopyable>  { }; \
+			template <> struct is_trivially_copyable<const T>          : public std::integral_constant<bool, isTriviallyCopyable>  { }; \
+			template <> struct is_trivially_copyable<volatile T>       : public std::integral_constant<bool, isTriviallyCopyable>  { }; \
+			template <> struct is_trivially_copyable<const volatile T> : public std::integral_constant<bool, isTriviallyCopyable>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -737,45 +737,45 @@ namespace eastl
 	#else
 		// We implement a copy of move here has move_internal. We are currently stuck doing this because our move
 		// implementation is in <utility.h> and <utility.h> currently #includes us, and so we have a header
-		// chicken-and-egg problem. To do: Resolve this, probably by putting eastl::move somewhere else.
+		// chicken-and-egg problem. To do: Resolve this, probably by putting std::move somewhere else.
 		template <typename T>
-		inline typename eastl::remove_reference<T>::type&& move_internal(T&& x) EA_NOEXCEPT
-		{ return ((typename eastl::remove_reference<T>::type&&)x); }
+		inline typename std::remove_reference<T>::type&& move_internal(T&& x) EA_NOEXCEPT
+		{ return ((typename std::remove_reference<T>::type&&)x); }
 
 		template <typename T, class ...Args>
-		typename first_type_select<eastl::true_type, decltype(eastl::move_internal(T(eastl::declval<Args>()...)))>::type is(T&&, Args&& ...);
+		typename first_type_select<std::true_type, decltype(std::move_internal(T(std::declval<Args>()...)))>::type is(T&&, Args&& ...);
 
 		template <typename T>
 		struct can_construct_scalar_helper
 		{
-			static eastl::true_type can(T);
-			static eastl::false_type can(...);
+			static std::true_type can(T);
+			static std::false_type can(...);
 		};
 
 		template <typename ...Args>
-		eastl::false_type is(argument_sink, Args&& ...);
+		std::false_type is(argument_sink, Args&& ...);
 
 		// Except for scalars and references (handled below), check for constructibility via decltype.
 		template <bool, typename T, typename... Args>
 		struct is_constructible_helper_2    // argument_sink will catch all T that is not constructible from the Args and denote false_type
-			: public eastl::identity<decltype(is(eastl::declval<T>(), eastl::declval<Args>()...))>::type {};
+			: public std::identity<decltype(is(std::declval<T>(), std::declval<Args>()...))>::type {};
 
 		template <typename T>
 		struct is_constructible_helper_2<true, T>
-			: public eastl::is_scalar<T> {};
+			: public std::is_scalar<T> {};
 
 		template <typename T, typename Arg0> // We handle the case of multiple arguments below (by disallowing them).
 		struct is_constructible_helper_2<true, T, Arg0>
-			: public eastl::identity<decltype(can_construct_scalar_helper<T>::can(eastl::declval<Arg0>()))>::type {};
+			: public std::identity<decltype(can_construct_scalar_helper<T>::can(std::declval<Arg0>()))>::type {};
 
 		// Scalars and references can be constructed only with 0 or 1 argument. e.g the following is an invalid expression: int(17, 23)
 		template <typename T, typename Arg0, typename ...Args>
 		struct is_constructible_helper_2<true, T, Arg0, Args...>
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <bool, typename T, typename... Args>
 		struct is_constructible_helper_1
-			: public is_constructible_helper_2<eastl::is_scalar<T>::value || eastl::is_reference<T>::value, T, Args...> {};
+			: public is_constructible_helper_2<std::is_scalar<T>::value || std::is_reference<T>::value, T, Args...> {};
 
 		// Unilaterally dismiss void, abstract, unknown bound arrays, and function types as not constructible.
 		template <typename T, typename... Args>
@@ -785,29 +785,29 @@ namespace eastl
 		// is_constructible
 		template <typename T, typename... Args>
 		struct is_constructible
-			: public is_constructible_helper_1<(eastl::is_abstract<typename eastl::remove_all_extents<T>::type>::value ||
-												eastl::is_array_of_unknown_bounds<T>::value                            ||
-												eastl::is_function<typename eastl::remove_all_extents<T>::type>::value ||
-												eastl::has_void_arg<T, Args...>::value),
+			: public is_constructible_helper_1<(std::is_abstract<typename std::remove_all_extents<T>::type>::value ||
+												std::is_array_of_unknown_bounds<T>::value                            ||
+												std::is_function<typename std::remove_all_extents<T>::type>::value ||
+												std::has_void_arg<T, Args...>::value),
 												T, Args...> {};
 
 		// Array types are constructible if constructed with no arguments and if their element type is default-constructible
 		template <typename Array, size_t N>
 		struct is_constructible_helper_2<false, Array[N]>
-			: public eastl::is_constructible<typename eastl::remove_all_extents<Array>::type> {};
+			: public std::is_constructible<typename std::remove_all_extents<Array>::type> {};
 
 		// Arrays with arguments are not constructible. e.g. the following is an invalid expression: int[3](37, 34, 12)
 		template <typename Array, size_t N, typename ...Args>
 		struct is_constructible_helper_2<false, Array[N], Args...>
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 	#endif
 
 
 	// You need to manually declare const/volatile variants individually if you want them.
 	#define EASTL_DECLARE_IS_CONSTRUCTIBLE(T, U, isConstructible)                                                     \
-		namespace eastl {                                                                                             \
-			template <> struct is_constructible<T, U>  : public eastl::integral_constant<bool, isConstructible>  { }; \
+		namespace std {                                                                                             \
+			template <> struct is_constructible<T, U>  : public std::integral_constant<bool, isConstructible>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -846,69 +846,69 @@ namespace eastl
 		// presence is specific.
 		//
 		// To consider: we can fold the two implementations below by making a macro that's defined
-		// has __is_trivially_constructible(T) or eastl::has_trivial_copy<T>::value, depending on
+		// has __is_trivially_constructible(T) or std::has_trivial_copy<T>::value, depending on
 		// whether the __is_trivially_constructible compiler intrinsic is available.
 
 		// If the compiler has this trait built-in (which ideally all compilers would have since it's necessary for full conformance) use it.
 		#if EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && ((defined(__clang__) && EA_COMPILER_HAS_FEATURE(is_trivially_constructible)) || defined(EA_COMPILER_MSVC))
 
-			template <typename T, typename Arg0 = eastl::unused>
+			template <typename T, typename Arg0 = std::unused>
 			struct is_trivially_constructible
-				: public eastl::false_type {};
+				: public std::false_type {};
 
 			template <typename T>
-			struct is_trivially_constructible<T, eastl::unused>
-				: public eastl::integral_constant<bool, __is_trivially_constructible(T)> {};
+			struct is_trivially_constructible<T, std::unused>
+				: public std::integral_constant<bool, __is_trivially_constructible(T)> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, T>
-				: public eastl::integral_constant<bool, __is_trivially_constructible(T)> {};
+				: public std::integral_constant<bool, __is_trivially_constructible(T)> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, T&>
-				: public eastl::integral_constant<bool, __is_trivially_constructible(T)> {};
+				: public std::integral_constant<bool, __is_trivially_constructible(T)> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, const T&>
-				: public eastl::integral_constant<bool, __is_trivially_constructible(T)> {};
+				: public std::integral_constant<bool, __is_trivially_constructible(T)> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, volatile T&>
-				: public eastl::integral_constant<bool, __is_trivially_constructible(T)> {};
+				: public std::integral_constant<bool, __is_trivially_constructible(T)> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, const volatile T&>
-				: public eastl::integral_constant<bool, __is_trivially_constructible(T)> {};
+				: public std::integral_constant<bool, __is_trivially_constructible(T)> {};
 
 		#else
 
-			template <typename T, typename Arg0 = eastl::unused>
+			template <typename T, typename Arg0 = std::unused>
 			struct is_trivially_constructible
-				: public eastl::false_type {};
+				: public std::false_type {};
 
 			template <typename T>
-			struct is_trivially_constructible<T, eastl::unused>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_constructor<typename eastl::remove_all_extents<T>::type>::value> {};
+			struct is_trivially_constructible<T, std::unused>
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_constructor<typename std::remove_all_extents<T>::type>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, T>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, const T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, volatile T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, const volatile T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 		#endif
 
@@ -922,7 +922,7 @@ namespace eastl
 			// Until it gets resolved, what we do is check for is_constructible along with __is_trivially_constructible().
 			template <typename T, typename... Args>
 			struct is_trivially_constructible
-				: public eastl::integral_constant<bool, eastl::is_constructible<T, Args...>::value && __is_trivially_constructible(T, Args...)> {};
+				: public std::integral_constant<bool, std::is_constructible<T, Args...>::value && __is_trivially_constructible(T, Args...)> {};
 
 		#else
 
@@ -930,36 +930,36 @@ namespace eastl
 
 			template <typename T, typename... Args>
 			struct is_trivially_constructible
-				: public eastl::false_type {};
+				: public std::false_type {};
 
 			template <typename T>
 			struct is_trivially_constructible<T>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_constructor<typename eastl::remove_all_extents<T>::type>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_constructor<typename std::remove_all_extents<T>::type>::value> {};
 
 			// It's questionable whether we can use has_trivial_copy here, as it could theoretically create a false-positive.
 			template <typename T>
 			struct is_trivially_constructible<T, T>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, T&&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, const T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, volatile T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 			template <typename T>
 			struct is_trivially_constructible<T, const volatile T&>
-				: public eastl::integral_constant<bool, eastl::is_constructible<T>::value && eastl::has_trivial_copy<T>::value> {};
+				: public std::integral_constant<bool, std::is_constructible<T>::value && std::has_trivial_copy<T>::value> {};
 
 		#endif
 
@@ -967,11 +967,11 @@ namespace eastl
 
 
 	#define EASTL_DECLARE_IS_TRIVIALLY_CONSTRUCTIBLE(T, isTriviallyConstructible)                                                                   \
-		namespace eastl {                                                                                                                           \
-			template <> struct is_trivially_constructible<T>                : public eastl::integral_constant<bool, isTriviallyConstructible>  { }; \
-			template <> struct is_trivially_constructible<const T>          : public eastl::integral_constant<bool, isTriviallyConstructible>  { }; \
-			template <> struct is_trivially_constructible<volatile T>       : public eastl::integral_constant<bool, isTriviallyConstructible>  { }; \
-			template <> struct is_trivially_constructible<const volatile T> : public eastl::integral_constant<bool, isTriviallyConstructible>  { }; \
+		namespace std {                                                                                                                           \
+			template <> struct is_trivially_constructible<T>                : public std::integral_constant<bool, isTriviallyConstructible>  { }; \
+			template <> struct is_trivially_constructible<const T>          : public std::integral_constant<bool, isTriviallyConstructible>  { }; \
+			template <> struct is_trivially_constructible<volatile T>       : public std::integral_constant<bool, isTriviallyConstructible>  { }; \
+			template <> struct is_trivially_constructible<const volatile T> : public std::integral_constant<bool, isTriviallyConstructible>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -991,7 +991,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_trivially_default_constructible
-		: public eastl::is_trivially_constructible<T> {};
+		: public std::is_trivially_constructible<T> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1013,7 +1013,7 @@ namespace eastl
 	#if defined(_MSC_VER) && _MSC_VER == 1800
 		template<bool, typename T>
 		struct is_trivial_helper
-			: public eastl::integral_constant<bool, eastl::is_trivially_copyable<T>::value && eastl::is_trivially_default_constructible<T>::value>{};
+			: public std::integral_constant<bool, std::is_trivially_copyable<T>::value && std::is_trivially_default_constructible<T>::value>{};
 
 		template<typename T>
 		struct is_trivial_helper<true, T>
@@ -1026,7 +1026,7 @@ namespace eastl
 		// All other compilers seem to be able to handle aligned types passed as value
 		template <typename T>
 		struct is_trivial
-			: public eastl::integral_constant<bool, eastl::is_trivially_copyable<T>::value && eastl::is_trivially_default_constructible<T>::value> {};
+			: public std::integral_constant<bool, std::is_trivially_copyable<T>::value && std::is_trivially_default_constructible<T>::value> {};
 	#endif
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1051,27 +1051,27 @@ namespace eastl
 
 		template <typename T, typename... Args>
 		struct is_nothrow_constructible
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <typename T>
 		struct is_nothrow_constructible<T>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_constructor<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_constructor<T>::value> {};
 
 		template <typename T>
 		struct is_nothrow_constructible<T, T>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_copy<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_copy<T>::value> {};
 
 		template <typename T>
 		struct is_nothrow_constructible<T, const T&>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_copy<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_copy<T>::value> {};
 
 		template <typename T>
 		struct is_nothrow_constructible<T, T&>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_copy<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_copy<T>::value> {};
 
 		template <typename T>
 		struct is_nothrow_constructible<T, T&&>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_copy<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_copy<T>::value> {};
 
 	#else
 		#if defined(EA_COMPILER_GNUC) && (EA_COMPILER_VERSION < 4008)
@@ -1095,39 +1095,39 @@ namespace eastl
 
 		template <typename T, typename... Args>
 		struct is_nothrow_constructible_helper_noexcept_wrapper
-			{ static const bool value = noexcept(T(eastl::declval<Args>()...)); };
+			{ static const bool value = noexcept(T(std::declval<Args>()...)); };
 
 		template <bool, typename T, typename... Args>
 		struct is_nothrow_constructible_helper;
 
 		template <typename T, typename... Args>
 		struct is_nothrow_constructible_helper<true, T, Args...>
-			: public eastl::integral_constant<bool, is_nothrow_constructible_helper_noexcept_wrapper<T, Args...>::value> {};
+			: public std::integral_constant<bool, is_nothrow_constructible_helper_noexcept_wrapper<T, Args...>::value> {};
 
 		template<typename T, typename Arg>
 		struct is_nothrow_constructible_helper<true, T, Arg>
-			: public eastl::integral_constant<bool, noexcept(T(eastl::declval<Arg>()))> {};
+			: public std::integral_constant<bool, noexcept(T(std::declval<Arg>()))> {};
 
 		template<typename T>
 		struct is_nothrow_constructible_helper<true, T>
-			: public eastl::integral_constant<bool, noexcept(T())> {};
+			: public std::integral_constant<bool, noexcept(T())> {};
 
 		template <typename T, typename... Args>
 		struct is_nothrow_constructible_helper<false, T, Args...>
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <typename T, typename... Args>
 		struct is_nothrow_constructible
-			: public eastl::is_nothrow_constructible_helper<eastl::is_constructible<T, Args...>::value, T, Args...> {};
+			: public std::is_nothrow_constructible_helper<std::is_constructible<T, Args...>::value, T, Args...> {};
 
 		template <typename T, size_t N>
 		struct is_nothrow_constructible<T[N]>
-			: public eastl::is_nothrow_constructible_helper<eastl::is_constructible<T>::value, T> {};
+			: public std::is_nothrow_constructible_helper<std::is_constructible<T>::value, T> {};
 	#endif
 
 	#define EASTL_DECLARE_IS_NOTHROW_CONSTRUCTIBLE(T, isNothrowConstructible)                                                    \
-		namespace eastl{                                                                                                         \
-			template <> struct is_nothrow_constructible<T> : public eastl::integral_constant<bool, isNothrowConstructible>  { }; \
+		namespace std{                                                                                                         \
+			template <> struct is_nothrow_constructible<T> : public std::integral_constant<bool, isNothrowConstructible>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1146,7 +1146,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_default_constructible
-		: public eastl::is_constructible<T> {};
+		: public std::is_constructible<T> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1172,7 +1172,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_copy_constructible
-		: public eastl::is_constructible<T, typename eastl::add_lvalue_reference<typename eastl::add_const<T>::type>::type> {};
+		: public std::is_constructible<T, typename std::add_lvalue_reference<typename std::add_const<T>::type>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1190,7 +1190,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_trivially_copy_constructible
-		: public eastl::is_trivially_constructible<T, typename eastl::add_lvalue_reference<typename eastl::add_const<T>::type>::type> {};
+		: public std::is_trivially_constructible<T, typename std::add_lvalue_reference<typename std::add_const<T>::type>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1208,7 +1208,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_nothrow_copy_constructible
-		: public is_nothrow_constructible<T, typename eastl::add_lvalue_reference<typename eastl::add_const<T>::type>::type> {};
+		: public is_nothrow_constructible<T, typename std::add_lvalue_reference<typename std::add_const<T>::type>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1226,7 +1226,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_move_constructible
-		: public eastl::is_constructible<T, typename eastl::add_rvalue_reference<T>::type> {};
+		: public std::is_constructible<T, typename std::add_rvalue_reference<T>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1246,11 +1246,11 @@ namespace eastl
 
 	template <typename T>
 	struct is_trivially_move_constructible
-		: public eastl::is_trivially_constructible<T, typename eastl::add_rvalue_reference<T>::type> {};
+		: public std::is_trivially_constructible<T, typename std::add_rvalue_reference<T>::type> {};
 
 	#define EASTL_DECLARE_IS_TRIVIALLY_MOVE_CONSTRUCTIBLE(T, isTrivallyMoveConstructible)                                                      \
-		namespace eastl{                                                                                                                       \
-			template <> struct is_trivially_move_constructible<T>  : public eastl::integral_constant<bool, isTriviallyMoveConstructible>  { }; \
+		namespace std{                                                                                                                       \
+			template <> struct is_trivially_move_constructible<T>  : public std::integral_constant<bool, isTriviallyMoveConstructible>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1315,17 +1315,17 @@ namespace eastl
 	struct is_assignable_helper
 	{
 		template<typename, typename>
-		static eastl::no_type is(...);
+		static std::no_type is(...);
 
 		template<typename T1, typename U1>
-		static decltype(eastl::declval<T1>() = eastl::declval<U1>(), eastl::yes_type()) is(int);
+		static decltype(std::declval<T1>() = std::declval<U1>(), std::yes_type()) is(int);
 
-		static const bool value = (sizeof(is<T, U>(0)) == sizeof(eastl::yes_type));
+		static const bool value = (sizeof(is<T, U>(0)) == sizeof(std::yes_type));
 	};
 
 	template<typename T, typename U>
 	struct is_assignable :
-		public eastl::integral_constant<bool, eastl::is_assignable_helper<T, U>::value> {};
+		public std::integral_constant<bool, std::is_assignable_helper<T, U>::value> {};
 
 	// The main purpose of this function is to help the non-conforming case above.
 	// Note: We don't handle const/volatile variations here, as we expect the user to
@@ -1334,8 +1334,8 @@ namespace eastl
 	//     EASTL_DECLARE_IS_ASSIGNABLE(int, int, false)
 	//
 	#define EASTL_DECLARE_IS_ASSIGNABLE(T, U, isAssignable)                                                    \
-		namespace eastl {                                                                                      \
-			template <> struct is_assignable<T, U> : public eastl::integral_constant<bool, isAssignable>  { }; \
+		namespace std {                                                                                      \
+			template <> struct is_assignable<T, U> : public std::integral_constant<bool, isAssignable>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1361,12 +1361,12 @@ namespace eastl
 
 	template <typename T, typename U>
 	struct is_lvalue_assignable
-		: public eastl::is_assignable<typename eastl::add_lvalue_reference<T>::type,
-									  typename eastl::add_lvalue_reference<typename eastl::add_const<U>::type>::type> {};
+		: public std::is_assignable<typename std::add_lvalue_reference<T>::type,
+									  typename std::add_lvalue_reference<typename std::add_const<U>::type>::type> {};
 
 	#define EASTL_DECLARE_IS_LVALUE_ASSIGNABLE(T, U, isLvalueAssignable)                                                    \
-		namespace eastl {                                                                                                   \
-			template <> struct is_lvalue_assignable<T, U> : public eastl::integral_constant<bool, isLvalueAssignable>  { }; \
+		namespace std {                                                                                                   \
+			template <> struct is_lvalue_assignable<T, U> : public std::integral_constant<bool, isLvalueAssignable>  { }; \
 		}
 
 
@@ -1385,7 +1385,7 @@ namespace eastl
 
 		template <typename T, typename U>
 		struct is_trivially_assignable
-			: eastl::integral_constant<bool, __is_trivially_assignable(T, U)> {};
+			: std::integral_constant<bool, __is_trivially_assignable(T, U)> {};
 
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(_MSC_VER) && (_MSC_VER >= 1800))
 		#define EASTL_TYPE_TRAIT_is_trivially_assignable_CONFORMANCE EASTL_TYPE_TRAIT_is_assignable_CONFORMANCE
@@ -1399,14 +1399,14 @@ namespace eastl
 		struct is_trivially_assignable_helper;
 
 		template <typename T, typename U>
-		struct is_trivially_assignable_helper<true, T, U> : eastl::integral_constant<bool, __is_trivially_assignable(T, U)>{};
+		struct is_trivially_assignable_helper<true, T, U> : std::integral_constant<bool, __is_trivially_assignable(T, U)>{};
 
 		template <typename T, typename U>
 		struct is_trivially_assignable_helper<false, T, U> : false_type{};
 
 		template <typename T, typename U>
 		struct is_trivially_assignable
-			: eastl::integral_constant<bool, is_trivially_assignable_helper< eastl::is_assignable<T, U>::value, T, U >::value> {};
+			: std::integral_constant<bool, is_trivially_assignable_helper< std::is_assignable<T, U>::value, T, U >::value> {};
 
 	#elif EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(EA_COMPILER_MSVC) || defined(EA_COMPILER_GNUC))
 		#define EASTL_TYPE_TRAIT_is_trivially_assignable_CONFORMANCE EASTL_TYPE_TRAIT_is_assignable_CONFORMANCE
@@ -1416,31 +1416,31 @@ namespace eastl
 		// need to come up with something in the meantime. To do: Re-evalulate this for VS2013+ when it becomes available.
 		template <typename T, typename U>
 		struct is_trivially_assignable
-			: eastl::integral_constant<bool, eastl::is_assignable<T, U>::value &&
-									   (eastl::is_pod<typename eastl::remove_reference<T>::type>::value || __has_trivial_assign(typename eastl::remove_reference<T>::type))> {};
+			: std::integral_constant<bool, std::is_assignable<T, U>::value &&
+									   (std::is_pod<typename std::remove_reference<T>::type>::value || __has_trivial_assign(typename std::remove_reference<T>::type))> {};
 	#else
 
 		#define EASTL_TYPE_TRAIT_is_trivially_assignable_CONFORMANCE 0  // Generates false negatives.
 
 		template <typename T, typename U>
 		struct is_trivially_assignable
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <typename T>
 		struct is_trivially_assignable<T&, T>
-			: public eastl::integral_constant<bool, eastl::is_scalar<T>::value> {};
+			: public std::integral_constant<bool, std::is_scalar<T>::value> {};
 
 		template <typename T>
 		struct is_trivially_assignable<T&, T&>
-			: public eastl::integral_constant<bool, eastl::is_scalar<T>::value> {};
+			: public std::integral_constant<bool, std::is_scalar<T>::value> {};
 
 		template <typename T>
 		struct is_trivially_assignable<T&, const T&>
-			: public eastl::integral_constant<bool, eastl::is_scalar<T>::value> {};
+			: public std::integral_constant<bool, std::is_scalar<T>::value> {};
 
 		template <typename T>
 		struct is_trivially_assignable<T&, T&&>
-			: public eastl::integral_constant<bool, eastl::is_scalar<T>::value> {};
+			: public std::integral_constant<bool, std::is_scalar<T>::value> {};
 
 	#endif
 
@@ -1456,8 +1456,8 @@ namespace eastl
 	//     EASTL_DECLARE_IS_TRIVIALLY_ASSIGNABLE(int, int, false)
 	//
 	#define EASTL_DECLARE_IS_TRIVIALLY_ASSIGNABLE(T, U, isTriviallyAssignable)                                                   \
-		namespace eastl {                                                                                                        \
-			template <> struct is_trivially_assignable<T, U> : public eastl::integral_constant<bool, isTriviallyAssignable> { }; \
+		namespace std {                                                                                                        \
+			template <> struct is_trivially_assignable<T, U> : public std::integral_constant<bool, isTriviallyAssignable> { }; \
 		}
 
 
@@ -1476,7 +1476,7 @@ namespace eastl
 
 		template <typename T, typename U>
 		struct is_nothrow_assignable
-			: eastl::integral_constant<bool, __is_nothrow_assignable(T, U)> {};
+			: std::integral_constant<bool, __is_nothrow_assignable(T, U)> {};
 
 	#elif defined(EA_COMPILER_NO_NOEXCEPT) || defined(__EDG_VERSION__) // EDG mis-compiles the conforming code below and so must be placed here.
 		#define EASTL_TYPE_TRAIT_is_nothrow_assignable_CONFORMANCE 0
@@ -1488,15 +1488,15 @@ namespace eastl
 		// Note that the following are crippled in that they support only assignment of T types to other T types.
 		template <typename T>
 		struct is_nothrow_assignable<T&, T>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_assign<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_assign<T>::value> {};
 
 		template <typename T>
 		struct is_nothrow_assignable<T&, T&>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_assign<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_assign<T>::value> {};
 
 		template <typename T>
 		struct is_nothrow_assignable<T&, const T&>
-			: public eastl::integral_constant<bool, eastl::has_nothrow_assign<T>::value> {};
+			: public std::integral_constant<bool, std::has_nothrow_assign<T>::value> {};
 
 	#else
 		#define EASTL_TYPE_TRAIT_is_nothrow_assignable_CONFORMANCE 1
@@ -1510,23 +1510,23 @@ namespace eastl
 
 		template <typename T, typename U>
 		struct is_nothrow_assignable_helper<true, T, U> // Set to true if the assignment (same as is_assignable) cannot generate an exception.
-			: public eastl::integral_constant<bool, noexcept(eastl::declval<T>() = eastl::declval<U>()) >
+			: public std::integral_constant<bool, noexcept(std::declval<T>() = std::declval<U>()) >
 		{
 		};
 
 		template <typename T, typename U>
 		struct is_nothrow_assignable
-			: public eastl::is_nothrow_assignable_helper<eastl::is_assignable<T, U>::value, T, U>
+			: public std::is_nothrow_assignable_helper<std::is_assignable<T, U>::value, T, U>
 		{
 		};
 	#endif
 
 	#define EASTL_DECLARE_IS_NOTHROW_ASSIGNABLE(T, isNothrowAssignable)                                                                   \
-		namespace eastl{                                                                                                                  \
-			template <> struct is_nothrow_assignable<T>                : public eastl::integral_constant<bool, isNothrowAssignable>  { }; \
-			template <> struct is_nothrow_assignable<const T>          : public eastl::integral_constant<bool, isNothrowAssignable>  { }; \
-			template <> struct is_nothrow_assignable<volatile T>       : public eastl::integral_constant<bool, isNothrowAssignable>  { }; \
-			template <> struct is_nothrow_assignable<const volatile T> : public eastl::integral_constant<bool, isNothrowAssignable>  { }; \
+		namespace std{                                                                                                                  \
+			template <> struct is_nothrow_assignable<T>                : public std::integral_constant<bool, isNothrowAssignable>  { }; \
+			template <> struct is_nothrow_assignable<const T>          : public std::integral_constant<bool, isNothrowAssignable>  { }; \
+			template <> struct is_nothrow_assignable<volatile T>       : public std::integral_constant<bool, isNothrowAssignable>  { }; \
+			template <> struct is_nothrow_assignable<const volatile T> : public std::integral_constant<bool, isNothrowAssignable>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1553,8 +1553,8 @@ namespace eastl
 
 	template <typename T>
 	struct is_copy_assignable
-		: public eastl::is_assignable<typename eastl::add_lvalue_reference<T>::type,
-									  typename eastl::add_lvalue_reference<typename eastl::add_const<T>::type>::type> {};
+		: public std::is_assignable<typename std::add_lvalue_reference<T>::type,
+									  typename std::add_lvalue_reference<typename std::add_const<T>::type>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1575,19 +1575,19 @@ namespace eastl
 #if EASTL_TYPE_TRAIT_is_trivially_copy_assignable_CONFORMANCE
 	template <typename T>
 	struct is_trivially_copy_assignable
-		: public eastl::is_trivially_assignable<typename eastl::add_lvalue_reference<T>::type,
-												typename eastl::add_lvalue_reference<typename eastl::add_const<T>::type>::type> {};
+		: public std::is_trivially_assignable<typename std::add_lvalue_reference<T>::type,
+												typename std::add_lvalue_reference<typename std::add_const<T>::type>::type> {};
 #else
 	template <typename T>
 	struct is_trivially_copy_assignable
 		: public integral_constant<bool,
-			eastl::is_scalar<T>::value || eastl::is_pod<T>::value || eastl::is_trivially_assignable<typename eastl::add_lvalue_reference<T>::type, typename eastl::add_lvalue_reference<typename eastl::add_const<T>::type>::type>::value
+			std::is_scalar<T>::value || std::is_pod<T>::value || std::is_trivially_assignable<typename std::add_lvalue_reference<T>::type, typename std::add_lvalue_reference<typename std::add_const<T>::type>::type>::value
 		> {};
 #endif
 
 	#define EASTL_DECLARE_IS_TRIVIALLY_COPY_ASSIGNABLE(T, isTriviallyCopyAssignable)                                                    \
-		namespace eastl {                                                                                                               \
-			template <> struct is_trivially_copy_assignable<T> : public eastl::integral_constant<bool, isTriviallyCopyAssignable>  { }; \
+		namespace std {                                                                                                               \
+			template <> struct is_trivially_copy_assignable<T> : public std::integral_constant<bool, isTriviallyCopyAssignable>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1604,8 +1604,8 @@ namespace eastl
 
 	template <typename T>
 	struct is_nothrow_copy_assignable
-		: public eastl::is_nothrow_assignable<typename eastl::add_lvalue_reference<T>::type,
-											  typename eastl::add_lvalue_reference<typename eastl::add_const<T>::type>::type> {};
+		: public std::is_nothrow_assignable<typename std::add_lvalue_reference<T>::type,
+											  typename std::add_lvalue_reference<typename std::add_const<T>::type>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1624,15 +1624,15 @@ namespace eastl
 
 	template <typename T>
 	struct is_move_assignable
-		: public eastl::is_assignable<typename eastl::add_lvalue_reference<T>::type,
-									  typename eastl::add_rvalue_reference<T>::type> {};
+		: public std::is_assignable<typename std::add_lvalue_reference<T>::type,
+									  typename std::add_rvalue_reference<T>::type> {};
 
 	#define EASTL_DECLARE_IS_MOVE_ASSIGNABLE(T, isMoveAssignable)                                                                   \
-		namespace eastl{                                                                                                            \
-			template <> struct is_move_assignable<T>                : public eastl::integral_constant<bool, isMoveAssignable>  { }; \
-			template <> struct is_move_assignable<const T>          : public eastl::integral_constant<bool, isMoveAssignable>  { }; \
-			template <> struct is_move_assignable<volatile T>       : public eastl::integral_constant<bool, isMoveAssignable>  { }; \
-			template <> struct is_move_assignable<const volatile T> : public eastl::integral_constant<bool, isMoveAssignable>  { }; \
+		namespace std{                                                                                                            \
+			template <> struct is_move_assignable<T>                : public std::integral_constant<bool, isMoveAssignable>  { }; \
+			template <> struct is_move_assignable<const T>          : public std::integral_constant<bool, isMoveAssignable>  { }; \
+			template <> struct is_move_assignable<volatile T>       : public std::integral_constant<bool, isMoveAssignable>  { }; \
+			template <> struct is_move_assignable<const volatile T> : public std::integral_constant<bool, isMoveAssignable>  { }; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1654,8 +1654,8 @@ namespace eastl
 
 	template <typename T>
 	struct is_trivially_move_assignable
-		: public eastl::is_trivially_assignable<typename eastl::add_lvalue_reference<T>::type,
-												typename eastl::add_rvalue_reference<T>::type> {};
+		: public std::is_trivially_assignable<typename std::add_lvalue_reference<T>::type,
+												typename std::add_rvalue_reference<T>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1672,8 +1672,8 @@ namespace eastl
 
 	template <typename T>
 	struct is_nothrow_move_assignable
-		: public eastl::is_nothrow_assignable<typename eastl::add_lvalue_reference<T>::type,
-											  typename eastl::add_rvalue_reference<T>::type> {};
+		: public std::is_nothrow_assignable<typename std::add_lvalue_reference<T>::type,
+											  typename std::add_rvalue_reference<T>::type> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1708,35 +1708,35 @@ namespace eastl
 
 		template <typename T>
 		struct is_destructible
-			: public eastl::integral_constant<bool, !eastl::is_array_of_unknown_bounds<T>::value &&
-													!eastl::is_void<T>::value                    &&
-													!eastl::is_function<T>::value> {};
+			: public std::integral_constant<bool, !std::is_array_of_unknown_bounds<T>::value &&
+													!std::is_void<T>::value                    &&
+													!std::is_function<T>::value> {};
 	#else
 		#define EASTL_TYPE_TRAIT_is_destructible_CONFORMANCE 1
 
 		template <typename>
-		eastl::false_type destructible_test_function(...);
+		std::false_type destructible_test_function(...);
 
-		template <typename T, typename U = typename eastl::remove_all_extents<T>::type, typename V = decltype(eastl::declval<U&>().~U())>
-		eastl::true_type destructible_test_function(int);
+		template <typename T, typename U = typename std::remove_all_extents<T>::type, typename V = decltype(std::declval<U&>().~U())>
+		std::true_type destructible_test_function(int);
 
-		template <typename T, bool = eastl::is_array_of_unknown_bounds<T>::value || // Exclude these types from being considered destructible.
-									 eastl::is_void<T>::value                    ||
-									 eastl::is_function<T>::value>
+		template <typename T, bool = std::is_array_of_unknown_bounds<T>::value || // Exclude these types from being considered destructible.
+									 std::is_void<T>::value                    ||
+									 std::is_function<T>::value>
 		struct is_destructible_helper
-			: public eastl::identity<decltype(eastl::destructible_test_function<T>(0))>::type {}; // Need to wrap decltype with identity because some compilers otherwise don't like the bare decltype usage.
+			: public std::identity<decltype(std::destructible_test_function<T>(0))>::type {}; // Need to wrap decltype with identity because some compilers otherwise don't like the bare decltype usage.
 
 		template <typename T>
 		struct is_destructible_helper<T, true>
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <typename T, bool Whatever>
 		struct is_destructible_helper<T&, Whatever> // Reference are trivially destructible.
-			: public eastl::true_type {};
+			: public std::true_type {};
 
 		template <typename T, bool Whatever>
 		struct is_destructible_helper<T&&, Whatever> // Reference are trivially destructible.
-			: public eastl::true_type {};
+			: public std::true_type {};
 
 		template <typename T>
 		struct is_destructible
@@ -1750,11 +1750,11 @@ namespace eastl
     #endif
 
 	#define EASTL_DECLARE_IS_DESTRUCTIBLE(T, isDestructible)												                \
-		namespace eastl{                                                                                                    \
-			template <> struct is_destructible<T>                : public eastl::integral_constant<bool, isDestructible>{}; \
-			template <> struct is_destructible<const T>          : public eastl::integral_constant<bool, isDestructible>{}; \
-			template <> struct is_destructible<volatile T>       : public eastl::integral_constant<bool, isDestructible>{}; \
-			template <> struct is_destructible<const volatile T> : public eastl::integral_constant<bool, isDestructible>{}; \
+		namespace std{                                                                                                    \
+			template <> struct is_destructible<T>                : public std::integral_constant<bool, isDestructible>{}; \
+			template <> struct is_destructible<const T>          : public std::integral_constant<bool, isDestructible>{}; \
+			template <> struct is_destructible<volatile T>       : public std::integral_constant<bool, isDestructible>{}; \
+			template <> struct is_destructible<const volatile T> : public std::integral_constant<bool, isDestructible>{}; \
 		}
 
 
@@ -1786,26 +1786,26 @@ namespace eastl
 
 		template <typename T>
 		struct is_trivially_destructible // Can't use just __has_trivial_destructor(T) because some compilers give it slightly different meaning, and are just plain broken, such as VC++'s __has_trivial_destructor, which says false for fundamental types.
-			: public integral_constant<bool, eastl::is_destructible<T>::value && ((__has_trivial_destructor(T) && !eastl::is_hat_type<T>::value)|| eastl::is_scalar<typename eastl::remove_all_extents<T>::type>::value)> {};
+			: public integral_constant<bool, std::is_destructible<T>::value && ((__has_trivial_destructor(T) && !std::is_hat_type<T>::value)|| std::is_scalar<typename std::remove_all_extents<T>::type>::value)> {};
 
 	#else
 		#define EASTL_TYPE_TRAIT_is_trivially_destructible_CONFORMANCE 0
 
 		template <typename T>
 		struct is_trivially_destructible_helper
-			: public integral_constant<bool, (eastl::is_pod<T>::value || eastl::is_scalar<T>::value || eastl::is_reference<T>::value) && !eastl::is_void<T>::value> {};
+			: public integral_constant<bool, (std::is_pod<T>::value || std::is_scalar<T>::value || std::is_reference<T>::value) && !std::is_void<T>::value> {};
 
 		template <typename T>
 		struct is_trivially_destructible
-			: public eastl::is_trivially_destructible_helper<typename eastl::remove_all_extents<T>::type> {};
+			: public std::is_trivially_destructible_helper<typename std::remove_all_extents<T>::type> {};
 	#endif
 
 	#define EASTL_DECLARE_IS_TRIVIALLY_DESTRUCTIBLE(T, isTriviallyDestructible)                                                       \
-		namespace eastl{                                                                                                              \
-			template <> struct is_trivially_destructible<T>                : public eastl::integral_constant<bool, isTriviallyDestructible>{}; \
-			template <> struct is_trivially_destructible<const T>          : public eastl::integral_constant<bool, isTriviallyDestructible>{}; \
-			template <> struct is_trivially_destructible<volatile T>       : public eastl::integral_constant<bool, isTriviallyDestructible>{}; \
-			template <> struct is_trivially_destructible<const volatile T> : public eastl::integral_constant<bool, isTriviallyDestructible>{}; \
+		namespace std{                                                                                                              \
+			template <> struct is_trivially_destructible<T>                : public std::integral_constant<bool, isTriviallyDestructible>{}; \
+			template <> struct is_trivially_destructible<const T>          : public std::integral_constant<bool, isTriviallyDestructible>{}; \
+			template <> struct is_trivially_destructible<volatile T>       : public std::integral_constant<bool, isTriviallyDestructible>{}; \
+			template <> struct is_trivially_destructible<const volatile T> : public std::integral_constant<bool, isTriviallyDestructible>{}; \
 		}
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -1837,11 +1837,11 @@ namespace eastl
 
 		template <typename T>
 		struct is_nothrow_destructible_helper
-			: public eastl::integral_constant<bool, eastl::is_scalar<T>::value || eastl::is_reference<T>::value> {};
+			: public std::integral_constant<bool, std::is_scalar<T>::value || std::is_reference<T>::value> {};
 
 		template <typename T>
 		struct is_nothrow_destructible
-			: public eastl::is_nothrow_destructible_helper<typename eastl::remove_all_extents<T>::type> {};
+			: public std::is_nothrow_destructible_helper<typename std::remove_all_extents<T>::type> {};
 
 	#else
 		#if defined(EA_COMPILER_GNUC) && (EA_COMPILER_VERSION < 4008)
@@ -1864,39 +1864,39 @@ namespace eastl
 
 		template <typename T>
 		struct is_nothrow_destructible_helper_noexcept_wrapper
-			{ static const bool value = noexcept(eastl::declval<T&>().~T()); };
+			{ static const bool value = noexcept(std::declval<T&>().~T()); };
 
 		template <typename T, bool>
 		struct is_nothrow_destructible_helper;
 
 		template <typename T>
 		struct is_nothrow_destructible_helper<T, false>
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <typename T>
 		struct is_nothrow_destructible_helper<T, true>     // If the expression T::~T is a noexcept expression then it's nothrow.
-			: public eastl::integral_constant<bool, is_nothrow_destructible_helper_noexcept_wrapper<T>::value > {};
+			: public std::integral_constant<bool, is_nothrow_destructible_helper_noexcept_wrapper<T>::value > {};
 
 		template <typename T>
 		struct is_nothrow_destructible                      // A type needs to at least be destructible before it could be nothrow destructible.
-			: public eastl::is_nothrow_destructible_helper<T, eastl::is_destructible<T>::value> {};
+			: public std::is_nothrow_destructible_helper<T, std::is_destructible<T>::value> {};
 
 		template <typename T, size_t N>                     // An array is nothrow destructible if its element type is nothrow destructible.
 		struct is_nothrow_destructible<T[N]>                // To consider: Replace this with a remove_all_extents pathway.
-			: public eastl::is_nothrow_destructible<T> {};
+			: public std::is_nothrow_destructible<T> {};
 
 		template <typename T>
 		struct is_nothrow_destructible<T&>                  // A reference type cannot throw while being destructed. It's just a reference.
-			: public eastl::true_type {};
+			: public std::true_type {};
 
 		template <typename T>
 		struct is_nothrow_destructible<T&&>                 // An rvalue reference type cannot throw while being destructed.
-			: public eastl::true_type {};
+			: public std::true_type {};
 
 	#endif
 
 	#define EASTL_DECLARE_IS_NOTHROW_DESTRUCTIBLE(T, isNoThrowDestructible)                                                    \
-		namespace eastl{                                                                                                       \
+		namespace std{                                                                                                       \
 			template <> struct is_nothrow_destructible<T>                { static const bool value = isNoThrowDestructible; }; \
 			template <> struct is_nothrow_destructible<const T>          { static const bool value = isNoThrowDestructible; }; \
 			template <> struct is_nothrow_destructible<volatile T>       { static const bool value = isNoThrowDestructible; }; \
@@ -1918,7 +1918,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_nothrow_default_constructible
-		: public eastl::is_nothrow_constructible<T> {};
+		: public std::is_nothrow_constructible<T> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1934,7 +1934,7 @@ namespace eastl
 
 	template <typename T>
 	struct is_nothrow_move_constructible
-	    : public eastl::is_nothrow_constructible<T, typename eastl::add_rvalue_reference<T>::type> {};
+	    : public std::is_nothrow_constructible<T, typename std::add_rvalue_reference<T>::type> {};
 
     #if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -1942,7 +1942,7 @@ namespace eastl
 	#endif
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

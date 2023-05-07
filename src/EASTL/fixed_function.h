@@ -11,7 +11,7 @@
 
 #include <EASTL/internal/function_detail.h>
 
-namespace eastl
+namespace std
 {
 	template <int, typename>
 	class fixed_function;
@@ -20,11 +20,11 @@ namespace eastl
 	{
 		template <typename>
 		struct is_fixed_function
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <int SIZE_IN_BYTES, typename R, typename... Args>
-		struct is_fixed_function<eastl::fixed_function<SIZE_IN_BYTES, R(Args...)>>
-			: public eastl::true_type {};
+		struct is_fixed_function<std::fixed_function<SIZE_IN_BYTES, R(Args...)>>
+			: public std::true_type {};
 
 		template<typename T>
 		EA_CONSTEXPR bool is_fixed_function_v = is_fixed_function<T>::value;
@@ -40,7 +40,7 @@ namespace eastl
 
 	template <typename Functor>
 	using EASTL_DISABLE_OVERLOAD_IF_FIXED_FUNCTION =
-	    eastl::disable_if_t<internal::is_fixed_function<eastl::decay_t<Functor>>::value>;
+	    std::disable_if_t<internal::is_fixed_function<std::decay_t<Functor>>::value>;
 
 
 	// fixed_function
@@ -65,7 +65,7 @@ namespace eastl
 		}
 
 		fixed_function(fixed_function&& other)
-			: Base(eastl::move(other))
+			: Base(std::move(other))
 		{
 		}
 
@@ -73,7 +73,7 @@ namespace eastl
 		          typename = EASTL_INTERNAL_FUNCTION_VALID_FUNCTION_ARGS(Functor, R, Args..., Base, fixed_function),
 		          typename = EASTL_DISABLE_OVERLOAD_IF_FIXED_FUNCTION<Functor>>
 		fixed_function(Functor functor)
-		    : Base(eastl::move(functor))
+		    : Base(std::move(functor))
 		{
 			EASTL_INTERNAL_FIXED_FUNCTION_STATIC_ASSERT(Functor);
 		}
@@ -87,7 +87,7 @@ namespace eastl
 
 		template<int NEW_SIZE_IN_BYTES>
 		fixed_function(fixed_function<NEW_SIZE_IN_BYTES, R(Args...)>&& other)
-			: Base(eastl::move(other))
+			: Base(std::move(other))
 		{
 			EASTL_INTERNAL_FIXED_FUNCTION_NEW_SIZE_STATIC_ASSERT(NEW_SIZE_IN_BYTES);
 		}
@@ -102,7 +102,7 @@ namespace eastl
 
 		fixed_function& operator=(fixed_function&& other)
 		{
-			Base::operator=(eastl::move(other));
+			Base::operator=(std::move(other));
 			return *this;
 		}
 
@@ -126,7 +126,7 @@ namespace eastl
 		{
 			EASTL_INTERNAL_FIXED_FUNCTION_NEW_SIZE_STATIC_ASSERT(NEW_SIZE_IN_BYTES);
 
-			Base::operator=(eastl::move(other));
+			Base::operator=(std::move(other));
 			return *this;
 		}
 
@@ -135,15 +135,15 @@ namespace eastl
 		          typename = EASTL_DISABLE_OVERLOAD_IF_FIXED_FUNCTION<Functor>>
 		fixed_function& operator=(Functor&& functor)
 		{
-			EASTL_INTERNAL_FIXED_FUNCTION_STATIC_ASSERT(eastl::decay_t<Functor>);
-			Base::operator=(eastl::forward<Functor>(functor));
+			EASTL_INTERNAL_FIXED_FUNCTION_STATIC_ASSERT(std::decay_t<Functor>);
+			Base::operator=(std::forward<Functor>(functor));
 			return *this;
 		}
 
 		template <typename Functor>
-		fixed_function& operator=(eastl::reference_wrapper<Functor> f) EA_NOEXCEPT
+		fixed_function& operator=(std::reference_wrapper<Functor> f) EA_NOEXCEPT
 		{
-			EASTL_INTERNAL_FIXED_FUNCTION_STATIC_ASSERT(eastl::reference_wrapper<Functor>);
+			EASTL_INTERNAL_FIXED_FUNCTION_STATIC_ASSERT(std::reference_wrapper<Functor>);
 			Base::operator=(f);
 			return *this;
 		}
@@ -160,7 +160,7 @@ namespace eastl
 
 		R operator ()(Args... args) const
 		{
-			return Base::operator ()(eastl::forward<Args>(args)...);
+			return Base::operator ()(std::forward<Args>(args)...);
 		}
 
 	#if EASTL_RTTI_ENABLED
@@ -213,6 +213,6 @@ namespace eastl
 		lhs.swap(rhs);
 	}
 
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_FIXED_FUNCTION_H

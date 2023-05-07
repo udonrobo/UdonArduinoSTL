@@ -37,7 +37,7 @@ EA_RESTORE_ALL_VC_WARNINGS();
 #define EASTL_COMPILER_ATOMIC_FIXED_WIDTH_TYPE_32 long
 #define EASTL_COMPILER_ATOMIC_FIXED_WIDTH_TYPE_64 __int64
 
-namespace eastl
+namespace std
 {
 
 namespace internal
@@ -50,9 +50,9 @@ struct FixedWidth128
 
 } // namespace internal
 
-} // namespace eastl
+} // namespace std
 
-#define EASTL_COMPILER_ATOMIC_FIXED_WIDTH_TYPE_128 eastl::internal::FixedWidth128
+#define EASTL_COMPILER_ATOMIC_FIXED_WIDTH_TYPE_128 std::internal::FixedWidth128
 
 
 /////////////////////////////////////////////////////////////////////////////////

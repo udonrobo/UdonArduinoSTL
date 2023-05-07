@@ -51,7 +51,7 @@
 #include "atomic_push_compiler_options.h"
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -85,14 +85,14 @@ namespace internal
 	template <typename T>
 	struct is_user_type_suitable_for_primary_template
 	{
-		static EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR_OR_CONST bool value = eastl::internal::is_atomic_lockfree_size<T>::value;
+		static EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR_OR_CONST bool value = std::internal::is_atomic_lockfree_size<T>::value;
 	};
 
 
 	template <typename T>
-	using select_atomic_inherit_0 = typename eastl::conditional<eastl::is_same<bool, T>::value || eastl::internal::is_user_type_suitable_for_primary_template<T>::value,
-																eastl::internal::atomic_base_width<T>, /* True */
-																eastl::internal::atomic_invalid_type<T> /* False */
+	using select_atomic_inherit_0 = typename std::conditional<std::is_same<bool, T>::value || std::internal::is_user_type_suitable_for_primary_template<T>::value,
+																std::internal::atomic_base_width<T>, /* True */
+																std::internal::atomic_invalid_type<T> /* False */
 																>::type;
 
 	template <typename T>
@@ -116,7 +116,7 @@ namespace internal
 																		\
 	public:																\
 																		\
-		static EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR_OR_CONST bool is_always_lock_free = eastl::internal::is_atomic_lockfree_size<type>::value; \
+		static EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR_OR_CONST bool is_always_lock_free = std::internal::is_atomic_lockfree_size<type>::value; \
 																		\
 	public: /* deleted ctors && assignment operators */					\
 																		\
@@ -132,13 +132,13 @@ namespace internal
 		{																\
 		}																\
 																		\
-		EA_CONSTEXPR atomic() EA_NOEXCEPT_IF(eastl::is_nothrow_default_constructible<type>::value) = default; \
+		EA_CONSTEXPR atomic() EA_NOEXCEPT_IF(std::is_nothrow_default_constructible<type>::value) = default; \
 																		\
 	public:																\
 																		\
 		bool is_lock_free() const EA_NOEXCEPT							\
 		{																\
-			return eastl::internal::is_atomic_lockfree_size<type>::value; \
+			return std::internal::is_atomic_lockfree_size<type>::value; \
 		}																\
 																		\
 		bool is_lock_free() const volatile EA_NOEXCEPT					\
@@ -167,7 +167,7 @@ namespace internal
 													\
 		operator type() const EA_NOEXCEPT			\
 		{											\
-			return load(eastl::memory_order_seq_cst); \
+			return load(std::memory_order_seq_cst); \
 		}
 
 
@@ -213,18 +213,18 @@ namespace internal
 
 
 template <typename T, typename = void>
-struct atomic : protected eastl::internal::select_atomic_inherit<T>
+struct atomic : protected std::internal::select_atomic_inherit<T>
 {
-	EASTL_ATOMIC_CLASS_IMPL(T, eastl::internal::select_atomic_inherit<T>, T, T)
+	EASTL_ATOMIC_CLASS_IMPL(T, std::internal::select_atomic_inherit<T>, T, T)
 
 	EASTL_ATOMIC_USING_ATOMIC_BASE(T)
 };
 
 
 template <typename T>
-struct atomic<T, eastl::enable_if_t<eastl::is_integral<T>::value && !eastl::is_same<bool, T>::value>> : protected eastl::internal::atomic_integral_width<T>
+struct atomic<T, std::enable_if_t<std::is_integral<T>::value && !std::is_same<bool, T>::value>> : protected std::internal::atomic_integral_width<T>
 {
-	EASTL_ATOMIC_CLASS_IMPL(T, eastl::internal::atomic_integral_width<T>, T, T)
+	EASTL_ATOMIC_CLASS_IMPL(T, std::internal::atomic_integral_width<T>, T, T)
 
 	EASTL_ATOMIC_USING_ATOMIC_BASE(T)
 
@@ -233,9 +233,9 @@ struct atomic<T, eastl::enable_if_t<eastl::is_integral<T>::value && !eastl::is_s
 
 
 template <typename T>
-struct atomic<T*> : protected eastl::internal::atomic_pointer_width<T*>
+struct atomic<T*> : protected std::internal::atomic_pointer_width<T*>
 {
-	EASTL_ATOMIC_CLASS_IMPL(T*, eastl::internal::atomic_pointer_width<T*>, T*, ptrdiff_t)
+	EASTL_ATOMIC_CLASS_IMPL(T*, std::internal::atomic_pointer_width<T*>, T*, ptrdiff_t)
 
 	EASTL_ATOMIC_USING_ATOMIC_BASE(T*)
 
@@ -243,7 +243,7 @@ struct atomic<T*> : protected eastl::internal::atomic_pointer_width<T*>
 };
 
 
-} // namespace eastl
+} // namespace std
 
 
 #include "atomic_pop_compiler_options.h"

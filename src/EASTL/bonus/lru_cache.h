@@ -7,7 +7,7 @@
 // Basically, you give the container a key, like a string, and the data you want.
 // The container provides callback mechanisms to generate data if it's missing
 // as well as delete data when it's purged from the cache.  This container
-// uses a least recently used method: whatever the oldest item is will be 
+// uses a least recently used method: whatever the oldest item is will be
 // replaced with a new entry.
 //
 // Algorithmically, the container is a combination of a map and a list.
@@ -15,7 +15,7 @@
 // of the list on each access, either by a call to get() or to touch().
 // The map is just the map as one would expect.
 //
-// This is useful for caching off data that is expensive to generate, 
+// This is useful for caching off data that is expensive to generate,
 // for example text to speech wave files that are dynamically generated,
 // but that will need to be reused, as is the case in narration of menu
 // entries as a user scrolls through the entries.
@@ -32,7 +32,7 @@
 #include <EASTL/unordered_map.h>
 #include <EASTL/optional.h>
 
-namespace eastl
+namespace std
 {
 	/// EASTL_LRUCACHE_DEFAULT_NAME
 	///
@@ -54,7 +54,7 @@ namespace eastl
 	/// Implements a caching map based off of a key and data.
 	/// LRUList parameter is any container that guarantees the validity of its iterator even after a modification (e.g. list)
 	/// LRUMap is any mapping container that can map a key to some data.  By default, we use unordered_set, but it might be better
-	/// to use hash_map or some other structure depending on your key/data combination.  For example, you may want to swap the 
+	/// to use hash_map or some other structure depending on your key/data combination.  For example, you may want to swap the
 	/// map backing if using strings as keys or if the data objects are small.  In any case, unordered_set is a good default and should
 	/// work well enough since the purpose of this class is to cache results of expensive, order of milliseconds, operations
 	///
@@ -69,11 +69,11 @@ namespace eastl
 	template <typename Key,
 	          typename Value,
 	          typename Allocator = EASTLAllocatorType,
-	          typename list_type = eastl::list<Key, Allocator>,
-	          typename map_type = eastl::unordered_map<Key,
-	                                                   eastl::pair<Value, typename list_type::iterator>,
-	                                                   eastl::hash<Key>,
-	                                                   eastl::equal_to<Key>,
+	          typename list_type = std::list<Key, Allocator>,
+	          typename map_type = std::unordered_map<Key,
+	                                                   std::pair<Value, typename list_type::iterator>,
+	                                                   std::hash<Key>,
+	                                                   std::equal_to<Key>,
 	                                                   Allocator>>
 	class lru_cache
 	{
@@ -84,12 +84,12 @@ namespace eastl
 		using size_type = eastl_size_t;
 		using list_iterator = typename list_type::iterator;
 		using map_iterator = typename map_type::iterator;
-		using data_container_type = eastl::pair<value_type, list_iterator>;
+		using data_container_type = std::pair<value_type, list_iterator>;
 		using iterator = typename map_type::iterator;
 		using const_iterator = typename map_type::const_iterator;
 		using this_type = lru_cache<key_type, value_type, Allocator, list_type, map_type>;
-		using create_callback_type = eastl::function<value_type(key_type)>;
-		using delete_callback_type = eastl::function<void(const value_type &)>;
+		using create_callback_type = std::function<value_type(key_type)>;
+		using delete_callback_type = std::function<void(const value_type &)>;
 
 		/// lru_cache constructor
 		///
@@ -121,7 +121,7 @@ namespace eastl
 			}
 		}
 
-		lru_cache(std::initializer_list<eastl::pair<Key, Value>> il)
+		lru_cache(std::initializer_list<std::pair<Key, Value>> il)
 			: lru_cache(static_cast<size_type>(il.size()))
 		{
 			for(auto& p : il)
@@ -133,7 +133,7 @@ namespace eastl
 		this_type &operator=(const this_type&) = delete;
 
 		/// insert
-		/// 
+		///
 		/// insert key k with value v.
 		/// If key already exists, no change is made and the return value is false.
 		/// If the key doesn't exist, the data is added to the map and the return value is true.
@@ -155,7 +155,7 @@ namespace eastl
 		}
 
 		/// emplace
-		/// 
+		///
 		/// Places a new object in place k created with args
 		/// If the key already exists, it is replaced.
 		template <typename... Args>
@@ -164,7 +164,7 @@ namespace eastl
 			make_space();
 
 			m_list.push_front(k);
-			m_map.emplace(k, data_container_type(eastl::forward<Args>(args)..., m_list.begin()));
+			m_map.emplace(k, data_container_type(std::forward<Args>(args)..., m_list.begin()));
 		}
 
 		/// insert_or_assign
@@ -186,7 +186,7 @@ namespace eastl
 		}
 
 		/// contains
-		/// 
+		///
 		/// Returns true if key k exists in the cache
 		bool contains(const key_type& k) const
 		{
@@ -196,7 +196,7 @@ namespace eastl
 		/// at
 		///
 		/// Retrives the data for key k, not valid if k does not exist
-		eastl::optional<value_type> at(const key_type& k)
+		std::optional<value_type> at(const key_type& k)
 		{
 			auto iter = m_map.find(k);
 
@@ -206,7 +206,7 @@ namespace eastl
 			}
 			else
 			{
-				return eastl::nullopt;
+				return std::nullopt;
 			}
 		}
 
@@ -361,12 +361,12 @@ namespace eastl
 		/// Resizes the cache.  Can be used to either expand or contract the cache.
 		/// In the case of a contraction, the oldest entries will be evicted with their respective
 		/// deletors called before completing.
-		void resize(size_type newSize)	
+		void resize(size_type newSize)
 		{
 			m_capacity = newSize;
 			trim();
 		}
-		
+
 		void setCreateCallback(create_callback_type callback) { m_create_callback = callback; }
 		void setDeleteCallback(delete_callback_type callback) { m_delete_callback = callback; }
 
@@ -385,7 +385,7 @@ namespace eastl
 				m_delete_callback(pos->second.first);
 			m_map.erase(pos);
 		}
-		
+
 		bool trim()
 		{
 			if (size() <= m_capacity)

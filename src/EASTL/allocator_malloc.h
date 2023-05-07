@@ -16,7 +16,7 @@
 //
 // Identifies if the standard library provides a built-in aligned version of malloc.
 // Defined as 0 or 1, depending on the standard library or platform availability.
-// None of the viable C functions provides for an aligned malloc with offset, so we 
+// None of the viable C functions provides for an aligned malloc with offset, so we
 // don't consider that supported in any case.
 //
 // Options for aligned allocations:
@@ -27,9 +27,9 @@
 //
 #if !defined EASTL_ALIGNED_MALLOC_AVAILABLE
 	#if defined(EA_PLATFORM_POSIX) && !defined(EA_PLATFORM_APPLE)
-		// memalign is more consistently available than posix_memalign, though its location isn't consistent across 
+		// memalign is more consistently available than posix_memalign, though its location isn't consistent across
 		// platforms and compiler libraries. Typically it's declared in one of three headers: stdlib.h, malloc.h, or malloc/malloc.h
-		#include <stdlib.h> // memalign, posix_memalign. 
+		#include <stdlib.h> // memalign, posix_memalign.
 		#define EASTL_ALIGNED_MALLOC_AVAILABLE 1
 
 		#if EA_HAS_INCLUDE_AVAILABLE
@@ -55,18 +55,18 @@
 #endif
 
 
-namespace eastl
+namespace std
 {
 
 	///////////////////////////////////////////////////////////////////////////////
 	// allocator_malloc
 	//
-	// Implements an EASTL allocator that uses malloc/free as opposed to 
-	// new/delete or PPMalloc Malloc/Free. 
+	// Implements an EASTL allocator that uses malloc/free as opposed to
+	// new/delete or PPMalloc Malloc/Free.
 	//
 	// Example usage:
 	//      vector<int, allocator_malloc> intVector;
-	// 
+	//
 	class allocator_malloc
 	{
 	public:
@@ -92,9 +92,9 @@ namespace eastl
 			{ return malloc(n); }
 
 		void* allocate(size_t n, size_t alignment, size_t alignmentOffset, int /*flags*/ = 0)
-		{ 
+		{
 			#if EASTL_ALIGNED_MALLOC_AVAILABLE
-				if((alignmentOffset % alignment) == 0) // We check for (offset % alignmnent == 0) instead of (offset == 0) because any block which is aligned on e.g. 64 also is aligned at an offset of 64 by definition. 
+				if((alignmentOffset % alignment) == 0) // We check for (offset % alignmnent == 0) instead of (offset == 0) because any block which is aligned on e.g. 64 also is aligned at an offset of 64 by definition.
 					return memalign(alignment, n); // memalign is more consistently available than posix_memalign.
 			#else
 				if((alignment <= EASTL_SYSTEM_ALLOCATOR_MIN_ALIGNMENT) && ((alignmentOffset % alignment) == 0))
@@ -114,7 +114,7 @@ namespace eastl
 	};
 
 
-} // namespace eastl
+} // namespace std
 
 
 

@@ -14,7 +14,7 @@
 #include "atomic_push_compiler_options.h"
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -53,24 +53,24 @@ public: /* clear */
 		EASTL_ATOMIC_STATIC_ASSERT_INVALID_MEMORY_ORDER(Order);
 	}
 
-	void clear(eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT
+	void clear(std::internal::memory_order_relaxed_s) EA_NOEXCEPT
 	{
-		mFlag.store(false, eastl::memory_order_relaxed);
+		mFlag.store(false, std::memory_order_relaxed);
 	}
 
-	void clear(eastl::internal::memory_order_release_s) EA_NOEXCEPT
+	void clear(std::internal::memory_order_release_s) EA_NOEXCEPT
 	{
-		mFlag.store(false, eastl::memory_order_release);
+		mFlag.store(false, std::memory_order_release);
 	}
 
-	void clear(eastl::internal::memory_order_seq_cst_s) EA_NOEXCEPT
+	void clear(std::internal::memory_order_seq_cst_s) EA_NOEXCEPT
 	{
-		mFlag.store(false, eastl::memory_order_seq_cst);
+		mFlag.store(false, std::memory_order_seq_cst);
 	}
 
 	void clear() EA_NOEXCEPT
 	{
-		mFlag.store(false, eastl::memory_order_seq_cst);
+		mFlag.store(false, std::memory_order_seq_cst);
 	}
 
 public: /* test_and_set */
@@ -89,34 +89,34 @@ public: /* test_and_set */
 		return false;
 	}
 
-	bool test_and_set(eastl::internal::memory_order_relaxed_s) EA_NOEXCEPT
+	bool test_and_set(std::internal::memory_order_relaxed_s) EA_NOEXCEPT
 	{
-		return mFlag.exchange(true, eastl::memory_order_relaxed);
+		return mFlag.exchange(true, std::memory_order_relaxed);
 	}
 
-	bool test_and_set(eastl::internal::memory_order_acquire_s) EA_NOEXCEPT
+	bool test_and_set(std::internal::memory_order_acquire_s) EA_NOEXCEPT
 	{
-		return mFlag.exchange(true, eastl::memory_order_acquire);
+		return mFlag.exchange(true, std::memory_order_acquire);
 	}
 
-	bool test_and_set(eastl::internal::memory_order_release_s) EA_NOEXCEPT
+	bool test_and_set(std::internal::memory_order_release_s) EA_NOEXCEPT
 	{
-		return mFlag.exchange(true, eastl::memory_order_release);
+		return mFlag.exchange(true, std::memory_order_release);
 	}
 
-	bool test_and_set(eastl::internal::memory_order_acq_rel_s) EA_NOEXCEPT
+	bool test_and_set(std::internal::memory_order_acq_rel_s) EA_NOEXCEPT
 	{
-		return mFlag.exchange(true, eastl::memory_order_acq_rel);
+		return mFlag.exchange(true, std::memory_order_acq_rel);
 	}
 
-	bool test_and_set(eastl::internal::memory_order_seq_cst_s) EA_NOEXCEPT
+	bool test_and_set(std::internal::memory_order_seq_cst_s) EA_NOEXCEPT
 	{
-		return mFlag.exchange(true, eastl::memory_order_seq_cst);
+		return mFlag.exchange(true, std::memory_order_seq_cst);
 	}
 
 	bool test_and_set() EA_NOEXCEPT
 	{
-		return mFlag.exchange(true, eastl::memory_order_seq_cst);
+		return mFlag.exchange(true, std::memory_order_seq_cst);
 	}
 
 public: /* test */
@@ -135,33 +135,33 @@ public: /* test */
 		return false;
 	}
 
-	bool test(eastl::internal::memory_order_relaxed_s) const EA_NOEXCEPT
+	bool test(std::internal::memory_order_relaxed_s) const EA_NOEXCEPT
 	{
-		return mFlag.load(eastl::memory_order_relaxed);
+		return mFlag.load(std::memory_order_relaxed);
 	}
 
-	bool test(eastl::internal::memory_order_acquire_s) const EA_NOEXCEPT
+	bool test(std::internal::memory_order_acquire_s) const EA_NOEXCEPT
 	{
-		return mFlag.load(eastl::memory_order_acquire);
+		return mFlag.load(std::memory_order_acquire);
 	}
 
-	bool test(eastl::internal::memory_order_seq_cst_s) const EA_NOEXCEPT
+	bool test(std::internal::memory_order_seq_cst_s) const EA_NOEXCEPT
 	{
-		return mFlag.load(eastl::memory_order_seq_cst);
+		return mFlag.load(std::memory_order_seq_cst);
 	}
 
 	bool test() const EA_NOEXCEPT
 	{
-		return mFlag.load(eastl::memory_order_seq_cst);
+		return mFlag.load(std::memory_order_seq_cst);
 	}
 
 private:
 
-	eastl::atomic<bool> mFlag;
+	std::atomic<bool> mFlag;
 };
 
 
-} // namespace eastl
+} // namespace std
 
 
 #include "atomic_pop_compiler_options.h"

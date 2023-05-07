@@ -12,14 +12,14 @@
 	#pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
 #endif
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_FIXED_TUPLE_VECTOR_DEFAULT_NAME
 	///
 	/// Defines a default container name in the absence of a user-provided name.
 	/// In the case of fixed-size containers, the allocator name always refers
-	/// to overflow allocations. 
+	/// to overflow allocations.
 	///
 	#ifndef EASTL_FIXED_TUPLE_VECTOR_DEFAULT_NAME
 		#define EASTL_FIXED_TUPLE_VECTOR_DEFAULT_NAME EASTL_DEFAULT_NAME_PREFIX " fixed_tuple_vector" // Unless the user overrides something, this is "EASTL fixed_vector".
@@ -65,7 +65,7 @@ public:
 
 	fixed_tuple_vector(this_type&& x)
 		: base_type(fixed_allocator_type(mBuffer.buffer), mBuffer.buffer, nodeCount, fixed_allocator_type::kNodeSize)
-	{ 
+	{
 		base_type::get_allocator().copy_overflow_allocator(x.get_allocator());
 		base_type::DoInitFromIterator(make_move_iterator(x.begin()), make_move_iterator(x.end()));
 		x.clear();
@@ -80,7 +80,7 @@ public:
 
 	fixed_tuple_vector(const this_type& x)
 		: base_type(fixed_allocator_type(mBuffer.buffer), mBuffer.buffer, nodeCount, fixed_allocator_type::kNodeSize)
-	{ 
+	{
 		base_type::get_allocator().copy_overflow_allocator(x.get_allocator());
 		base_type::DoInitFromIterator(x.begin(), x.end());
 	}
@@ -168,7 +168,7 @@ public:
 
 	void swap(this_type& x)
 	{
-		// If both containers are using the heap instead of local memory 
+		// If both containers are using the heap instead of local memory
 		// then we can do a fast pointer swap instead of content swap.
 		if ((has_overflowed() && x.has_overflowed()) && (get_overflow_allocator() == x.get_overflow_allocator()))
 		{
@@ -177,7 +177,7 @@ public:
 		else
 		{
 			// Fixed containers use a special swap that can deal with excessively large buffers.
-			eastl::fixed_swap(*this, x);
+			std::fixed_swap(*this, x);
 		}
 	}
 
@@ -205,6 +205,6 @@ inline void swap(fixed_tuple_vector<nodeCount, bEnableOverflow, Ts...>& a,
 }
 
 
-}  // namespace eastl
+}  // namespace std
 
 #endif  // EASTL_TUPLEVECTOR_H

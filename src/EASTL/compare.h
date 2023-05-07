@@ -9,7 +9,7 @@
 
 #include <EABase/eabase.h>
 
-namespace eastl
+namespace std
 {
 
 #if defined(EA_COMPILER_HAS_THREE_WAY_COMPARISON)
@@ -39,7 +39,7 @@ namespace eastl
 	using synth_three_way_result = decltype(synth_three_way{}(declval<T&>(), declval<U&>()));
 #endif
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

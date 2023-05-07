@@ -16,19 +16,19 @@
 
 
 
-namespace eastl
+namespace std
 {
 	// We provide default implementations of AddRef and Release in the eastl namespace.
 	// The user can override these on a per-class basis by defining their own specialized
 	// intrusive_ptr_add_ref and intrusive_ptr_release functions. User-defined specializations
-	// do not need to exist in the eastl namespace, but should preferably be in the namespace 
+	// do not need to exist in the eastl namespace, but should preferably be in the namespace
 	// of the templated class T.
 	template <typename T>
 	void intrusive_ptr_add_ref(T* p)
 	{
 		p->AddRef();
 	}
-	 
+
 	template <typename T>
 	void intrusive_ptr_release(T* p)
 	{
@@ -38,20 +38,20 @@ namespace eastl
 
 	//////////////////////////////////////////////////////////////////////////////
 	/// intrusive_ptr
-	/// 
+	///
 	/// This is a class that acts like the C++ auto_ptr class except that instead
 	/// of deleting its member data when it goes out of scope, it releases its
-	/// member data when it goes out of scope. This class thus requires that the 
+	/// member data when it goes out of scope. This class thus requires that the
 	/// templated data type have an AddRef and Release function (or whatever is
 	/// configured to be the two refcount functions).
-	/// 
-	/// This class is useful for automatically releasing an object when this 
+	///
+	/// This class is useful for automatically releasing an object when this
 	/// class goes out of scope. See below for some usage.
-	/// You should be careful about putting instances of this class as members of 
+	/// You should be careful about putting instances of this class as members of
 	/// another class. If you do so, then the intrusive_ptr destructor will only
 	/// be called if the object that owns it is destructed. This creates a potential
-	/// chicken-and-egg situation. What if the intrusive_ptr member contains a 
-	/// pointer to an object that has a reference on the object that owns the 
+	/// chicken-and-egg situation. What if the intrusive_ptr member contains a
+	/// pointer to an object that has a reference on the object that owns the
 	/// intrusive_ptr member? The answer is that the neither object can ever be
 	/// destructed. The solution is to:
 	///    1) Be very careful about what objects you put into member intrusive_ptr objects.
@@ -75,10 +75,10 @@ namespace eastl
 
 	public:
 		/// element_type
-		/// This typedef is present for consistency with the C++ standard library 
+		/// This typedef is present for consistency with the C++ standard library
 		/// auto_ptr template. It allows users to refer to the templated type via
 		/// a typedef. This is sometimes useful to be able to do.
-		/// 
+		///
 		/// Example usage:
 		///    intrusive_ptr<IWidget> ip;
 		///    void DoSomething(intrusive_ptr<IWidget>::element_type someType);
@@ -100,16 +100,16 @@ namespace eastl
 		/// Example usage:
 		///    intrusive_ptr<Widget> pWidget(new Widget);
 		intrusive_ptr(T* p, bool bAddRef = true)
-			: mpObject(p) 
+			: mpObject(p)
 		{
 			if(mpObject && bAddRef)
-				intrusive_ptr_add_ref(mpObject);  // Intentionally do not prefix the call with eastl:: but instead allow namespace lookup to resolve the namespace.
-		} 
+				intrusive_ptr_add_ref(mpObject);  // Intentionally do not prefix the call with std:: but instead allow namespace lookup to resolve the namespace.
+		}
 
 		/// intrusive_ptr
 		/// Construction from self type.
-		intrusive_ptr(const intrusive_ptr& ip) 
-			: mpObject(ip.mpObject) 
+		intrusive_ptr(const intrusive_ptr& ip)
+			: mpObject(ip.mpObject)
 		{
 			if(mpObject)
 				intrusive_ptr_add_ref(mpObject);
@@ -118,7 +118,7 @@ namespace eastl
 
 		/// intrusive_ptr
 		/// move constructor
-		intrusive_ptr(intrusive_ptr&& ip) 
+		intrusive_ptr(intrusive_ptr&& ip)
 			: mpObject(nullptr)
 		{
 			swap(ip);
@@ -133,8 +133,8 @@ namespace eastl
 		///    intrusive_ptr<Widget> pWidget1;
 		///    intrusive_ptr<Widget> pWidget2(pWidget1);
 		template <typename U>
-		intrusive_ptr(const intrusive_ptr<U>& ip) 
-			: mpObject(ip.mpObject) 
+		intrusive_ptr(const intrusive_ptr<U>& ip)
+			: mpObject(ip.mpObject)
 		{
 			if(mpObject)
 				intrusive_ptr_add_ref(mpObject);
@@ -142,7 +142,7 @@ namespace eastl
 
 		/// intrusive_ptr
 		/// Releases the owned pointer.
-		~intrusive_ptr() 
+		~intrusive_ptr()
 		{
 			if(mpObject)
 				intrusive_ptr_release(mpObject);
@@ -158,7 +158,7 @@ namespace eastl
 
 
 		/// operator=
-		/// Move assignment operator 
+		/// Move assignment operator
 		intrusive_ptr& operator=(intrusive_ptr&& ip)
 		{
 			swap(ip);
@@ -168,14 +168,14 @@ namespace eastl
 
 		/// operator =
 		/// Assigns an intrusive_ptr object to this intrusive_ptr object.
-		/// The incoming pointer is AddRefd. The source intrusive_ptr object 
+		/// The incoming pointer is AddRefd. The source intrusive_ptr object
 		/// maintains its AddRef on the pointer. If there is an existing member
 		/// pointer, it is Released before the incoming pointer is assigned.
-		/// If the incoming pointer is equal to the existing pointer, no    
-		/// action is taken. The incoming pointer is AddRefd before any 
+		/// If the incoming pointer is equal to the existing pointer, no
+		/// action is taken. The incoming pointer is AddRefd before any
 		/// member pointer is Released.
 		template <typename U>
-		intrusive_ptr& operator=(const intrusive_ptr<U>& ip)       
+		intrusive_ptr& operator=(const intrusive_ptr<U>& ip)
 		{
 			return operator=(ip.mpObject);
 		}
@@ -184,8 +184,8 @@ namespace eastl
 		/// Assigns an intrusive_ptr object to this intrusive_ptr object.
 		/// The incoming pointer is AddRefd. If there is an existing member
 		/// pointer, it is Released before the incoming pointer is assigned.
-		/// If the incoming pointer is equal to the existing pointer, no    
-		/// action is taken. The incoming pointer is AddRefd before any 
+		/// If the incoming pointer is equal to the existing pointer, no
+		/// action is taken. The incoming pointer is AddRefd before any
 		/// member pointer is Released.
 		intrusive_ptr& operator=(T* pObject)
 		{
@@ -203,21 +203,21 @@ namespace eastl
 
 		/// operator *
 		/// Returns a reference to the contained object.
-		T& operator *() const 
+		T& operator *() const
 		{
 			return *mpObject;
 		}
 
 		/// operator *
-		/// Returns a pointer to the contained object, allowing the 
-		/// user to use this container as if it were contained pointer itself. 
+		/// Returns a pointer to the contained object, allowing the
+		/// user to use this container as if it were contained pointer itself.
 		T* operator ->() const
 		{
 			return mpObject;
 		}
 
 		/// get()
-		/// Returns a pointer to the contained object. 
+		/// Returns a pointer to the contained object.
 		T* get() const
 		{
 			return mpObject;
@@ -225,7 +225,7 @@ namespace eastl
 
 		/// reset
 		/// Releases the owned object and clears our reference to it.
-		void reset() 
+		void reset()
 		{
 			T* const pTemp = mpObject;
 			mpObject = NULL;
@@ -259,7 +259,7 @@ namespace eastl
 		}
 
 		/// detach
-		/// Surrenders the reference held by an intrusive_ptr pointer -- 
+		/// Surrenders the reference held by an intrusive_ptr pointer --
 		/// it returns the current reference and nulls the pointer. If the returned
 		/// pointer is non-null it must be released. This is useful in functions
 		/// that must return a reference while possibly being aborted by a return
@@ -280,12 +280,12 @@ namespace eastl
 		}
 
 		/// Implicit operator bool
-		/// Allows for using a intrusive_ptr as a boolean. 
+		/// Allows for using a intrusive_ptr as a boolean.
 		/// Example usage:
 		///    intrusive_ptr<Widget> ptr = new Widget;
 		///    if(ptr)
 		///        ++*ptr;
-		///     
+		///
 		/// Note that below we do not use operator bool(). The reason for this
 		/// is that booleans automatically convert up to short, int, float, etc.
 		/// The result is that this: if(intrusivePtr == 1) would yield true (bad).
@@ -298,7 +298,7 @@ namespace eastl
 		}
 
 		/// operator!
-		/// This returns the opposite of operator bool; it returns true if 
+		/// This returns the opposite of operator bool; it returns true if
 		/// the owned pointer is null. Some compilers require this and some don't.
 		///    intrusive_ptr<Widget> ptr = new Widget;
 		///    if(!ptr)
@@ -312,7 +312,7 @@ namespace eastl
 
 
 	/// get_pointer
-	/// returns intrusive_ptr::get() via the input intrusive_ptr. 
+	/// returns intrusive_ptr::get() via the input intrusive_ptr.
 	template <typename T>
 	inline T* get_pointer(const intrusive_ptr<T>& intrusivePtr)
 	{
@@ -395,7 +395,7 @@ namespace eastl
 	#endif
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

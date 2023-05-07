@@ -24,7 +24,7 @@
 // constructor won't compile: the helper class monostate can be used to make
 // such variants default-constructible)
 //
-// Given defect 2901, the eastl::variant implementation does not provide the
+// Given defect 2901, the std::variant implementation does not provide the
 // specified allocator-aware functions.  This will be re-evaluated when the LWG
 // addresses this issue in future standardization updates.
 // LWG Defect 2901: https://cplusplus.github.io/LWG/issue2901
@@ -43,7 +43,7 @@
 // template <class T, class Alloc>        struct uses_allocator;
 // template <class... Types, class Alloc> struct uses_allocator<variant<Types...>, Alloc>;
 //
-// eastl::variant doesn't support:
+// std::variant doesn't support:
 //  * recursive variant support
 //  * strong exception guarantees as specified (we punted on the assignment problem).
 //    if an exception is thrown during assignment its undefined behaviour in our implementation.
@@ -78,12 +78,12 @@
 #endif
 
 #ifndef EA_COMPILER_CPP14_ENABLED
-	static_assert(false, "eastl::variant requires a C++14 compatible compiler (at least) ");
+	static_assert(false, "std::variant requires a C++14 compatible compiler (at least) ");
 #endif
 
 EA_DISABLE_VC_WARNING(4625) // copy constructor was implicitly defined as deleted
 
-namespace eastl
+namespace std
 {
 	namespace internal
 	{
@@ -95,7 +95,7 @@ namespace eastl
 		//
 		// We can remove these utilities when C++17 'constexpr if' is available.
 		//
-		template<typename T, bool = eastl::is_default_constructible<T>::value>
+		template<typename T, bool = std::is_default_constructible<T>::value>
 		struct default_construct_if_supported
 		{
 			static void call(T* pThis)
@@ -118,7 +118,7 @@ namespace eastl
 		//
 		// We can remove these utilities when C++17 'constexpr if' is available.
 		//
-		template<typename T, bool = eastl::is_destructible<T>::value>
+		template<typename T, bool = std::is_destructible<T>::value>
 		struct destroy_if_supported
 		{
 			static void call(T* pThis)
@@ -141,7 +141,7 @@ namespace eastl
 		//
 		// We can remove these utilities when C++17 'constexpr if' is available.
 		//
-		template<typename T, bool = eastl::is_copy_constructible<T>::value>
+		template<typename T, bool = std::is_copy_constructible<T>::value>
 		struct copy_if_supported
 		{
 			static void call(T* pThis, T* pOther)
@@ -164,12 +164,12 @@ namespace eastl
 		//
 		// We can remove these utilities when C++17 'constexpr if' is available.
 		//
-		template<typename T, bool = eastl::is_move_constructible<T>::value>
+		template<typename T, bool = std::is_move_constructible<T>::value>
 		struct move_if_supported
 		{
 			static void call(T* pThis, T* pOther)
 			{
-				new (pThis) T(eastl::move(*pOther));
+				new (pThis) T(std::move(*pOther));
 			}
 		};
 
@@ -193,7 +193,7 @@ namespace eastl
 	#if EASTL_EXCEPTIONS_ENABLED
 		struct bad_variant_access : public std::logic_error
 		{
-			bad_variant_access() : std::logic_error("eastl::bad_variant_access exception") {}
+			bad_variant_access() : std::logic_error("std::bad_variant_access exception") {}
 			virtual ~bad_variant_access() EA_NOEXCEPT {}
 		};
 	#endif
@@ -209,7 +209,7 @@ namespace eastl
 		if (!b)
 			throw bad_variant_access();
 	#elif EASTL_ASSERT_ENABLED
-		EASTL_ASSERT_MSG(b, "eastl::bad_variant_access assert");
+		EASTL_ASSERT_MSG(b, "std::bad_variant_access assert");
 	#else
 		EA_UNUSED(b);
 	#endif
@@ -357,7 +357,7 @@ namespace eastl
 
 		variant_storage& operator=(variant_storage&& other)
 		{
-			DoOp(StorageOp::MOVE, eastl::move(other));
+			DoOp(StorageOp::MOVE, std::move(other));
 			return *this;
 		}
 
@@ -371,7 +371,7 @@ namespace eastl
 
 			using RT = remove_reference_t<T>;
 
-			new (&mBuffer) RT(eastl::forward<Args>(args)...);
+			new (&mBuffer) RT(std::forward<Args>(args)...);
 
 			mpHandler = (storage_handler_ptr)&DoOpImpl<RT>;
 		}
@@ -386,7 +386,7 @@ namespace eastl
 
 			using RT = remove_reference_t<T>;
 
-			new (&mBuffer) RT(il, eastl::forward<Args>(args)...);
+			new (&mBuffer) RT(il, std::forward<Args>(args)...);
 
 			mpHandler = (storage_handler_ptr)&DoOpImpl<RT>;
 		}
@@ -394,14 +394,14 @@ namespace eastl
 		template<typename T>
 		T get_as()
 		{
-			static_assert(eastl::is_pointer<T>::value, "T must be a pointer type");
+			static_assert(std::is_pointer<T>::value, "T must be a pointer type");
 			return reinterpret_cast<T>(&mBuffer);
 		}
 
 		template<typename T>
 		const T get_as() const
 		{
-			static_assert(eastl::is_pointer<T>::value, "T must be a pointer type");
+			static_assert(std::is_pointer<T>::value, "T must be a pointer type");
 			return reinterpret_cast<const T>(reinterpret_cast<uintptr_t>(&mBuffer));
 		}
 
@@ -441,7 +441,7 @@ namespace eastl
 			// variant_storage used to store types. The size selected should be large enough to hold the largest type in
 			// the user provided variant type-list.
 			static_assert(sizeof(aligned_storage_impl_t) >= sizeof(T), "T is larger than local buffer size");
-			new (&mBuffer) remove_reference_t<T>(eastl::forward<Args>(args)...);
+			new (&mBuffer) remove_reference_t<T>(std::forward<Args>(args)...);
 
 			// mpHandler = ...; // member does not exist in this template specialization
 		}
@@ -453,7 +453,7 @@ namespace eastl
 			// variant_storage used to store types. The size selected should be large enough to hold the largest type in
 			// the user provided variant type-list.
 			static_assert(sizeof(aligned_storage_impl_t) >= sizeof(T), "T is larger than local buffer size");
-			new (&mBuffer) remove_reference_t<T>(il, eastl::forward<Args>(args)...);
+			new (&mBuffer) remove_reference_t<T>(il, std::forward<Args>(args)...);
 
 			// mpHandler = ...; // member does not exist in this template specialization
 		}
@@ -461,14 +461,14 @@ namespace eastl
 		template<typename T>
 		T get_as()
 		{
-			static_assert(eastl::is_pointer<T>::value, "T must be a pointer type");
+			static_assert(std::is_pointer<T>::value, "T must be a pointer type");
 			return reinterpret_cast<T>(&mBuffer);
 		}
 
 		template<typename T>
 		const T get_as() const
 		{
-			static_assert(eastl::is_pointer<T>::value, "T must be a pointer type");
+			static_assert(std::is_pointer<T>::value, "T must be a pointer type");
 			return reinterpret_cast<const T>(reinterpret_cast<uintptr_t>(&mBuffer));
 		}
 
@@ -590,7 +590,7 @@ namespace eastl
 		static_assert(I < sizeof...(Types), "get is ill-formed if I is not a valid index in the variant typelist");
 		using return_type = add_pointer_t<variant_alternative_t<I, variant<Types...>>>;
 
-		return eastl::move(*v.mStorage.template get_as<return_type>());
+		return std::move(*v.mStorage.template get_as<return_type>());
 	}
 
 	template <size_t I, class... Types>
@@ -608,7 +608,7 @@ namespace eastl
 		static_assert(I < sizeof...(Types), "get is ill-formed if I is not a valid index in the variant typelist");
 		using return_type = add_pointer_t<variant_alternative_t<I, variant<Types...>>>;
 
-		return eastl::move(*v.mStorage.template get_as<return_type>());
+		return std::move(*v.mStorage.template get_as<return_type>());
 	}
 
 	template <class T, class... Types, size_t I = meta::get_type_index<T, Types...>::value>
@@ -622,7 +622,7 @@ namespace eastl
 	EA_CONSTEXPR T&& get(variant<Types...>&& v)
 	{
 		static_assert(I < sizeof...(Types), "get is ill-formed if I is not a valid index in the variant typelist");
-		return get<I>(eastl::move(v));
+		return get<I>(std::move(v));
 	}
 
 	template <class T, class... Types, size_t I = meta::get_type_index<T, Types...>::value>
@@ -705,7 +705,7 @@ namespace eastl
 			if(this != &other)
 			{
 				mIndex = other.mIndex;
-				mStorage = eastl::move(other.mStorage);
+				mStorage = std::move(other.mStorage);
 			}
 		}
 
@@ -721,7 +721,7 @@ namespace eastl
 			static_assert((meta::type_count<T_j, Types...>::value == 1), "function overload is not unique - duplicate types in type list");
 
 			mIndex = static_cast<variant_index_t>(I);
-			mStorage.template set_as<T_j>(eastl::forward<T>(t));
+			mStorage.template set_as<T_j>(std::forward<T>(t));
 		}
 
 
@@ -733,7 +733,7 @@ namespace eastl
 			class... Args,
 			class = enable_if_t<conjunction<meta::duplicate_type_check<T, Types...>, is_constructible<T, Args...>>::value, T>>
 		EA_CPP14_CONSTEXPR explicit variant(in_place_type_t<T>, Args&&... args)
-			: variant(in_place<meta::get_type_index<T, Types...>::value>, eastl::forward<Args>(args)...)
+			: variant(in_place<meta::get_type_index<T, Types...>::value>, std::forward<Args>(args)...)
 		{}
 
 		template <
@@ -742,7 +742,7 @@ namespace eastl
 		    class... Args,
 		    class = enable_if_t<conjunction<meta::duplicate_type_check<T, Types...>, is_constructible<T, Args...>>::value, T>>
 		EA_CPP14_CONSTEXPR explicit variant(in_place_type_t<T>, std::initializer_list<U> il, Args&&... args)
-		    : variant(in_place<meta::get_type_index<T, Types...>::value>, il, eastl::forward<Args>(args)...)
+		    : variant(in_place<meta::get_type_index<T, Types...>::value>, il, std::forward<Args>(args)...)
 		{}
 
 		template <size_t I,
@@ -752,7 +752,7 @@ namespace eastl
 		EA_CPP14_CONSTEXPR explicit variant(in_place_index_t<I>, Args&&... args)
 		    : mIndex(I)
 		{
-			mStorage.template set_as<meta::get_type_at_t<I, Types...>>(eastl::forward<Args>(args)...);
+			mStorage.template set_as<meta::get_type_at_t<I, Types...>>(std::forward<Args>(args)...);
 		}
 
 		template <size_t I,
@@ -763,7 +763,7 @@ namespace eastl
 		EA_CPP14_CONSTEXPR explicit variant(in_place_index_t<I>, std::initializer_list<U> il, Args&&... args)
 		    : mIndex(I)
 		{
-			mStorage.template set_as<meta::get_type_at_t<I, Types...>>(il, eastl::forward<Args>(args)...);
+			mStorage.template set_as<meta::get_type_at_t<I, Types...>>(il, std::forward<Args>(args)...);
 		}
 
 
@@ -787,7 +787,7 @@ namespace eastl
 		    typename = enable_if_t<conjunction<is_constructible<T, Args...>::value, meta::duplicate_type_check<T, Types...>>>>
 		decltype(auto) emplace(Args&&... args)
 		{
-			return emplace<I>(eastl::forward<Args>(args)...);
+			return emplace<I>(std::forward<Args>(args)...);
 		}
 
 		// Equivalent to emplace<I>(il, std::forward<Args>(args)...), where I is the zero-based index of T in Types....
@@ -801,7 +801,7 @@ namespace eastl
 		                                               meta::duplicate_type_check<T, Types...>>::value>>
 		decltype(auto) emplace(std::initializer_list<U> il, Args&&... args)
 		{
-			return emplace<I>(il, eastl::forward<T>(args)...);
+			return emplace<I>(il, std::forward<T>(args)...);
 		}
 
 		// First, destroys the currently contained value (if any). Then direct-initializes the contained value as if
@@ -826,7 +826,7 @@ namespace eastl
 				#endif
 			}
 
-			mStorage.template set_as<T>(eastl::forward<Args>(args)...);
+			mStorage.template set_as<T>(std::forward<Args>(args)...);
 			mIndex = static_cast<variant_index_t>(I);
 			return *reinterpret_cast<T*>(&mStorage.mBuffer);
 		}
@@ -853,7 +853,7 @@ namespace eastl
 				#endif
 			}
 
-			mStorage.template set_as<T>(il, eastl::forward<Args>(args)...);
+			mStorage.template set_as<T>(il, std::forward<Args>(args)...);
 			mIndex = static_cast<variant_index_t>(I);
 			return *reinterpret_cast<T*>(&mStorage.mBuffer);
 		}
@@ -865,8 +865,8 @@ namespace eastl
 		template <class T,
 		          typename T_j = meta::overload_resolution_t<T, meta::overload_set<Types...>>,
 		          ssize_t I = meta::get_type_index<decay_t<T_j>, Types...>::value,
-		          typename = enable_if_t<!eastl::is_same<decay_t<T>, variant>::value && eastl::is_assignable<T_j&, T>::value &&
-		                                 eastl::is_constructible<T_j, T>::value>>
+		          typename = enable_if_t<!std::is_same<decay_t<T>, variant>::value && std::is_assignable<T_j&, T>::value &&
+		                                 std::is_constructible<T_j, T>::value>>
 		EA_CPP14_CONSTEXPR variant& operator=(T&& t)
 		    EA_NOEXCEPT(conjunction<is_nothrow_assignable<T_j&, T>, is_nothrow_constructible<T_j, T>>::value)
 		{
@@ -878,7 +878,7 @@ namespace eastl
 				mStorage.destroy();
 
 			mIndex = static_cast<variant_index_t>(I);
-			mStorage.template set_as<T_j>(eastl::forward<T>(t));
+			mStorage.template set_as<T_j>(std::forward<T>(t));
 			return *this;
 		}
 
@@ -908,8 +908,8 @@ namespace eastl
 		{
 			if (this != &other)
 			{
-				mIndex = eastl::move(other.mIndex);
-				mStorage = eastl::move(other.mStorage);
+				mIndex = std::move(other.mIndex);
+				mStorage = std::move(other.mStorage);
 			}
 			return *this;
 		}
@@ -943,8 +943,8 @@ namespace eastl
 		void swap(variant& other)
 			EA_NOEXCEPT(conjunction<is_nothrow_move_constructible<Types>..., is_nothrow_swappable<Types>...>::value)
 		{
-			eastl::swap(mIndex, other.mIndex);
-			eastl::swap(mStorage, other.mStorage);
+			std::swap(mIndex, other.mIndex);
+			std::swap(mStorage, other.mStorage);
 		}
 
 	private:
@@ -1013,12 +1013,12 @@ namespace eastl
 	//
 	// Constructing a matrix bottom up would look something as follows.
 	//
-	// make_visitor_matrix_recurse(eastl::index_sequence<>{}, eastl::make_index_sequence<eastl::variant_size_v<eastl::decay_t<Variants>>>{}...);
+	// make_visitor_matrix_recurse(std::index_sequence<>{}, std::make_index_sequence<std::variant_size_v<std::decay_t<Variants>>>{}...);
 	//
-	// make_visitor_matrix_recurse(eastl::index_sequence<Is...>) { return templated function pointer on Is... }
+	// make_visitor_matrix_recurse(std::index_sequence<Is...>) { return templated function pointer on Is... }
 	//
-	// make_visitor_matrix_recurse(eastl::index_sequence<Is...>, eastl::index_sequence<Js...>, RestIndex... rest)
-	//    return make_array(make_visitor_matrix_recurse(eastl::index_sequence<Is..., Js>{}, rest...)...);
+	// make_visitor_matrix_recurse(std::index_sequence<Is...>, std::index_sequence<Js...>, RestIndex... rest)
+	//    return make_array(make_visitor_matrix_recurse(std::index_sequence<Is..., Js>{}, rest...)...);
 	//
 	// Essentially we construct the matrix bottom up, row by row of indices and return an array of function pointers.
 	// The end result is a NxNxN... array on the stack which can be indexed by each variant in order as follows,
@@ -1061,11 +1061,11 @@ namespace eastl
 
 	// Since decltype() is not one of the contexts where an overloaded function can be used without arguments;
 	// We use this function to deduce the function pointer types.
-	// We also return an eastl::array<> since we cannot return C-style arrays as value types.
+	// We also return an std::array<> since we cannot return C-style arrays as value types.
 	template <typename T>
 	static EA_CONSTEXPR array<decay_t<T>, 1> make_visitor_array(T&& t)
 	{
-		return { { eastl::forward<T>(t) } };
+		return { { std::forward<T>(t) } };
 	}
 
 	template <typename T, typename... Ts>
@@ -1073,36 +1073,36 @@ namespace eastl
 	{
 		static_assert(conjunction<is_same<decay_t<T>, decay_t<Ts>>...>::value, "`visit` variant visitation requires that all visitors have the same return type!");
 
-		return { { eastl::forward<T>(t), eastl::forward<Ts>(ts)... } };
+		return { { std::forward<T>(t), std::forward<Ts>(ts)... } };
 	}
 
 
-	template <size_t N, typename Variant, typename... Variants, eastl::enable_if_t<N == 0, int> = 0>
+	template <size_t N, typename Variant, typename... Variants, std::enable_if_t<N == 0, int> = 0>
 	static EA_CONSTEXPR decltype(auto) get_variant_n(Variant&& variant, Variants&&...)
 	{
-		return eastl::forward<Variant>(variant);
+		return std::forward<Variant>(variant);
 	}
 
-	template <size_t N, typename Variant, typename... Variants, eastl::enable_if_t<N != 0, int> = 0>
+	template <size_t N, typename Variant, typename... Variants, std::enable_if_t<N != 0, int> = 0>
 	static EA_CONSTEXPR decltype(auto) get_variant_n(Variant&&, Variants&&... variants)
 	{
-		return get_variant_n<N - 1>(eastl::forward<Variants>(variants)...);
+		return get_variant_n<N - 1>(std::forward<Variants>(variants)...);
 	}
 
 
 	template <typename Visitor, typename Index, typename Array, typename... Variants>
 	static EA_CONSTEXPR decltype(auto) call_visitor_at_index(Array&& array, Index index, Visitor&& visitor, Variants&&... variants)
 	{
-		return array[static_cast<typename Array::size_type>(index)](eastl::forward<Visitor>(visitor), eastl::forward<Variants>(variants)...);
+		return array[static_cast<typename Array::size_type>(index)](std::forward<Visitor>(visitor), std::forward<Variants>(variants)...);
 	}
 
 	template <size_t VariantsIndex, typename Visitor, typename Array, typename... Variants>
 	static EA_CONSTEXPR decltype(auto) call_visitor_at(Array&& array, Visitor&& visitor, Variants&&... variants)
 	{
-		return call_visitor_at_index(eastl::forward<Array>(array),
-									 get_variant_n<VariantsIndex>(eastl::forward<Variants>(variants)...).index(),
-									 eastl::forward<Visitor>(visitor),
-									 eastl::forward<Variants>(variants)...);
+		return call_visitor_at_index(std::forward<Array>(array),
+									 get_variant_n<VariantsIndex>(std::forward<Variants>(variants)...).index(),
+									 std::forward<Visitor>(visitor),
+									 std::forward<Variants>(variants)...);
 	}
 
 
@@ -1118,8 +1118,8 @@ namespace eastl
 		template <size_t... VariantArgIndices>
 		static EA_CONSTEXPR return_type invoke_visitor_leaf(Visitor&& visitor, Variants&&... variants)
 		{
-			return eastl::invoke(eastl::forward<Visitor>(visitor),
-								 eastl::get<VariantArgIndices>(eastl::forward<Variants>(variants))...);
+			return std::invoke(std::forward<Visitor>(visitor),
+								 std::get<VariantArgIndices>(std::forward<Variants>(variants))...);
 		}
 
 		template <size_t... VariantArgIndices>
@@ -1133,8 +1133,8 @@ namespace eastl
 		static EA_CONSTEXPR return_type invoke_visitor_recurse(Visitor&& visitor, Variants&&... variants)
 		{
 			return call(index_sequence<VariantArgIndices...>{},
-						eastl::forward<Visitor>(visitor),
-						eastl::forward<Variants>(variants)...);
+						std::forward<Visitor>(visitor),
+						std::forward<Variants>(variants)...);
 		}
 
 		template <size_t... VariantArgIndices>
@@ -1149,9 +1149,9 @@ namespace eastl
 		{
 			EA_CPP14_CONSTEXPR auto callers = make_visitor_array(make_invoke_visitor_leaf(meta::double_pack_expansion_t<VariantArgIndexSequence, VariantIndices>{})...);
 
-			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(eastl::move(callers),
-																							 eastl::forward<Visitor>(visitor),
-																							 eastl::forward<Variants>(variants)...);
+			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(std::move(callers),
+																							 std::forward<Visitor>(visitor),
+																							 std::forward<Variants>(variants)...);
 		}
 
 		template <typename VariantArgIndexSequence, enable_if_t<internal::index_sequence_size<VariantArgIndexSequence>::value + 1 != sizeof...(Variants), int> = 0>
@@ -1159,9 +1159,9 @@ namespace eastl
 		{
 			EA_CPP14_CONSTEXPR auto callers = make_visitor_array(make_invoke_visitor_recurse(meta::double_pack_expansion_t<VariantArgIndexSequence, VariantIndices>{})...);
 
-			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(eastl::move(callers),
-																							 eastl::forward<Visitor>(visitor),
-																							 eastl::forward<Variants>(variants)...);
+			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(std::move(callers),
+																							 std::forward<Visitor>(visitor),
+																							 std::forward<Variants>(variants)...);
 		}
 
 	};
@@ -1169,7 +1169,7 @@ namespace eastl
 	template <typename VariantIndexSequence, typename Visitor, typename... Variants>
 	static EA_CONSTEXPR decltype(auto) call_initial_n(VariantIndexSequence, Visitor&& visitor, Variants&&... variants)
 	{
-		return visitor_caller_n<VariantIndexSequence, Visitor, Variants...>::call(index_sequence<>{}, eastl::forward<Visitor>(visitor), eastl::forward<Variants>(variants)...);
+		return visitor_caller_n<VariantIndexSequence, Visitor, Variants...>::call(index_sequence<>{}, std::forward<Visitor>(visitor), std::forward<Variants>(variants)...);
 	}
 
 
@@ -1185,8 +1185,8 @@ namespace eastl
 		{
 			static EA_CONSTEXPR R_ invoke_visitor_leaf_r(Visitor&& visitor, Variants&&... variants)
 			{
-				return eastl::invoke(eastl::forward<Visitor>(visitor),
-									 eastl::get<VariantArgIndices>(eastl::forward<Variants>(variants))...);
+				return std::invoke(std::forward<Visitor>(visitor),
+									 std::get<VariantArgIndices>(std::forward<Variants>(variants))...);
 			}
 		};
 
@@ -1196,8 +1196,8 @@ namespace eastl
 		{
 			static EA_CONSTEXPR void invoke_visitor_leaf_r(Visitor&& visitor, Variants&&... variants)
 			{
-				eastl::invoke(eastl::forward<Visitor>(visitor),
-							  eastl::get<VariantArgIndices>(eastl::forward<Variants>(variants))...);
+				std::invoke(std::forward<Visitor>(visitor),
+							  std::get<VariantArgIndices>(std::forward<Variants>(variants))...);
 			}
 		};
 		template <size_t... VariantArgIndices> struct visitor_leaf_r<const void, VariantArgIndices...> : public visitor_leaf_r<void, VariantArgIndices...> {};
@@ -1217,8 +1217,8 @@ namespace eastl
 			static EA_CONSTEXPR R_ invoke_visitor_recurse_r(Visitor&& visitor, Variants&&... variants)
 			{
 				return call_r(index_sequence<VariantArgIndices...>{},
-							  eastl::forward<Visitor>(visitor),
-							  eastl::forward<Variants>(variants)...);
+							  std::forward<Visitor>(visitor),
+							  std::forward<Variants>(variants)...);
 			}
 		};
 
@@ -1234,9 +1234,9 @@ namespace eastl
 		{
 			EA_CPP14_CONSTEXPR auto callers = make_visitor_array(make_invoke_visitor_leaf_r<R>(meta::double_pack_expansion_t<VariantArgIndexSequence, VariantIndices>{})...);
 
-			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(eastl::move(callers),
-																							 eastl::forward<Visitor>(visitor),
-																							 eastl::forward<Variants>(variants)...);
+			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(std::move(callers),
+																							 std::forward<Visitor>(visitor),
+																							 std::forward<Variants>(variants)...);
 		}
 
 		template <typename VariantArgIndexSequence, enable_if_t<internal::index_sequence_size<VariantArgIndexSequence>::value + 1 != sizeof...(Variants), int> = 0>
@@ -1244,9 +1244,9 @@ namespace eastl
 		{
 			EA_CPP14_CONSTEXPR auto callers = make_visitor_array(make_invoke_visitor_recurse_r<R>(meta::double_pack_expansion_t<VariantArgIndexSequence, VariantIndices>{})...);
 
-			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(eastl::move(callers),
-																							 eastl::forward<Visitor>(visitor),
-																							 eastl::forward<Variants>(variants)...);
+			return call_visitor_at<internal::index_sequence_size<VariantArgIndexSequence>::value>(std::move(callers),
+																							 std::forward<Visitor>(visitor),
+																							 std::forward<Variants>(variants)...);
 		}
 
 	};
@@ -1254,7 +1254,7 @@ namespace eastl
 	template <typename R, typename VariantIndexSequence, typename Visitor, typename... Variants>
 	static EA_CONSTEXPR decltype(auto) call_initial_n_r(VariantIndexSequence, Visitor&& visitor, Variants&&... variants)
 	{
-		return visitor_caller_n_r<R, VariantIndexSequence, Visitor, Variants...>::call_r(index_sequence<>{}, eastl::forward<Visitor>(visitor), eastl::forward<Variants>(variants)...);
+		return visitor_caller_n_r<R, VariantIndexSequence, Visitor, Variants...>::call_r(index_sequence<>{}, std::forward<Visitor>(visitor), std::forward<Variants>(variants)...);
 	}
 
 
@@ -1265,8 +1265,8 @@ namespace eastl
 		template <typename Visitor, typename Variant, size_t I>
 		static EA_CONSTEXPR decltype(auto) invoke_visitor(Visitor&& visitor, Variant&& variant)
 		{
-			return eastl::invoke(eastl::forward<Visitor>(visitor),
-								 eastl::get<I>(eastl::forward<Variant>(variant)));
+			return std::invoke(std::forward<Visitor>(visitor),
+								 std::get<I>(std::forward<Variant>(variant)));
 		}
 
 		template <typename Visitor, typename Variant, size_t... VariantArgIndices>
@@ -1274,15 +1274,15 @@ namespace eastl
 		{
 			EA_CPP14_CONSTEXPR auto callers = make_visitor_array((&invoke_visitor<Visitor, Variant, VariantArgIndices>)...);
 
-			return call_visitor_at_index(eastl::move(callers), eastl::forward<Variant>(variant).index(),
-										 eastl::forward<Visitor>(visitor), eastl::forward<Variant>(variant));
+			return call_visitor_at_index(std::move(callers), std::forward<Variant>(variant).index(),
+										 std::forward<Visitor>(visitor), std::forward<Variant>(variant));
 		}
 
 		template <typename Visitor, typename Variant>
 		static EA_CONSTEXPR decltype(auto) call(Visitor&& visitor, Variant&& variant)
 		{
-			return call_index(eastl::forward<Visitor>(visitor),
-							  eastl::forward<Variant>(variant),
+			return call_index(std::forward<Visitor>(visitor),
+							  std::forward<Variant>(variant),
 							  make_index_sequence<variant_size<decay_t<Variant>>::value>{});
 		}
 
@@ -1294,8 +1294,8 @@ namespace eastl
 		template <typename Visitor, typename Variant, size_t I>
 		static EA_CONSTEXPR R invoke_visitor_r(Visitor&& visitor, Variant&& variant)
 		{
-			return eastl::invoke(eastl::forward<Visitor>(visitor),
-								 eastl::get<I>(eastl::forward<Variant>(variant)));
+			return std::invoke(std::forward<Visitor>(visitor),
+								 std::get<I>(std::forward<Variant>(variant)));
 		}
 	};
 
@@ -1306,8 +1306,8 @@ namespace eastl
 		template <typename Visitor, typename Variant, size_t I>
 		static EA_CONSTEXPR void invoke_visitor_r(Visitor&& visitor, Variant&& variant)
 		{
-			eastl::invoke(eastl::forward<Visitor>(visitor),
-						  eastl::get<I>(eastl::forward<Variant>(variant)));
+			std::invoke(std::forward<Visitor>(visitor),
+						  std::get<I>(std::forward<Variant>(variant)));
 		}
 	};
 
@@ -1319,18 +1319,18 @@ namespace eastl
 	struct visitor_caller_one_r
 	{
 		template <typename R, typename Visitor, typename Variant, size_t... VariantArgIndices>
-		static EA_CPP14_CONSTEXPR decltype(auto) call_index_r(Visitor&& visitor, Variant&& variant, eastl::index_sequence<VariantArgIndices...>)
+		static EA_CPP14_CONSTEXPR decltype(auto) call_index_r(Visitor&& visitor, Variant&& variant, std::index_sequence<VariantArgIndices...>)
 		{
 			EA_CPP14_CONSTEXPR auto callers = make_visitor_array(&visitor_r<R>::template invoke_visitor_r<Visitor, Variant, VariantArgIndices>...);
 
-			return callers[static_cast<typename decltype(callers)::size_type>(eastl::forward<Variant>(variant).index())](eastl::forward<Visitor>(visitor),
-																														 eastl::forward<Variant>(variant));
+			return callers[static_cast<typename decltype(callers)::size_type>(std::forward<Variant>(variant).index())](std::forward<Visitor>(visitor),
+																														 std::forward<Variant>(variant));
 		}
 
 		template <typename R, typename Visitor, typename Variant>
 		static EA_CONSTEXPR decltype(auto) call_r(Visitor&& visitor, Variant&& variant)
 		{
-			return call_index_r<R>(eastl::forward<Visitor>(visitor), eastl::forward<Variant>(variant), eastl::make_index_sequence<eastl::variant_size<eastl::decay_t<Variant>>::value>());
+			return call_index_r<R>(std::forward<Visitor>(visitor), std::forward<Variant>(variant), std::make_index_sequence<std::variant_size<std::decay_t<Variant>>::value>());
 		}
 
 	};
@@ -1358,7 +1358,7 @@ namespace eastl
 		using bool_array_type = bool[];
 		bool badAccess = false;
 
-		(void)bool_array_type{ (badAccess |= eastl::forward<Variants>(variants).valueless_by_exception(), false)... };
+		(void)bool_array_type{ (badAccess |= std::forward<Variants>(variants).valueless_by_exception(), false)... };
 
 		if (badAccess)
 		{
@@ -1374,7 +1374,7 @@ namespace eastl
 
 		using variant_type = decay_t<meta::get_type_at_t<0, Variants...>>;
 		static_assert(conjunction<is_same<variant_type, decay_t<Variants>>...>::value,
-					  "`visit` all variants passed to eastl::visit() must have the same type");
+					  "`visit` all variants passed to std::visit() must have the same type");
 	}
 	EA_RESTORE_VC_WARNING()
 
@@ -1383,48 +1383,48 @@ namespace eastl
 	template <typename Visitor, typename Variant>
 	EA_CPP14_CONSTEXPR decltype(auto) visit(Visitor&& visitor, Variant&& variant)
 	{
-		visit_static_assert_check(eastl::forward<Variant>(variant));
+		visit_static_assert_check(std::forward<Variant>(variant));
 
-		visit_throw_bad_variant_access(eastl::forward<Variant>(variant));
+		visit_throw_bad_variant_access(std::forward<Variant>(variant));
 
-		return visitor_caller_one::call(eastl::forward<Visitor>(visitor),
-										eastl::forward<Variant>(variant));
+		return visitor_caller_one::call(std::forward<Visitor>(visitor),
+										std::forward<Variant>(variant));
 	}
 
 	template <typename Visitor, typename... Variants>
 	EA_CPP14_CONSTEXPR decltype(auto) visit(Visitor&& visitor, Variants&&... variants)
 	{
-		visit_static_assert_check(eastl::forward<Variants>(variants)...);
+		visit_static_assert_check(std::forward<Variants>(variants)...);
 
-		visit_throw_bad_variant_access(eastl::forward<Variants>(variants)...);
+		visit_throw_bad_variant_access(std::forward<Variants>(variants)...);
 
 		return call_initial_n(make_index_sequence<variant_size<decay_t<meta::get_type_at_t<0, Variants...>>>::value>{},
-							  eastl::forward<Visitor>(visitor),
-							  eastl::forward<Variants>(variants)...);
+							  std::forward<Visitor>(visitor),
+							  std::forward<Variants>(variants)...);
 
 	}
 
-	template <typename R, typename Visitor, typename Variant, eastl::enable_if_t<!eastl::is_same<R, Visitor>::value, int> = 0>
+	template <typename R, typename Visitor, typename Variant, std::enable_if_t<!std::is_same<R, Visitor>::value, int> = 0>
 	EA_CPP14_CONSTEXPR R visit(Visitor&& visitor, Variant&& variant)
 	{
-		visit_static_assert_check(eastl::forward<Variant>(variant));
+		visit_static_assert_check(std::forward<Variant>(variant));
 
-		visit_throw_bad_variant_access(eastl::forward<Variant>(variant));
+		visit_throw_bad_variant_access(std::forward<Variant>(variant));
 
-		return visitor_caller_one_r::call_r<R>(eastl::forward<Visitor>(visitor),
-											   eastl::forward<Variant>(variant));
+		return visitor_caller_one_r::call_r<R>(std::forward<Visitor>(visitor),
+											   std::forward<Variant>(variant));
 	}
 
-	template <typename R, typename Visitor, typename... Variants, eastl::enable_if_t<!eastl::is_same<R, Visitor>::value, int> = 0>
+	template <typename R, typename Visitor, typename... Variants, std::enable_if_t<!std::is_same<R, Visitor>::value, int> = 0>
 	EA_CPP14_CONSTEXPR R visit(Visitor&& visitor, Variants&&... variants)
 	{
-		visit_static_assert_check(eastl::forward<Variants>(variants)...);
+		visit_static_assert_check(std::forward<Variants>(variants)...);
 
-		visit_throw_bad_variant_access(eastl::forward<Variants>(variants)...);
+		visit_throw_bad_variant_access(std::forward<Variants>(variants)...);
 
 		return call_initial_n_r<R>(make_index_sequence<variant_size<decay_t<meta::get_type_at_t<0, Variants...>>>::value>{},
-								   eastl::forward<Visitor>(visitor),
-								   eastl::forward<Variants>(variants)...);
+								   std::forward<Visitor>(visitor),
+								   std::forward<Variants>(variants)...);
 	}
 
 
@@ -1443,11 +1443,11 @@ namespace eastl
 			template <typename Compare, size_t I, typename Variant>
 			static EA_CONSTEXPR bool invoke_relational_visitor(const Variant& lhs, const Variant& rhs)
 			{
-				return eastl::invoke(Compare{}, eastl::get<I>(lhs), eastl::get<I>(rhs));
+				return std::invoke(Compare{}, std::get<I>(lhs), std::get<I>(rhs));
 			}
 
 			template <typename Compare, typename Variant, size_t... VariantArgIndices>
-			static EA_CPP14_CONSTEXPR bool call_index(const Variant& lhs, const Variant& rhs, eastl::index_sequence<VariantArgIndices...>)
+			static EA_CPP14_CONSTEXPR bool call_index(const Variant& lhs, const Variant& rhs, std::index_sequence<VariantArgIndices...>)
 			{
 				using invoke_relational_visitor_func_ptr = bool (*)(const Variant&, const Variant&);
 
@@ -1459,18 +1459,18 @@ namespace eastl
 			template <typename Compare, typename Variant>
 			static EA_CONSTEXPR bool call(const Variant& lhs, const Variant& rhs)
 			{
-				return call_index<Compare>(lhs, rhs, eastl::make_index_sequence<eastl::variant_size<eastl::decay_t<Variant>>::value>());
+				return call_index<Compare>(lhs, rhs, std::make_index_sequence<std::variant_size<std::decay_t<Variant>>::value>());
 			}
 
 #if defined(EA_COMPILER_HAS_THREE_WAY_COMPARISON)
 			template <typename Compare, size_t I, typename Variant>
 			static EA_CONSTEXPR std::compare_three_way_result_t<Variant> invoke_relational_visitor_three_way(const Variant& lhs, const Variant& rhs)
 			{
-				return eastl::invoke(Compare{}, eastl::get<I>(lhs), eastl::get<I>(rhs));
+				return std::invoke(Compare{}, std::get<I>(lhs), std::get<I>(rhs));
 			}
 
 			template <typename Compare, typename Variant, size_t... VariantArgIndices>
-			static EA_CONSTEXPR std::compare_three_way_result_t<Variant> call_index_three_way(const Variant& lhs, const Variant& rhs, eastl::index_sequence<VariantArgIndices...>)
+			static EA_CONSTEXPR std::compare_three_way_result_t<Variant> call_index_three_way(const Variant& lhs, const Variant& rhs, std::index_sequence<VariantArgIndices...>)
 			{
 				using invoke_relational_visitor_func_ptr = std::compare_three_way_result_t<Variant> (*)(const Variant&, const Variant&);
 
@@ -1482,7 +1482,7 @@ namespace eastl
 			template <typename Compare, typename Variant>
 			static EA_CONSTEXPR std::compare_three_way_result_t<Variant> call_three_way(const Variant& lhs, const Variant& rhs)
 			{
-				return call_index_three_way<Compare>(lhs, rhs, eastl::make_index_sequence<eastl::variant_size<eastl::decay_t<Variant>>::value>());
+				return call_index_three_way<Compare>(lhs, rhs, std::make_index_sequence<std::variant_size<std::decay_t<Variant>>::value>());
 			}
 #endif
 		};
@@ -1513,7 +1513,7 @@ namespace eastl
 		if (lhs.index() != rhs.index()) return false;
 		if (lhs.valueless_by_exception()) return true;
 
-		return internal::CompareVariantRelational<eastl::equal_to<>>(lhs, rhs);
+		return internal::CompareVariantRelational<std::equal_to<>>(lhs, rhs);
 	}
 
 	template <class... Types>
@@ -1522,7 +1522,7 @@ namespace eastl
 		if (lhs.index() != rhs.index()) return true;
 		if (lhs.valueless_by_exception()) return false;
 
-		return internal::CompareVariantRelational<eastl::not_equal_to<>>(lhs, rhs);
+		return internal::CompareVariantRelational<std::not_equal_to<>>(lhs, rhs);
 	}
 
 	template <class... Types>
@@ -1533,7 +1533,7 @@ namespace eastl
 		if (lhs.index() < rhs.index()) return true;
 		if (lhs.index() > rhs.index()) return false;
 
-		return internal::CompareVariantRelational<eastl::less<>>(lhs, rhs);
+		return internal::CompareVariantRelational<std::less<>>(lhs, rhs);
 	}
 
 	template <class... Types>
@@ -1544,7 +1544,7 @@ namespace eastl
 		if (lhs.index() > rhs.index()) return true;
 		if (lhs.index() < rhs.index()) return false;
 
-		return internal::CompareVariantRelational<eastl::greater<>>(lhs, rhs);
+		return internal::CompareVariantRelational<std::greater<>>(lhs, rhs);
 	}
 
 	template <class... Types>
@@ -1555,7 +1555,7 @@ namespace eastl
 		if (lhs.index() < rhs.index()) return true;
 		if (lhs.index() > rhs.index()) return false;
 
-		return internal::CompareVariantRelational<eastl::less_equal<>>(lhs, rhs);
+		return internal::CompareVariantRelational<std::less_equal<>>(lhs, rhs);
 	}
 
 	template <class... Types>
@@ -1566,7 +1566,7 @@ namespace eastl
 		if (lhs.index() > rhs.index()) return true;
 		if (lhs.index() < rhs.index()) return false;
 
-		return internal::CompareVariantRelational<eastl::greater_equal<>>(lhs, rhs);
+		return internal::CompareVariantRelational<std::greater_equal<>>(lhs, rhs);
 	}
 
 #if defined(EA_COMPILER_HAS_THREE_WAY_COMPARISON)
@@ -1583,7 +1583,7 @@ namespace eastl
 	}
 #endif
 
-} // namespace eastl
+} // namespace std
 
 EA_RESTORE_VC_WARNING()
 

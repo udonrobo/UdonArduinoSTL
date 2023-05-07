@@ -4,7 +4,7 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Implements the class template eastl::ratio that provides compile-time
+// Implements the class template std::ratio that provides compile-time
 // rational arithmetic support. Each instantiation of this template exactly
 // represents any finite rational number as long as its numerator Num and
 // denominator Denom are representable as compile-time constants of type
@@ -18,14 +18,14 @@
 #define EASTL_RATIO_H
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
-	#pragma once 
+	#pragma once
 #endif
 
 #include <EABase/eabase.h>
 
 
 //////////////////////////////////////////////////////////////////////////////
-// namespace eastl 
+// namespace std
 // {
 // 	template <intmax_t N, intmax_t D = 1>
 // 	class ratio
@@ -35,13 +35,13 @@
 // 		static constexpr intmax_t den;
 // 		typedef ratio<num, den> type;
 // 	};
-// 
+//
 // 	// ratio arithmetic
 // 	template <class R1, class R2> using ratio_add      = ...;
 // 	template <class R1, class R2> using ratio_subtract = ...;
 // 	template <class R1, class R2> using ratio_multiply = ...;
 // 	template <class R1, class R2> using ratio_divide   = ...;
-// 
+//
 // 	// ratio comparison
 // 	template <class R1, class R2> struct ratio_equal;
 // 	template <class R1, class R2> struct ratio_not_equal;
@@ -49,7 +49,7 @@
 // 	template <class R1, class R2> struct ratio_less_equal;
 // 	template <class R1, class R2> struct ratio_greater;
 // 	template <class R1, class R2> struct ratio_greater_equal;
-// 
+//
 // 	// convenience SI typedefs
 // 	typedef ratio<1, 1000000000000000000000000> yocto;  // not supported
 // 	typedef ratio<1,    1000000000000000000000> zepto;  // not supported
@@ -79,8 +79,8 @@
 #include <EASTL/type_traits.h>
 
 
-namespace eastl 
-{ 
+namespace std
+{
 	///////////////////////////////////////////////////////////////////////
 	// compile-time overflow helpers
 	///////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ namespace eastl
 	template <intmax_t X, intmax_t Y>
 	struct AdditionOverFlow
 	{
-		static const bool c1 = (X <= 0 && 0 <= Y) || (Y < 0 && 0 < X);   // True if digits do not have the same sign. 
+		static const bool c1 = (X <= 0 && 0 <= Y) || (Y < 0 && 0 < X);   // True if digits do not have the same sign.
 		static const bool c2 = EASTL_RATIO_ABS(Y) <= INTMAX_MAX - EASTL_RATIO_ABS(X);
 		static const bool value = c1 || c2;
 	};
@@ -105,7 +105,7 @@ namespace eastl
 	// ratio (C++ Standard: 20.11.3)
 	///////////////////////////////////////////////////////////////////////
 	template <intmax_t N = 0, intmax_t D = 1>
-	class ratio 
+	class ratio
 	{
 	public:
 		static EA_CONSTEXPR_OR_CONST intmax_t num = N;
@@ -126,17 +126,17 @@ namespace eastl
 
 		// ct_add
 		template <intmax_t X, intmax_t Y>
-		struct ct_add 
-		{ 
-			static_assert(AdditionOverFlow<X,Y>::value, "compile-time addition overflow"); 
-			static const intmax_t value = X + Y; 
+		struct ct_add
+		{
+			static_assert(AdditionOverFlow<X,Y>::value, "compile-time addition overflow");
+			static const intmax_t value = X + Y;
 		};
 
 		// ct_sub
         template <intmax_t X, intmax_t Y>
         struct ct_sub
         {
-			static_assert(AdditionOverFlow<X,-Y>::value, "compile-time addition overflow"); 
+			static_assert(AdditionOverFlow<X,-Y>::value, "compile-time addition overflow");
 	        static const intmax_t value = X - Y;
         };
 
@@ -144,17 +144,17 @@ namespace eastl
         template <intmax_t X, intmax_t Y>
         struct ct_multi
         {
-			static_assert(MultiplyOverFlow<X,Y>::value, "compile-time multiply overflow"); 
+			static_assert(MultiplyOverFlow<X,Y>::value, "compile-time multiply overflow");
 	        static const intmax_t value = X * Y;
         };
 
         // ct_simplify
 		template <class R1>
 		struct ct_simplify
-		{ 
-			static const intmax_t divisor = Internal::gcd<R1::num, R1::den>::value; 
+		{
+			static const intmax_t divisor = Internal::gcd<R1::num, R1::den>::value;
 			static const intmax_t num = R1::num / divisor;
-			static const intmax_t den = R1::den / divisor; 
+			static const intmax_t den = R1::den / divisor;
 
 			typedef ratio<num, den> ratio_type;
 			typedef ct_simplify<R1> this_type;
@@ -182,10 +182,10 @@ namespace eastl
 				<
 					ct_add
 					<
-						ct_multi<R1::num, R2::den>::value, 
+						ct_multi<R1::num, R2::den>::value,
 						ct_multi<R2::num, R1::den>::value
-					>::value,							
-					ct_multi<R1::den, R2::den>::value  
+					>::value,
+					ct_multi<R1::den, R2::den>::value
 				>::type
 			>::ratio_type type;
 		};
@@ -202,10 +202,10 @@ namespace eastl
 				<
 					ct_sub
 					<
-						ct_multi<R1::num, R2::den>::value, 
+						ct_multi<R1::num, R2::den>::value,
 						ct_multi<R2::num, R1::den>::value
-					>::value,							
-					ct_multi<R1::den, R2::den>::value  
+					>::value,
+					ct_multi<R1::den, R2::den>::value
 				>::type
 			>::ratio_type type;
 		};
@@ -220,8 +220,8 @@ namespace eastl
 			<
 				typename ratio
 				<
-					ct_multi<R1::num, R2::num>::value, 
-					ct_multi<R1::den, R2::den>::value  
+					ct_multi<R1::num, R2::num>::value,
+					ct_multi<R1::den, R2::den>::value
 				>::type
 			>::ratio_type type;
 		};
@@ -236,8 +236,8 @@ namespace eastl
 			<
 				typename ratio
 				<
-					ct_multi<R1::num, R2::den>::value, 
-					ct_multi<R1::den, R2::num>::value  
+					ct_multi<R1::num, R2::den>::value,
+					ct_multi<R1::den, R2::num>::value
 				>::type
 			>::ratio_type type;
 		};
@@ -260,7 +260,7 @@ namespace eastl
 		template <class R1, class R2>
 		struct ratio_less
 		{
-	        static const bool value = (R1::num * R2::den) < (R2::num * R1::den); 
+	        static const bool value = (R1::num * R2::den) < (R2::num * R1::den);
         };
 	} // namespace Internal
 

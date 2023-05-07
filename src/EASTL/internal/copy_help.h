@@ -17,7 +17,7 @@
 #include <string.h> // memcpy, memcmp, memmove
 
 
-namespace eastl
+namespace std
 {
 	/// move / move_n / move_backward
 	/// copy / copy_n / copy_backward
@@ -67,7 +67,7 @@ namespace eastl
 		template <typename InputIterator, typename OutputIterator>
 		static OutputIterator move_or_copy(InputIterator first, InputIterator last, OutputIterator result)
 		{
-			typedef typename eastl::iterator_traits<InputIterator>::difference_type difference_type;
+			typedef typename std::iterator_traits<InputIterator>::difference_type difference_type;
 
 			for(difference_type n = (last - first); n > 0; --n, ++first, ++result)
 				*result = *first;
@@ -84,7 +84,7 @@ namespace eastl
 		static OutputIterator move_or_copy(InputIterator first, InputIterator last, OutputIterator result)
 		{
 			for(; first != last; ++result, ++first)
-				*result = eastl::move(*first);
+				*result = std::move(*first);
 			return result;
 		}
 	};
@@ -96,10 +96,10 @@ namespace eastl
 		template <typename InputIterator, typename OutputIterator>
 		static OutputIterator move_or_copy(InputIterator first, InputIterator last, OutputIterator result)
 		{
-			typedef typename eastl::iterator_traits<InputIterator>::difference_type difference_type;
+			typedef typename std::iterator_traits<InputIterator>::difference_type difference_type;
 
 			for(difference_type n = (last - first); n > 0; --n, ++first, ++result)
-				*result = eastl::move(*first);
+				*result = std::move(*first);
 
 			return result;
 		}
@@ -128,23 +128,23 @@ namespace eastl
 		// is_same<> directly.
 	#if !EASTL_STD_ITERATOR_CATEGORY_ENABLED || defined(EA_COMPILER_CPP20_ENABLED)
 		template <typename IC>
-		using is_contiguous_iterator_helper = eastl::is_same<IC, EASTL_ITC_NS::contiguous_iterator_tag>;
+		using is_contiguous_iterator_helper = std::is_same<IC, EASTL_ITC_NS::contiguous_iterator_tag>;
 	#else
 		template <typename IC>
-		using is_contiguous_iterator_helper = eastl::false_type;
+		using is_contiguous_iterator_helper = std::false_type;
 	#endif
 
 		template <typename InputIterator, typename OutputIterator>
 		struct can_be_memmoved_helper {
-			using IIC = typename eastl::iterator_traits<InputIterator>::iterator_category;
-			using OIC = typename eastl::iterator_traits<OutputIterator>::iterator_category;
-			using value_type_input = typename eastl::iterator_traits<InputIterator>::value_type;
-			using value_type_output = typename eastl::iterator_traits<OutputIterator>::value_type;
+			using IIC = typename std::iterator_traits<InputIterator>::iterator_category;
+			using OIC = typename std::iterator_traits<OutputIterator>::iterator_category;
+			using value_type_input = typename std::iterator_traits<InputIterator>::value_type;
+			using value_type_output = typename std::iterator_traits<OutputIterator>::value_type;
 
-			static constexpr bool value = eastl::is_trivially_copyable<value_type_output>::value &&
-				                          eastl::is_same<value_type_input, value_type_output>::value &&
-				                         (eastl::is_pointer<InputIterator>::value  || is_contiguous_iterator_helper<IIC>::value) &&
-				                         (eastl::is_pointer<OutputIterator>::value || is_contiguous_iterator_helper<OIC>::value);
+			static constexpr bool value = std::is_trivially_copyable<value_type_output>::value &&
+				                          std::is_same<value_type_input, value_type_output>::value &&
+				                         (std::is_pointer<InputIterator>::value  || is_contiguous_iterator_helper<IIC>::value) &&
+				                         (std::is_pointer<OutputIterator>::value || is_contiguous_iterator_helper<OIC>::value);
 
 		};
 	}
@@ -152,11 +152,11 @@ namespace eastl
 	template <bool isMove, typename InputIterator, typename OutputIterator>
 	inline OutputIterator move_and_copy_chooser(InputIterator first, InputIterator last, OutputIterator result)
 	{
-		typedef typename eastl::iterator_traits<InputIterator>::iterator_category  IIC;
+		typedef typename std::iterator_traits<InputIterator>::iterator_category  IIC;
 
 		const bool canBeMemmoved = internal::can_be_memmoved_helper<InputIterator, OutputIterator>::value;
 
-		return eastl::move_and_copy_helper<IIC, isMove, canBeMemmoved>::move_or_copy(first, last, result); // Need to chose based on the input iterator tag and not the output iterator tag, because containers accept input ranges of iterator types different than self.
+		return std::move_and_copy_helper<IIC, isMove, canBeMemmoved>::move_or_copy(first, last, result); // Need to chose based on the input iterator tag and not the output iterator tag, because containers accept input ranges of iterator types different than self.
 	}
 
 
@@ -164,7 +164,7 @@ namespace eastl
 	template <bool isMove, typename InputIterator, typename OutputIterator>
 	inline OutputIterator move_and_copy_unwrapper(InputIterator first, InputIterator last, OutputIterator result)
 	{
-		return OutputIterator(eastl::move_and_copy_chooser<isMove>(eastl::unwrap_iterator(first), eastl::unwrap_iterator(last), eastl::unwrap_iterator(result))); // Have to convert to OutputIterator because unwrap_iterator(result) could be a T*
+		return OutputIterator(std::move_and_copy_chooser<isMove>(std::unwrap_iterator(first), std::unwrap_iterator(last), std::unwrap_iterator(result))); // Have to convert to OutputIterator because unwrap_iterator(result) could be a T*
 	}
 
 
@@ -177,21 +177,21 @@ namespace eastl
 	/// Note: if result is within [first, last), move_backward must be used instead of move.
 	///
 	/// Example usage:
-	///     eastl::move(myArray.begin(), myArray.end(), myDestArray.begin());
+	///     std::move(myArray.begin(), myArray.end(), myDestArray.begin());
 	///
 	/// Reference implementation:
 	///     template <typename InputIterator, typename OutputIterator>
 	///     OutputIterator move(InputIterator first, InputIterator last, OutputIterator result)
 	///     {
 	///         while(first != last)
-	///             *result++ = eastl::move(*first++);
+	///             *result++ = std::move(*first++);
 	///         return result;
 	///     }
 
 	template <typename InputIterator, typename OutputIterator>
 	inline OutputIterator move(InputIterator first, InputIterator last, OutputIterator result)
 	{
-		return eastl::move_and_copy_unwrapper<true>(eastl::unwrap_iterator(first), eastl::unwrap_iterator(last), result);
+		return std::move_and_copy_unwrapper<true>(std::unwrap_iterator(first), std::unwrap_iterator(last), result);
 	}
 
 
@@ -212,10 +212,10 @@ namespace eastl
 	template <typename InputIterator, typename OutputIterator>
 	inline OutputIterator copy(InputIterator first, InputIterator last, OutputIterator result)
 	{
-		const bool isMove = eastl::is_move_iterator<InputIterator>::value; EA_UNUSED(isMove);
+		const bool isMove = std::is_move_iterator<InputIterator>::value; EA_UNUSED(isMove);
 
-		return eastl::move_and_copy_unwrapper<isMove>(eastl::unwrap_iterator(first), eastl::unwrap_iterator(last), result);
+		return std::move_and_copy_unwrapper<isMove>(std::unwrap_iterator(first), std::unwrap_iterator(last), result);
 	}
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_INTERNAL_COPY_HELP_H

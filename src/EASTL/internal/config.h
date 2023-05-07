@@ -160,7 +160,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 /// EA Standard Template Library
-namespace eastl
+namespace std
 {
 	// Intentionally empty.
 }
@@ -478,7 +478,7 @@ namespace eastl
 #ifndef EASTL_ASSERTION_FAILURE_DEFINED
 	#define EASTL_ASSERTION_FAILURE_DEFINED
 
-	namespace eastl
+	namespace std
 	{
 		typedef void (*EASTL_AssertionFailureFunction)(const char* pExpression, void* pContext);
 		EASTL_API void SetAssertionFailureFunction(EASTL_AssertionFailureFunction pFunction, void* pContext);
@@ -507,7 +507,7 @@ namespace eastl
 			EA_DISABLE_VC_WARNING(4127) \
 			do { \
 				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (eastl::AssertionFailure(#expression), 0)); \
+				(void)((expression) || (std::AssertionFailure(#expression), 0)); \
 			} while (0) \
 			EA_RESTORE_VC_WARNING()
 	#else
@@ -523,7 +523,7 @@ namespace eastl
 			EA_DISABLE_VC_WARNING(4127) \
 			do { \
 				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (eastl::AssertionFailure(#expression), 0)); \
+				(void)((expression) || (std::AssertionFailure(#expression), 0)); \
 			} while(0) \
 			EA_RESTORE_VC_WARNING()
 	#else
@@ -546,7 +546,7 @@ namespace eastl
 			EA_DISABLE_VC_WARNING(4127) \
 			do { \
 				EA_ANALYSIS_ASSUME(expression); \
-				(void)((expression) || (eastl::AssertionFailure(message), 0)); \
+				(void)((expression) || (std::AssertionFailure(message), 0)); \
 			} while (0) \
 			EA_RESTORE_VC_WARNING()
 	#else
@@ -568,7 +568,7 @@ namespace eastl
 
 #ifndef EASTL_FAIL_MSG
 	#if EASTL_ASSERT_ENABLED
-		#define EASTL_FAIL_MSG(message) (eastl::AssertionFailure(message))
+		#define EASTL_FAIL_MSG(message) (std::AssertionFailure(message))
 	#else
 		#define EASTL_FAIL_MSG(message)
 	#endif
@@ -1039,8 +1039,8 @@ namespace eastl
 // Defined as 0 or 1. Default is 0 until such day that it's deemed safe.
 // When enabled, enables operator= for other char types, e.g. for code
 // like this:
-//     eastl::string8  s8;
-//     eastl::string16 s16;
+//     std::string8  s8;
+//     std::string16 s16;
 //     s8 = s16;
 // This option is considered experimental, and may exist as such for an
 // indefinite amount of time.
@@ -1084,7 +1084,7 @@ namespace eastl
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef EASTL_STD_ITERATOR_CATEGORY_ENABLED
-	#define EASTL_STD_ITERATOR_CATEGORY_ENABLED 0
+	#define EASTL_STD_ITERATOR_CATEGORY_ENABLED 1
 #endif
 
 #if EASTL_STD_ITERATOR_CATEGORY_ENABLED
@@ -1710,7 +1710,7 @@ typedef EASTL_SSIZE_T eastl_ssize_t; // Signed version of eastl_size_t. Concept 
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-// namespace eastl
+// namespace std
 // {
 //     class allocator
 //     {
@@ -1748,11 +1748,11 @@ typedef EASTL_SSIZE_T eastl_ssize_t; // Signed version of eastl_size_t. Concept 
 #endif
 
 #ifndef EASTLAllocatorType
-	#define EASTLAllocatorType eastl::allocator
+	#define EASTLAllocatorType std::allocator
 #endif
 
 #ifndef EASTLDummyAllocatorType
-	#define EASTLDummyAllocatorType eastl::dummy_allocator
+	#define EASTLDummyAllocatorType std::dummy_allocator
 #endif
 
 #ifndef EASTLAllocatorDefault
@@ -1761,7 +1761,7 @@ typedef EASTL_SSIZE_T eastl_ssize_t; // Signed version of eastl_size_t. Concept 
 	// used when EASTL needs to allocate memory internally. There are very few cases where
 	// EASTL allocates memory internally, and in each of these it is for a sensible reason
 	// that is documented to behave as such.
-	#define EASTLAllocatorDefault eastl::GetDefaultAllocator
+	#define EASTLAllocatorDefault std::GetDefaultAllocator
 #endif
 
 
@@ -1899,7 +1899,7 @@ typedef EASTL_SSIZE_T eastl_ssize_t; // Signed version of eastl_size_t. Concept 
 
 
 /// EASTL_ENABLE_PAIR_FIRST_ELEMENT_CONSTRUCTOR
-/// This feature define allows users to toggle the problematic eastl::pair implicit
+/// This feature define allows users to toggle the problematic std::pair implicit
 /// single element constructor.
 #ifndef EASTL_ENABLE_PAIR_FIRST_ELEMENT_CONSTRUCTOR
 	#define EASTL_ENABLE_PAIR_FIRST_ELEMENT_CONSTRUCTOR 0
@@ -1923,7 +1923,7 @@ typedef EASTL_SSIZE_T eastl_ssize_t; // Signed version of eastl_size_t. Concept 
 #endif
 
 /// EASTL_CONSTEXPR_BIT_CAST_SUPPORTED
-/// eastl::bit_cast, in order to be implemented as constexpr, requires explicit compiler support.
+/// std::bit_cast, in order to be implemented as constexpr, requires explicit compiler support.
 /// This macro defines whether it's possible for bit_cast to be constexpr.
 ///
 #if (defined(EA_COMPILER_MSVC) && defined(EA_COMPILER_MSVC_VERSION_14_26) && EA_COMPILER_VERSION >= EA_COMPILER_MSVC_VERSION_14_26) \

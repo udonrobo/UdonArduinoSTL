@@ -5,8 +5,8 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // *** Note ***
-// *** This code is deprecated in favor of the C++11-conforming             *** 
-// *** eastl::unique_ptr template class found in <EASTL/unique_ptr.h>       *** 
+// *** This code is deprecated in favor of the C++11-conforming             ***
+// *** std::unique_ptr template class found in <EASTL/unique_ptr.h>       ***
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -24,12 +24,12 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// class scoped_array
 	///
-	/// A scoped_array is the same as scoped_ptr but for arrays. 
+	/// A scoped_array is the same as scoped_ptr but for arrays.
 	///
 	template <typename T, typename Deleter = smart_array_deleter<T> >
 	class scoped_array
@@ -70,7 +70,7 @@ namespace eastl
 
 		/// ~scoped_array
 		/// Destroys the owned pointer. The destructors for each of the objects
-		/// in the owned array will be called. 
+		/// in the owned array will be called.
 		~scoped_array()
 		{
 			Deleter del;
@@ -78,7 +78,7 @@ namespace eastl
 		}
 
 		/// reset
-		/// Deletes the owned pointer and takes ownership of the 
+		/// Deletes the owned pointer and takes ownership of the
 		/// passed in pointer. If the passed in pointer is the same
 		/// as the owned pointer, nothing is done.
 		/// Example usage:
@@ -96,7 +96,7 @@ namespace eastl
 		}
 
 		/// detach
-		/// This simply forgets the owned pointer. It doesn't 
+		/// This simply forgets the owned pointer. It doesn't
 		/// free it but rather assumes that the user does.
 		/// Example usage:
 		///    scoped_array<int> ptr(new int[6]);
@@ -111,7 +111,7 @@ namespace eastl
 		}
 
 		/// swap
-		/// Exchanges the owned pointer beween two scoped_array objects. 
+		/// Exchanges the owned pointer beween two scoped_array objects.
 		void swap(this_type& scopedArray)
 		{
 			// std::swap(mpArray, scopedArray.mpArray); // Not used so that we can reduce a dependency.
@@ -122,7 +122,7 @@ namespace eastl
 
 		/// operator[]
 		/// Returns a reference to the specified item in the owned pointer
-		/// array. 
+		/// array.
 		/// Example usage:
 		///    scoped_array<int> ptr(new int[6]);
 		///    int x = ptr[2];
@@ -133,9 +133,9 @@ namespace eastl
 		}
 
 		/// get
-		/// Returns the owned array pointer. 
+		/// Returns the owned array pointer.
 		/// Example usage:
-		///    struct X{ void DoSomething(); }; 
+		///    struct X{ void DoSomething(); };
 		///    scoped_array<int> ptr(new X[8]);
 		///    X** ppX = ptr.get();
 		///    ppX[2]->DoSomething();
@@ -145,12 +145,12 @@ namespace eastl
 		}
 
 		/// Implicit operator bool
-		/// Allows for using a scoped_ptr as a boolean. 
+		/// Allows for using a scoped_ptr as a boolean.
 		/// Example usage:
 		///    scoped_array<int> ptr(new int[8]);
 		///    if(ptr)
 		///        ++ptr[2];
-		///     
+		///
 		/// Note that below we do not use operator bool(). The reason for this
 		/// is that booleans automatically convert up to short, int, float, etc.
 		/// The result is that this: if(scopedArray == 1) would yield true (bad).
@@ -163,7 +163,7 @@ namespace eastl
 		}
 
 		/// operator!
-		/// This returns the opposite of operator bool; it returns true if 
+		/// This returns the opposite of operator bool; it returns true if
 		/// the owned pointer is null. Some compilers require this and some don't.
 		///    scoped_array<int> ptr(new int(3));
 		///    if(!ptr)
@@ -181,7 +181,7 @@ namespace eastl
 	/// Example usage:
 	///    unique_array<int> uniqueIntArray;
 	/// Example usage:
-	///    UNIQUE_ARRAY_T(int, eastl::smart_ptr_deleter<int>) uniqueIntArray;
+	///    UNIQUE_ARRAY_T(int, std::smart_ptr_deleter<int>) uniqueIntArray;
 	///
 	#if defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
 		#define UNIQUE_ARRAY_T(T, Deleter) scoped_array<T, Deleter>
@@ -194,7 +194,7 @@ namespace eastl
 
 
 	/// scoped_array
-	/// returns scoped_array::get() via the input scoped_array. 
+	/// returns scoped_array::get() via the input scoped_array.
 	template <typename T, typename D>
 	inline T* get_pointer(const scoped_array<T, D>& scopedArray)
 	{
@@ -223,7 +223,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

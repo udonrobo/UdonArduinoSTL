@@ -24,11 +24,11 @@
  * into locks. We would rather have user-code explicitly use locking primitives if their code cannot
  * be satisfied with atomic instructions on the given platform.
  */
-static_assert(__atomic_always_lock_free(1, 0), "eastl::atomic<T> where sizeof(T) == 1 must be lock-free!");
-static_assert(__atomic_always_lock_free(2, 0), "eastl::atomic<T> where sizeof(T) == 2 must be lock-free!");
-static_assert(__atomic_always_lock_free(4, 0), "eastl::atomic<T> where sizeof(T) == 4 must be lock-free!");
+static_assert(__atomic_always_lock_free(1, 0), "std::atomic<T> where sizeof(T) == 1 must be lock-free!");
+static_assert(__atomic_always_lock_free(2, 0), "std::atomic<T> where sizeof(T) == 2 must be lock-free!");
+static_assert(__atomic_always_lock_free(4, 0), "std::atomic<T> where sizeof(T) == 4 must be lock-free!");
 #if EA_PLATFORM_PTR_SIZE == 8
-	static_assert(__atomic_always_lock_free(8, 0), "eastl::atomic<T> where sizeof(T) == 8 must be lock-free!");
+	static_assert(__atomic_always_lock_free(8, 0), "std::atomic<T> where sizeof(T) == 8 must be lock-free!");
 #endif
 
 /**
@@ -41,13 +41,13 @@ static_assert(__atomic_always_lock_free(4, 0), "eastl::atomic<T> where sizeof(T)
  * gcc mailing lists argue that since load must be implemented with cmpxchg16b, then the __atomic bultin
  * cannot be used in read-only memory which is why they always call out to libatomic.
  * There is no way to tell gcc to not do that, unfortunately.
- * We don't care about the read-only restriction because our eastl::atomic<T> object is mutable
+ * We don't care about the read-only restriction because our std::atomic<T> object is mutable
  * and also msvc doesn't enforce this restriction thus to be fully platform agnostic we cannot either.
  *
  * Therefore, the follow static_assert is commented out for the time being, as it always fails on these compilers.
  * We still guarantee 128-bit atomics are lock-free by handrolling the inline assembly ourselves.
  *
- * static_assert(__atomic_always_lock_free(16, 0), "eastl::atomic<T> where sizeof(T) == 16 must be lock-free!");
+ * static_assert(__atomic_always_lock_free(16, 0), "std::atomic<T> where sizeof(T) == 16 must be lock-free!");
  */
 
 /**
@@ -56,7 +56,7 @@ static_assert(__atomic_always_lock_free(4, 0), "eastl::atomic<T> where sizeof(T)
  * Why do we do the cast to the unsigned fixed width types for every operation even though gcc/clang builtins are generics?
  * Well gcc/clang correctly-incorrectly call out to libatomic and do locking on user types that may be potentially misaligned.
  * struct UserType { uint8_t a,b; }; This given struct is 2 bytes in size but has only 1 byte alignment.
- * gcc/clang cannot and doesn't know that we always guarantee every type T is size aligned within eastl::atomic<T>.
+ * gcc/clang cannot and doesn't know that we always guarantee every type T is size aligned within std::atomic<T>.
  * Therefore it always emits calls into libatomic and does locking for structs like these which we do not want.
  * Therefore you'll notice we always cast each atomic ptr type to the equivalent unsigned fixed width type when doing the atomic operations.
  * This ensures all user types are size aligned and thus are lock free.

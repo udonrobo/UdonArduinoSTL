@@ -36,27 +36,27 @@ EA_DISABLE_ALL_VC_WARNINGS();
 EA_RESTORE_ALL_VC_WARNINGS();
 
 
-namespace eastl
+namespace std
 {
 
 	/// intrusive_hash_node
 	///
-	/// A hash_node stores an element in a hash table, much like a 
-	/// linked list node stores an element in a linked list. 
+	/// A hash_node stores an element in a hash table, much like a
+	/// linked list node stores an element in a linked list.
 	/// An intrusive_hash_node additionally can, via template parameter,
-	/// store a hash code in the node to speed up hash calculations 
+	/// store a hash code in the node to speed up hash calculations
 	/// and comparisons in some cases.
 	///
 	/// To consider: Make a version of intrusive_hash_node which is
-	/// templated on the container type. This would allow for the 
+	/// templated on the container type. This would allow for the
 	/// mpNext pointer to be the container itself and thus allow
-	/// for easier debugging. 
-	/// 
+	/// for easier debugging.
+	///
 	/// Example usage:
 	///   struct Widget : public intrusive_hash_node{ ... };
-	/// 
+	///
 	///   struct Dagget : public intrusive_hash_node_key<int>{ ... };
-	/// 
+	///
 	struct intrusive_hash_node
 	{
 		intrusive_hash_node* mpNext;
@@ -123,7 +123,7 @@ namespace eastl
 
 	/// intrusive_hashtable_iterator_base
 	///
-	/// An intrusive_hashtable_iterator_base iterates the entire hash table and 
+	/// An intrusive_hashtable_iterator_base iterates the entire hash table and
 	/// not just nodes within a single bucket. Users in general will use a hash
 	/// table iterator much more often, as it is much like other container
 	/// iterators (e.g. vector::iterator).
@@ -160,7 +160,7 @@ namespace eastl
 		void increment_bucket()
 		{
 			++mpBucket;
-			while(*mpBucket == NULL) // We store an extra bucket with some non-NULL value at the end 
+			while(*mpBucket == NULL) // We store an extra bucket with some non-NULL value at the end
 				++mpBucket;          // of the bucket array so that finding the end of the bucket
 			mpNode = *mpBucket;      // array is quick and simple.
 		}
@@ -180,7 +180,7 @@ namespace eastl
 
 	/// intrusive_hashtable_iterator
 	///
-	/// An intrusive_hashtable_iterator iterates the entire hash table and not 
+	/// An intrusive_hashtable_iterator iterates the entire hash table and not
 	/// just nodes within a single bucket. Users in general will use a hash
 	/// table iterator much more often, as it is much like other container
 	/// iterators (e.g. vector::iterator).
@@ -233,7 +233,7 @@ namespace eastl
 	/// use_intrusive_key
 	///
 	/// operator()(x) returns x.mKey. Used in maps, as opposed to sets.
-	/// This is a template policy implementation; it is an alternative to 
+	/// This is a template policy implementation; it is an alternative to
 	/// the use_self template implementation, which is used for sets.
 	///
 	template <typename Node, typename Key>
@@ -250,12 +250,12 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////////
 	/// intrusive_hashtable
 	///
-	template <typename Key, typename Value, typename Hash, typename Equal, 
+	template <typename Key, typename Value, typename Hash, typename Equal,
 			  size_t bucketCount, bool bConstIterators, bool bUniqueKeys>
 	class intrusive_hashtable
 	{
 	public:
-		typedef intrusive_hashtable<Key, Value, Hash, Equal, 
+		typedef intrusive_hashtable<Key, Value, Hash, Equal,
 									bucketCount, bConstIterators, bUniqueKeys>            this_type;
 		typedef Key                                                                       key_type;
 		typedef Value                                                                     value_type;
@@ -272,8 +272,8 @@ namespace eastl
 		typedef intrusive_hashtable_iterator<value_type, bConstIterators>                 iterator;
 		typedef intrusive_hashtable_iterator<value_type, true>                            const_iterator;
 		typedef typename type_select<bUniqueKeys, pair<iterator, bool>, iterator>::type   insert_return_type;
-		typedef typename type_select<bConstIterators, eastl::use_self<Value>, 
-												 eastl::use_intrusive_key<Value, key_type> >::type  extract_key;
+		typedef typename type_select<bConstIterators, std::use_self<Value>,
+												 std::use_intrusive_key<Value, key_type> >::type  extract_key;
 
 		enum
 		{
@@ -349,7 +349,7 @@ namespace eastl
 			{ return kBucketCount; }                // intrusive_hashtable::kBucketCount as a constant.
 
 		size_type bucket_size(size_type n) const EA_NOEXCEPT
-			{ return (size_type)eastl::distance(begin(n), end(n)); }
+			{ return (size_type)std::distance(begin(n), end(n)); }
 
 		size_type bucket(const key_type& k) const EA_NOEXCEPT
 			{ return (size_type)(mHash(k) % kBucketCount); }
@@ -359,7 +359,7 @@ namespace eastl
 			{ return (float)mnElementCount / (float)kBucketCount; }
 
 	public:
-		insert_return_type insert(value_type& value) 
+		insert_return_type insert(value_type& value)
 			{ return DoInsertValue(value, integral_constant<bool, bUniqueKeys>()); }
 
 		insert_return_type insert(const_iterator, value_type& value)
@@ -384,7 +384,7 @@ namespace eastl
 		/// than the hashtable value_type. A useful case of this is one whereby you have
 		/// a container of string objects but want to do searches via passing in char pointers.
 		/// The problem is that without this kind of find, you need to do the expensive operation
-		/// of converting the char pointer to a string so it can be used as the argument to the 
+		/// of converting the char pointer to a string so it can be used as the argument to the
 		/// find function.
 		///
 		/// Example usage:
@@ -411,8 +411,8 @@ namespace eastl
 
 		// The use for equal_range in a hash_table seems somewhat questionable.
 		// The primary reason for its existence is to replicate the interface of set/map.
-		eastl::pair<iterator, iterator>             equal_range(const key_type& k);
-		eastl::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
+		std::pair<iterator, iterator>             equal_range(const key_type& k);
+		std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 
 	public:
 		bool validate() const;
@@ -422,17 +422,17 @@ namespace eastl
 		Hash hash_function() const
 			{ return mHash; }
 
-		Equal equal_function() const    // Deprecated. Use key_eq() instead, as key_eq is what the new C++ standard 
+		Equal equal_function() const    // Deprecated. Use key_eq() instead, as key_eq is what the new C++ standard
 			{ return mEqual; }          // has specified in its hashtable (unordered_*) proposal.
 
-		const key_equal& key_eq() const 
+		const key_equal& key_eq() const
 			{ return mEqual; }
 
 		key_equal& key_eq()
 			{ return mEqual; }
 
 	protected:
-		eastl::pair<iterator, bool> DoInsertValue(value_type&, true_type);  // true_type means bUniqueKeys is true.
+		std::pair<iterator, bool> DoInsertValue(value_type&, true_type);  // true_type means bUniqueKeys is true.
 		iterator                    DoInsertValue(value_type&, false_type); // false_type means bUniqueKeys is false.
 
 		node_type* DoFindNode(node_type* pNode, const key_type& k) const;
@@ -451,7 +451,7 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename Value, bool bConst>
-	inline bool operator==(const intrusive_node_iterator<Value, bConst>& a, 
+	inline bool operator==(const intrusive_node_iterator<Value, bConst>& a,
 						   const intrusive_node_iterator<Value, bConst>& b)
 		{ return a.mpNode == b.mpNode; }
 
@@ -500,11 +500,11 @@ namespace eastl
 	void intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::swap(this_type& x)
 	{
 		for(size_t i = 0; i < kBucketCount; i++)
-			eastl::swap(mBucketArray[i], x.mBucketArray[i]);
+			std::swap(mBucketArray[i], x.mBucketArray[i]);
 
-		eastl::swap(mnElementCount, x.mnElementCount);
-		eastl::swap(mHash,          x.mHash);
-		eastl::swap(mEqual,         x.mEqual);
+		std::swap(mnElementCount, x.mnElementCount);
+		std::swap(mHash,          x.mHash);
+		std::swap(mEqual,         x.mEqual);
 	}
 
 
@@ -566,11 +566,11 @@ namespace eastl
 	///
 	template <typename H, typename U>
 	inline typename H::iterator intrusive_hashtable_find(H& hashTable, const U& u)
-		{ return hashTable.find_as(u, eastl::hash<U>(), eastl::equal_to_2<const typename H::key_type, U>()); }
+		{ return hashTable.find_as(u, std::hash<U>(), std::equal_to_2<const typename H::key_type, U>()); }
 
 	template <typename H, typename U>
 	inline typename H::const_iterator intrusive_hashtable_find(const H& hashTable, const U& u)
-		{ return hashTable.find_as(u, eastl::hash<U>(), eastl::equal_to_2<const typename H::key_type, U>()); }
+		{ return hashTable.find_as(u, std::hash<U>(), std::equal_to_2<const typename H::key_type, U>()); }
 
 
 
@@ -578,20 +578,20 @@ namespace eastl
 	template <typename U>
 	inline typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::iterator
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::find_as(const U& other)
-		{ return eastl::intrusive_hashtable_find(*this, other); }
+		{ return std::intrusive_hashtable_find(*this, other); }
 		// VC++ doesn't appear to like the following, though it seems correct to me.
 		// So we implement the workaround above until we can straighten this out.
-		//{ return find_as(other, eastl::hash<U>(), eastl::equal_to_2<const key_type, U>()); }
+		//{ return find_as(other, std::hash<U>(), std::equal_to_2<const key_type, U>()); }
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
 	template <typename U>
 	inline typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::const_iterator
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::find_as(const U& other) const
-		{ return eastl::intrusive_hashtable_find(*this, other); }
+		{ return std::intrusive_hashtable_find(*this, other); }
 		// VC++ doesn't appear to like the following, though it seems correct to me.
 		// So we implement the workaround above until we can straighten this out.
-		//{ return find_as(other, eastl::hash<U>(), eastl::equal_to_2<const key_type, U>()); }
+		//{ return find_as(other, std::hash<U>(), std::equal_to_2<const key_type, U>()); }
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
@@ -602,8 +602,8 @@ namespace eastl
 		size_type   result = 0;
 		extract_key extractKey; // extract_key is empty and thus this ctor is a no-op.
 
-		// To do: Make a specialization for bU (unique keys) == true and take 
-		// advantage of the fact that the count will always be zero or one in that case. 
+		// To do: Make a specialization for bU (unique keys) == true and take
+		// advantage of the fact that the count will always be zero or one in that case.
 		for(node_type* pNode = mBucketArray[n]; pNode; pNode = static_cast<node_type*>(pNode->mpNext))
 		{
 			if(mEqual(k, extractKey(*pNode)))
@@ -614,7 +614,7 @@ namespace eastl
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	eastl::pair<typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::iterator,
+	std::pair<typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::iterator,
 				typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::iterator>
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::equal_range(const key_type& k)
 	{
@@ -639,10 +639,10 @@ namespace eastl
 			if(!p1)
 				last.increment_bucket();
 
-			return eastl::pair<iterator, iterator>(first, last);
+			return std::pair<iterator, iterator>(first, last);
 		}
 
-		return eastl::pair<iterator, iterator>(iterator(mBucketArray + kBucketCount),
+		return std::pair<iterator, iterator>(iterator(mBucketArray + kBucketCount),
 											   iterator(mBucketArray + kBucketCount));
 	}
 
@@ -650,7 +650,7 @@ namespace eastl
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	eastl::pair<typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::const_iterator,
+	std::pair<typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::const_iterator,
 				typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::const_iterator>
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::equal_range(const key_type& k) const
 	{
@@ -675,16 +675,16 @@ namespace eastl
 			if(!p1)
 				last.increment_bucket();
 
-			return eastl::pair<const_iterator, const_iterator>(first, last);
+			return std::pair<const_iterator, const_iterator>(first, last);
 		}
 
-		return eastl::pair<const_iterator, const_iterator>(const_iterator(const_cast<node_type**>(mBucketArray) + kBucketCount),
+		return std::pair<const_iterator, const_iterator>(const_iterator(const_cast<node_type**>(mBucketArray) + kBucketCount),
 														   const_iterator(const_cast<node_type**>(mBucketArray) + kBucketCount));
 	}
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::node_type* 
+	inline typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::node_type*
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::DoFindNode(node_type* pNode, const key_type& k) const
 	{
 		extract_key extractKey; // extract_key is empty and thus this ctor is a no-op.
@@ -700,7 +700,7 @@ namespace eastl
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
 	template <typename U, typename BinaryPredicate>
-	inline typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::node_type* 
+	inline typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::node_type*
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::DoFindNode(node_type* pNode, const U& other, BinaryPredicate predicate) const
 	{
 		extract_key extractKey; // extract_key is empty and thus this ctor is a no-op.
@@ -715,7 +715,7 @@ namespace eastl
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	eastl::pair<typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::iterator, bool>
+	std::pair<typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::iterator, bool>
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::DoInsertValue(value_type& value, true_type) // true_type means bUniqueKeys is true.
 	{
 		// For sets (as opposed to maps), one could argue that all insertions are successful,
@@ -730,10 +730,10 @@ namespace eastl
 			mBucketArray[n] = &value;
 			++mnElementCount;
 
-			return eastl::pair<iterator, bool>(iterator(&value, mBucketArray + n), true);
+			return std::pair<iterator, bool>(iterator(&value, mBucketArray + n), true);
 		}
 
-		return eastl::pair<iterator, bool>(iterator(pNode, mBucketArray + n), false);
+		return std::pair<iterator, bool>(iterator(pNode, mBucketArray + n), false);
 	}
 
 
@@ -817,7 +817,7 @@ namespace eastl
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::size_type 
+	typename intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::size_type
 	intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::erase(const key_type& k)
 	{
 		const size_type n = (size_type)(mHash(k) % kBucketCount);
@@ -827,9 +827,9 @@ namespace eastl
 
 		// Note by Paul Pedriana:
 		// We have two loops here, and I'm not finding any easy way to having just one
-		// loop without changing the requirements of the hashtable node definition. 
-		// It's a problem of taking an address of a variable and converting it to the 
-		// address of another type without knowing what that type is. Perhaps I'm a 
+		// loop without changing the requirements of the hashtable node definition.
+		// It's a problem of taking an address of a variable and converting it to the
+		// address of another type without knowing what that type is. Perhaps I'm a
 		// little overly tired, so if there is a simple solution I am probably missing it.
 
 		while(pNodeBase && mEqual(k, extractKey(*pNodeBase)))
@@ -883,7 +883,7 @@ namespace eastl
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
 	inline bool intrusive_hashtable<K, V, H, Eq, bC, bM, bU>::validate() const
 	{
-		// Verify that the element count matches mnElementCount. 
+		// Verify that the element count matches mnElementCount.
 		size_type nElementCount = 0;
 
 		for(const_iterator temp = begin(), tempEnd = end(); temp != tempEnd; ++temp)
@@ -910,7 +910,7 @@ namespace eastl
 		}
 
 		if(i == end())
-			return (isf_valid | isf_current); 
+			return (isf_valid | isf_current);
 
 		return isf_none;
 	}
@@ -922,36 +922,36 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline bool operator==(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a, 
+	inline bool operator==(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a,
 						   const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& b)
 	{
-		return (a.size() == b.size()) && eastl::equal(a.begin(), a.end(), b.begin());
+		return (a.size() == b.size()) && std::equal(a.begin(), a.end(), b.begin());
 	}
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline bool operator!=(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a, 
+	inline bool operator!=(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a,
 						   const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& b)
 	{
 		return !(a == b);
 	}
 
 
-	// Comparing hash tables for less-ness is an odd thing to do. We provide it for 
+	// Comparing hash tables for less-ness is an odd thing to do. We provide it for
 	// completeness, though the user is advised to be wary of how they use this.
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline bool operator<(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a, 
+	inline bool operator<(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a,
 						  const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& b)
 	{
 		// This requires hash table elements to support operator<. Since the hash table
-		// doesn't compare elements via less (it does so via equals), we must use the 
+		// doesn't compare elements via less (it does so via equals), we must use the
 		// globally defined operator less for the elements.
-		return eastl::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+		return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
 	}
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline bool operator>(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a, 
+	inline bool operator>(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a,
 						  const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& b)
 	{
 		return b < a;
@@ -959,7 +959,7 @@ namespace eastl
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline bool operator<=(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a, 
+	inline bool operator<=(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a,
 						   const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& b)
 	{
 		return !(b < a);
@@ -967,7 +967,7 @@ namespace eastl
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline bool operator>=(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a, 
+	inline bool operator>=(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a,
 						   const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& b)
 	{
 		return !(a < b);
@@ -975,14 +975,14 @@ namespace eastl
 
 
 	template <typename K, typename V, typename H, typename Eq, size_t bC, bool bM, bool bU>
-	inline void swap(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a, 
+	inline void swap(const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& a,
 					 const intrusive_hashtable<K, V, H, Eq, bC, bM, bU>& b)
 	{
 		a.swap(b);
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 

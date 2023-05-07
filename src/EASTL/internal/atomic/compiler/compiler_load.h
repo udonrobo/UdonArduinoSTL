@@ -120,8 +120,8 @@
  */
 #define EASTL_COMPILER_ATOMIC_LOAD_READ_DEPENDS_N(type, ret, ptr)		\
 	{																	\
-		static_assert(eastl::is_pointer<type>::value, "eastl::atomic<T> : Read Depends Type must be a Pointer Type!"); \
-		static_assert(eastl::is_pointer<eastl::remove_pointer_t<decltype(ptr)>>::value, "eastl::atomic<T> : Read Depends Ptr must be a Pointer to a Pointer!"); \
+		static_assert(std::is_pointer<type>::value, "std::atomic<T> : Read Depends Type must be a Pointer Type!"); \
+		static_assert(std::is_pointer<std::remove_pointer_t<decltype(ptr)>>::value, "std::atomic<T> : Read Depends Ptr must be a Pointer to a Pointer!"); \
 																		\
 		ret = (*EASTL_ATOMIC_VOLATILE_CAST(ptr));						\
 	}

@@ -3,12 +3,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// This file implements a priority_queue that is just like the C++ 
+// This file implements a priority_queue that is just like the C++
 // std::priority_queue adapter class, except it has a couple extension functions.
 // The primary distinctions between this priority_queue and std::priority_queue are:
-//    - priority_queue has a couple extension functions that allow you to 
+//    - priority_queue has a couple extension functions that allow you to
 //      use a priority queue in extra ways. See the code for documentation.
-//    - priority_queue can contain objects with alignment requirements. 
+//    - priority_queue can contain objects with alignment requirements.
 //      std::priority_queue cannot do so without a bit of tedious non-portable effort.
 //    - priority_queue supports debug memory naming natively.
 //    - priority_queue is easier to read, debug, and visualize.
@@ -39,7 +39,7 @@ EA_DISABLE_VC_WARNING(4530 4571);
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_PRIORITY_QUEUE_DEFAULT_NAME
@@ -65,41 +65,41 @@ namespace eastl
 	///
 	/// A priority_queue is an adapter container which implements a
 	/// queue-like container whereby pop() returns the item of highest
-	/// priority. The entire queue isn't necessarily sorted; merely the 
-	/// first item in the queue happens to be of higher priority than 
+	/// priority. The entire queue isn't necessarily sorted; merely the
+	/// first item in the queue happens to be of higher priority than
 	/// other items. You can read about priority_queues in many books
 	/// on algorithms, such as "Algorithms" by Robert Sedgewick.
 	///
-	/// The Container type is a container which is random access and 
-	/// supports empty(), size(), clear(), insert(), front(), 
+	/// The Container type is a container which is random access and
+	/// supports empty(), size(), clear(), insert(), front(),
 	/// push_back(), and pop_back(). You would typically use vector
 	/// or deque.
-	/// 
-	/// Note that we don't provide functions in the priority_queue 
-	/// interface for working with allocators or names. The reason for 
+	///
+	/// Note that we don't provide functions in the priority_queue
+	/// interface for working with allocators or names. The reason for
 	/// this is that priority_queue is an adapter class which can work
-	/// with any standard sequence and not necessarily just a sequence 
-	/// provided by this library. So what we do is provide a member 
-	/// accessor function get_container() which allows the user to 
+	/// with any standard sequence and not necessarily just a sequence
+	/// provided by this library. So what we do is provide a member
+	/// accessor function get_container() which allows the user to
 	/// manipulate the sequence as needed. The user needs to be careful
 	/// not to change the container's contents, however.
 	///
 	/// Classic heaps allow for the concept of removing arbitrary items
 	/// and changing the priority of arbitrary items, though the C++
-	/// std heap (and thus priority_queue) functions don't support 
-	/// these operations. We have extended the heap algorithms and the 
+	/// std heap (and thus priority_queue) functions don't support
+	/// these operations. We have extended the heap algorithms and the
 	/// priority_queue implementation to support these operations.
 	///
 	///////////////////////////////////////////////////////////////////
 
-	template <typename T, typename Container = eastl::vector<T>, typename Compare = eastl::less<typename Container::value_type> >
+	template <typename T, typename Container = std::vector<T>, typename Compare = std::less<typename Container::value_type> >
 	class priority_queue
 	{
 	public:
 		typedef priority_queue<T, Container, Compare>        this_type;
 		typedef Container                                    container_type;
 		typedef Compare                                      compare_type;
-	  //typedef typename Container::allocator_type           allocator_type;  // We can't currently declare this because the container may be a type that doesn't have an allocator. 
+	  //typedef typename Container::allocator_type           allocator_type;  // We can't currently declare this because the container may be a type that doesn't have an allocator.
 		typedef typename Container::value_type               value_type;
 		typedef typename Container::reference                reference;
 		typedef typename Container::const_reference          const_reference;
@@ -113,27 +113,27 @@ namespace eastl
 	public:
 		priority_queue();
 
-		// Allocator is templated here because we aren't allowed to infer the allocator_type from the Container, as some containers (e.g. array) don't 
+		// Allocator is templated here because we aren't allowed to infer the allocator_type from the Container, as some containers (e.g. array) don't
 		// have allocators. For containers that don't have allocator types, you could use void or char as the Allocator template type.
 
-		template <class Allocator>                      
-		explicit priority_queue(const Allocator& allocator, typename eastl::enable_if<eastl::uses_allocator<container_type, Allocator>::value>::type* = NULL)
+		template <class Allocator>
+		explicit priority_queue(const Allocator& allocator, typename std::enable_if<std::uses_allocator<container_type, Allocator>::value>::type* = NULL)
 		   : c(allocator), comp()
 		{
-		}    
-
-		template <class Allocator>
-		priority_queue(const this_type& x, const Allocator& allocator, typename eastl::enable_if<eastl::uses_allocator<container_type, Allocator>::value>::type* = NULL)
-			: c(x.c, allocator), comp(x.comp)
-		{
-			eastl::make_heap(c.begin(), c.end(), comp);
 		}
 
 		template <class Allocator>
-		priority_queue(this_type&& x, const Allocator& allocator, typename eastl::enable_if<eastl::uses_allocator<container_type, Allocator>::value>::type* = NULL)
-			: c(eastl::move(x.c), allocator), comp(x.comp)
+		priority_queue(const this_type& x, const Allocator& allocator, typename std::enable_if<std::uses_allocator<container_type, Allocator>::value>::type* = NULL)
+			: c(x.c, allocator), comp(x.comp)
 		{
-			eastl::make_heap(c.begin(), c.end(), comp);
+			std::make_heap(c.begin(), c.end(), comp);
+		}
+
+		template <class Allocator>
+		priority_queue(this_type&& x, const Allocator& allocator, typename std::enable_if<std::uses_allocator<container_type, Allocator>::value>::type* = NULL)
+			: c(std::move(x.c), allocator), comp(x.comp)
+		{
+			std::make_heap(c.begin(), c.end(), comp);
 		}
 
 		explicit priority_queue(const compare_type& compare);
@@ -187,8 +187,8 @@ namespace eastl
 		container_type&       get_container();
 		const container_type& get_container() const;
 
-		void swap(this_type& x) EA_NOEXCEPT_IF((eastl::is_nothrow_swappable<this_type::container_type>::value && eastl::is_nothrow_swappable<this_type::compare_type>::value));
-		
+		void swap(this_type& x) EA_NOEXCEPT_IF((std::is_nothrow_swappable<this_type::container_type>::value && std::is_nothrow_swappable<this_type::compare_type>::value));
+
 		bool validate() const;
 
 	}; // class priority_queue
@@ -221,15 +221,15 @@ namespace eastl
 	inline priority_queue<T, Container, Compare>::priority_queue(const compare_type& compare, const container_type& x)
 		: c(x), comp(compare)
 	{
-		eastl::make_heap(c.begin(), c.end(), comp);
+		std::make_heap(c.begin(), c.end(), comp);
 	}
 
 
 	template <typename T, typename Container, typename Compare>
 	inline priority_queue<T, Container, Compare>::priority_queue(const compare_type& compare, container_type&& x)
-	  : c(eastl::move(x)), comp(compare)
+	  : c(std::move(x)), comp(compare)
 	{
-		eastl::make_heap(c.begin(), c.end(), comp);
+		std::make_heap(c.begin(), c.end(), comp);
 	}
 
 
@@ -238,7 +238,7 @@ namespace eastl
 		: c(), comp(compare)
 	{
 		c.insert(c.end(), ilist.begin(), ilist.end());
-		eastl::make_heap(c.begin(), c.end(), comp);
+		std::make_heap(c.begin(), c.end(), comp);
 	}
 
 
@@ -248,7 +248,7 @@ namespace eastl
 	inline priority_queue<T, Container, Compare>::priority_queue(InputIterator first, InputIterator last)
 		: c(first, last), comp()
 	{
-		eastl::make_heap(c.begin(), c.end(), comp);
+		std::make_heap(c.begin(), c.end(), comp);
 	}
 
 
@@ -257,7 +257,7 @@ namespace eastl
 	inline priority_queue<T, Container, Compare>::priority_queue(InputIterator first, InputIterator last, const compare_type& compare)
 		: c(first, last), comp(compare)
 	{
-		eastl::make_heap(c.begin(), c.end(), comp);
+		std::make_heap(c.begin(), c.end(), comp);
 	}
 
 
@@ -267,17 +267,17 @@ namespace eastl
 		: c(x), comp(compare)
 	{
 		c.insert(c.end(), first, last);
-		eastl::make_heap(c.begin(), c.end(), comp);
+		std::make_heap(c.begin(), c.end(), comp);
 	}
 
 
 	template <typename T, typename Container, typename Compare>
 	template <typename InputIterator>
 	inline priority_queue<T, Container, Compare>::priority_queue(InputIterator first, InputIterator last, const compare_type& compare, container_type&& x)
-		: c(eastl::move(x)), comp(compare)
+		: c(std::move(x)), comp(compare)
 	{
 		c.insert(c.end(), first, last);
-		eastl::make_heap(c.begin(), c.end(), comp);
+		std::make_heap(c.begin(), c.end(), comp);
 	}
 
 
@@ -311,7 +311,7 @@ namespace eastl
 			try
 			{
 				c.push_back(value);
-				eastl::push_heap(c.begin(), c.end(), comp);
+				std::push_heap(c.begin(), c.end(), comp);
 			}
 			catch(...)
 			{
@@ -320,7 +320,7 @@ namespace eastl
 			}
 		#else
 			c.push_back(value);
-			eastl::push_heap(c.begin(), c.end(), comp);
+			std::push_heap(c.begin(), c.end(), comp);
 		#endif
 	}
 
@@ -331,8 +331,8 @@ namespace eastl
 		#if EASTL_EXCEPTIONS_ENABLED
 			try
 			{
-				c.push_back(eastl::move(value));
-				eastl::push_heap(c.begin(), c.end(), comp);
+				c.push_back(std::move(value));
+				std::push_heap(c.begin(), c.end(), comp);
 			}
 			catch(...)
 			{
@@ -340,8 +340,8 @@ namespace eastl
 				throw;
 			}
 		#else
-			c.push_back(eastl::move(value));
-			eastl::push_heap(c.begin(), c.end(), comp);
+			c.push_back(std::move(value));
+			std::push_heap(c.begin(), c.end(), comp);
 		#endif
 	}
 
@@ -350,7 +350,7 @@ namespace eastl
 	template <class... Args>
 	inline void priority_queue<T, Container, Compare>::emplace(Args&&... args)
 	{
-		push(value_type(eastl::forward<Args>(args)...)); // The C++11 Standard 23.6.4/1 states that c.emplace is used, but also declares that c doesn't need to have an emplace function.
+		push(value_type(std::forward<Args>(args)...)); // The C++11 Standard 23.6.4/1 states that c.emplace is used, but also declares that c doesn't need to have an emplace function.
 	}
 
 
@@ -360,7 +360,7 @@ namespace eastl
 		#if EASTL_EXCEPTIONS_ENABLED
 			try
 			{
-				eastl::pop_heap(c.begin(), c.end(), comp);
+				std::pop_heap(c.begin(), c.end(), comp);
 				c.pop_back();
 			}
 			catch(...)
@@ -369,7 +369,7 @@ namespace eastl
 				throw;
 			}
 		#else
-			eastl::pop_heap(c.begin(), c.end(), comp);
+			std::pop_heap(c.begin(), c.end(), comp);
 			c.pop_back();
 		#endif
 	}
@@ -378,7 +378,7 @@ namespace eastl
 	template <typename T, typename Container, typename Compare>
 	inline void priority_queue<T, Container, Compare>::pop(value_type& value)
 	{
-		value = eastl::move(c.front());  // To consider: value = move_if_noexcept_assignable(c.front());
+		value = std::move(c.front());  // To consider: value = move_if_noexcept_assignable(c.front());
 		pop();
 	}
 
@@ -386,14 +386,14 @@ namespace eastl
 	template <typename T, typename Container, typename Compare>
 	inline void priority_queue<T, Container, Compare>::change(size_type n) // This function is not in the STL std::priority_queue.
 	{
-		eastl::change_heap(c.begin(), c.size(), n, comp);
+		std::change_heap(c.begin(), c.size(), n, comp);
 	}
 
 
 	template <typename T, typename Container, typename Compare>
 	inline void priority_queue<T, Container, Compare>::remove(size_type n) // This function is not in the STL std::priority_queue.
 	{
-		eastl::remove_heap(c.begin(), c.size(), n, comp);
+		std::remove_heap(c.begin(), c.size(), n, comp);
 		c.pop_back();
 	}
 
@@ -415,10 +415,10 @@ namespace eastl
 
 
 	template <typename T, typename Container, typename Compare>
-	inline void priority_queue<T, Container, Compare>::swap(this_type& x) EA_NOEXCEPT_IF((eastl::is_nothrow_swappable<this_type::container_type>::value && 
-																						  eastl::is_nothrow_swappable<this_type::compare_type>::value))
+	inline void priority_queue<T, Container, Compare>::swap(this_type& x) EA_NOEXCEPT_IF((std::is_nothrow_swappable<this_type::container_type>::value &&
+																						  std::is_nothrow_swappable<this_type::compare_type>::value))
 	{
-		using eastl::swap;
+		using std::swap;
 		swap(c, x.c);
 		swap(comp, x.comp);
 	}
@@ -428,7 +428,7 @@ namespace eastl
 	inline bool
 	priority_queue<T, Container, Compare>::validate() const
 	{
-		return c.validate() && eastl::is_heap(c.begin(), c.end(), comp);
+		return c.validate() && std::is_heap(c.begin(), c.end(), comp);
 	}
 
 
@@ -475,14 +475,14 @@ namespace eastl
 
 
 	template <class T, class Container, class Compare>
-	inline void swap(priority_queue<T, Container, Compare>& a,  priority_queue<T, Container, Compare>& b) EA_NOEXCEPT_IF((eastl::is_nothrow_swappable<typename priority_queue<T, Container, Compare>::container_type>::value && 
-																														  eastl::is_nothrow_swappable<typename priority_queue<T, Container, Compare>::compare_type>::value)) // EDG has a bug and won't let us use Container in this noexcept statement
+	inline void swap(priority_queue<T, Container, Compare>& a,  priority_queue<T, Container, Compare>& b) EA_NOEXCEPT_IF((std::is_nothrow_swappable<typename priority_queue<T, Container, Compare>::container_type>::value &&
+																														  std::is_nothrow_swappable<typename priority_queue<T, Container, Compare>::compare_type>::value)) // EDG has a bug and won't let us use Container in this noexcept statement
 	{
 		a.swap(b);
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 EA_RESTORE_VC_WARNING();

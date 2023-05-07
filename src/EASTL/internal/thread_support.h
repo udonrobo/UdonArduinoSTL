@@ -14,10 +14,10 @@
 #include <EASTL/internal/config.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-// NOTE(rparolin): We need a fallback mutex implementation because the Microsoft implementation 
+// NOTE(rparolin): We need a fallback mutex implementation because the Microsoft implementation
 // of std::mutex can not be included in managed-cpp code.
 //
-// fatal error C1189: <mutex> is not supported when compiling with /clr or /clr:pure 
+// fatal error C1189: <mutex> is not supported when compiling with /clr or /clr:pure
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 #if !defined(EASTL_CPP11_MUTEX_ENABLED)
 	#if defined(EA_HAVE_CPP11_MUTEX) && !defined(EA_COMPILER_MANAGED_CPP)
@@ -74,7 +74,7 @@ EA_DISABLE_VC_WARNING(4625 4626 4275);
 //
 // Defined as 0 or 1, based on existing support.
 // Identifies if thread support (e.g. atomics, mutexes) is available for use.
-// The large majority of EASTL doesn't use thread support, but a few parts 
+// The large majority of EASTL doesn't use thread support, but a few parts
 // of it (e.g. shared_ptr) do.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -89,7 +89,7 @@ EA_DISABLE_VC_WARNING(4625 4626 4275);
 #endif
 
 
-namespace eastl
+namespace std
 {
 	namespace Internal
 	{
@@ -151,7 +151,7 @@ namespace eastl
 
 	} // namespace Internal
 
-} // namespace eastl
+} // namespace std
 
 
 EA_RESTORE_VC_WARNING();

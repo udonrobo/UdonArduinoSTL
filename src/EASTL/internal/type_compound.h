@@ -19,43 +19,43 @@
 #endif
 
 
-namespace eastl
+namespace std
 {
 
 	///////////////////////////////////////////////////////////////////////
 	// extent
 	//
-	// extent<T, I>::value is an integral type representing the number of 
+	// extent<T, I>::value is an integral type representing the number of
 	// elements in the Ith dimension of array type T.
-	// 
+	//
 	// For a given array type T[N], extent<T[N]>::value == N.
 	// For a given multi-dimensional array type T[M][N], extent<T[M][N], 0>::value == N.
 	// For a given multi-dimensional array type T[M][N], extent<T[M][N], 1>::value == M.
 	// For a given array type T and a given dimension I where I >= rank<T>::value, extent<T, I>::value == 0.
 	// For a given array type of unknown extent T[], extent<T[], 0>::value == 0.
 	// For a given non-array type T and an arbitrary dimension I, extent<T, I>::value == 0.
-	// 
+	//
 	///////////////////////////////////////////////////////////////////////
 
 	#define EASTL_TYPE_TRAIT_extent_CONFORMANCE 1    // extent is conforming.
 
-	template<typename T, unsigned N> 
-	struct extent_help : public eastl::integral_constant<size_t, 0> {};
+	template<typename T, unsigned N>
+	struct extent_help : public std::integral_constant<size_t, 0> {};
 
 	template<typename T, unsigned I>
-	struct extent_help<T[I], 0> : public eastl::integral_constant<size_t, I> {};
+	struct extent_help<T[I], 0> : public std::integral_constant<size_t, I> {};
 
 	template<typename T, unsigned N, unsigned I>
-	struct extent_help<T[I], N> : public eastl::extent_help<T, N - 1> { };
+	struct extent_help<T[I], N> : public std::extent_help<T, N - 1> { };
 
 	template<typename T, unsigned N>
-	struct extent_help<T[], N> : public eastl::extent_help<T, N - 1> {};
+	struct extent_help<T[], N> : public std::extent_help<T, N - 1> {};
 
 	template<typename T, unsigned N = 0> // extent uses unsigned instead of size_t.
-	struct extent : public eastl::extent_help<T, N> { };
+	struct extent : public std::extent_help<T, N> { };
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
-		template<typename T, unsigned N = 0> 
+		template<typename T, unsigned N = 0>
 		EA_CONSTEXPR auto extent_v = extent<T, N>::value;
 	#endif
 
@@ -63,7 +63,7 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 	// is_array
 	//
-	// is_array<T>::value == true if and only if T is an array type, 
+	// is_array<T>::value == true if and only if T is an array type,
 	// including unbounded array types.
 	//
 	///////////////////////////////////////////////////////////////////////
@@ -71,13 +71,13 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_is_array_CONFORMANCE 1    // is_array is conforming; doesn't make mistakes.
 
 	template<typename T>
-	struct is_array : public eastl::false_type {};
+	struct is_array : public std::false_type {};
 
 	template<typename T>
-	struct is_array<T[]> : public eastl::true_type {};
+	struct is_array<T[]> : public std::true_type {};
 
 	template<typename T, size_t N>
-	struct is_array<T[N]> : public eastl::true_type {};
+	struct is_array<T[N]> : public std::true_type {};
 
 	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
 		template<typename T>
@@ -89,36 +89,36 @@ namespace eastl
 	// is_array_of_known_bounds
 	//
 	// Not part of the C++11 Standard.
-	// is_array_of_known_bounds<T>::value is true if T is an array and is 
+	// is_array_of_known_bounds<T>::value is true if T is an array and is
 	// of known bounds. is_array_of_unknown_bounds<int[3]>::value == true,
 	// while is_array_of_unknown_bounds<int[]>::value = false.
-	// 
+	//
 	///////////////////////////////////////////////////////////////////////
 
 	template<typename T>
 	struct is_array_of_known_bounds
-		: public eastl::integral_constant<bool, eastl::extent<T>::value != 0> {};
+		: public std::integral_constant<bool, std::extent<T>::value != 0> {};
 
 
 	///////////////////////////////////////////////////////////////////////
 	// is_array_of_unknown_bounds
 	//
 	// Not part of the C++11 Standard.
-	// is_array_of_unknown_bounds<T>::value is true if T is an array but is 
+	// is_array_of_unknown_bounds<T>::value is true if T is an array but is
 	// of unknown bounds. is_array_of_unknown_bounds<int[3]>::value == false,
 	// while is_array_of_unknown_bounds<int[]>::value = true.
-	// 
+	//
 	///////////////////////////////////////////////////////////////////////
 
 	template<typename T>
 	struct is_array_of_unknown_bounds
-		: public eastl::integral_constant<bool, eastl::is_array<T>::value && (eastl::extent<T>::value == 0)> {};
+		: public std::integral_constant<bool, std::is_array<T>::value && (std::extent<T>::value == 0)> {};
 
 
 	///////////////////////////////////////////////////////////////////////
 	// is_member_function_pointer
 	//
-	// is_member_function_pointer<T>::value == true if and only if T is a 
+	// is_member_function_pointer<T>::value == true if and only if T is a
 	// pointer to member function type.
 	//
 	///////////////////////////////////////////////////////////////////////
@@ -161,11 +161,11 @@ namespace eastl
 	namespace internal {
 		template <typename T>
 		struct is_member_pointer_helper
-			: public eastl::false_type {};
+			: public std::false_type {};
 
 		template <typename T, typename U>
 		struct is_member_pointer_helper<U T::*>
-			: public eastl::true_type {};
+			: public std::true_type {};
 	}
 
 	template<typename T>
@@ -181,7 +181,7 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 	// is_member_object_pointer
 	//
-	// is_member_object_pointer<T>::value == true if and only if T is a 
+	// is_member_object_pointer<T>::value == true if and only if T is a
 	// pointer to data member type.
 	//
 	///////////////////////////////////////////////////////////////////////
@@ -189,9 +189,9 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_is_member_object_pointer_CONFORMANCE 1    // is_member_object_pointer is conforming; doesn't make mistakes.
 
 	template<typename T>
-	struct is_member_object_pointer : public eastl::integral_constant<bool,
-																	  eastl::is_member_pointer<T>::value &&
-																	 !eastl::is_member_function_pointer<T>::value
+	struct is_member_object_pointer : public std::integral_constant<bool,
+																	  std::is_member_pointer<T>::value &&
+																	 !std::is_member_function_pointer<T>::value
 																	 > {};
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template<typename T>
@@ -202,8 +202,8 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 	// is_pointer
 	//
-	// is_pointer<T>::value == true if and only if T is a pointer type. 
-	// This category includes function pointer types, but not pointer to 
+	// is_pointer<T>::value == true if and only if T is a pointer type.
+	// This category includes function pointer types, but not pointer to
 	// member types.
 	//
 	///////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ namespace eastl
 	template <typename T>
 	struct is_pointer_value : public type_and<is_pointer_helper<T>::value, type_not<is_member_pointer<T>::value>::value> {};
 
-	template <typename T> 
+	template <typename T>
 	struct is_pointer : public integral_constant<bool, is_pointer_value<T>::value>{};
 
 	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
@@ -233,21 +233,21 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 	// is_convertible
 	//
-	// Given two (possible identical) types From and To, is_convertible<From, To>::value == true 
-	// if and only if an lvalue of type From can be implicitly converted to type To, 
+	// Given two (possible identical) types From and To, is_convertible<From, To>::value == true
+	// if and only if an lvalue of type From can be implicitly converted to type To,
 	// or is_void<To>::value == true
-	// 
+	//
 	// An instance of the type predicate holds true if the expression To to = from;, where from is an object of type From, is well-formed.
 	//
 	// is_convertible may only be applied to complete types.
-	// Type To may not be an abstract type. 
-	// If the conversion is ambiguous, the program is ill-formed. 
-	// If either or both of From and To are class types, and the conversion would invoke 
-	// non-public member functions of either From or To (such as a private constructor of To, 
+	// Type To may not be an abstract type.
+	// If the conversion is ambiguous, the program is ill-formed.
+	// If either or both of From and To are class types, and the conversion would invoke
+	// non-public member functions of either From or To (such as a private constructor of To,
 	// or a private conversion operator of From), the program is ill-formed.
 	//
-	// Note that without compiler help, both is_convertible and is_base 
-	// can produce compiler errors if the conversion is ambiguous. 
+	// Note that without compiler help, both is_convertible and is_base
+	// can produce compiler errors if the conversion is ambiguous.
 	// Example:
 	//    struct A {};
 	//    struct B : A {};
@@ -269,9 +269,9 @@ namespace eastl
 	#else
 		#define EASTL_TYPE_TRAIT_is_convertible_CONFORMANCE 1
 
-		template<typename From, typename To, bool = eastl::is_void<From>::value || eastl::is_function<To>::value || eastl::is_array<To>::value >
+		template<typename From, typename To, bool = std::is_void<From>::value || std::is_function<To>::value || std::is_array<To>::value >
 		struct is_convertible_helper // Anything is convertible to void. Nothing is convertible to a function or an array.
-			{ static const bool value = eastl::is_void<To>::value; };
+			{ static const bool value = std::is_void<To>::value; };
 
 		template<typename From, typename To>
 		class is_convertible_helper<From, To, false>
@@ -280,10 +280,10 @@ namespace eastl
 			static void ToFunction(To1);    // We try to call this function with an instance of From. It is valid if From can be converted to To.
 
 			template<typename /*From1*/, typename /*To1*/>
-			static eastl::no_type is(...);
+			static std::no_type is(...);
 
 			template<typename From1, typename To1>
-			static decltype(ToFunction<To1>(eastl::declval<From1>()), eastl::yes_type()) is(int);
+			static decltype(ToFunction<To1>(std::declval<From1>()), std::yes_type()) is(int);
 
 		public:
 			static const bool value = sizeof(is<From, To>(0)) == 1;
@@ -303,7 +303,7 @@ namespace eastl
 
 	///////////////////////////////////////////////////////////////////////
 	// is_nothrow_convertible
-	// 
+	//
 	// https://en.cppreference.com/w/cpp/types/is_convertible
 	//
 	// template<typename From, typename To>
@@ -316,7 +316,7 @@ namespace eastl
 
 	///////////////////////////////////////////////////////////////////////
 	// is_explicitly_convertible
-	// 
+	//
 	// This sometime-seen extension trait is the same as is_constructible
 	// and so we don't define it.
 	//
@@ -334,13 +334,13 @@ namespace eastl
 	//
 	// There is no way to tell if a type is a union without compiler help.
 	// As of this writing, only Metrowerks v8+ supports such functionality
-	// via 'msl::is_union<T>::value'. The user can force something to be 
+	// via 'msl::is_union<T>::value'. The user can force something to be
 	// evaluated as a union via EASTL_DECLARE_UNION.
 	///////////////////////////////////////////////////////////////////////
 	#if EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(_MSC_VER) || defined(EA_COMPILER_GNUC) || (defined(__clang__) && EA_COMPILER_HAS_FEATURE(is_union)))
 		#define EASTL_TYPE_TRAIT_is_union_CONFORMANCE 1    // is_union is conforming.
 
-		template <typename T> 
+		template <typename T>
 		struct is_union : public integral_constant<bool, __is_union(T)>{};
 	#else
 		#define EASTL_TYPE_TRAIT_is_union_CONFORMANCE 0    // is_union is not fully conforming.
@@ -348,7 +348,7 @@ namespace eastl
 		template <typename T> struct is_union : public false_type{};
 	#endif
 
-	#define EASTL_DECLARE_UNION(T) namespace eastl{ template <> struct is_union<T> : public true_type{}; template <> struct is_union<const T> : public true_type{}; }
+	#define EASTL_DECLARE_UNION(T) namespace std{ template <> struct is_union<T> : public true_type{}; template <> struct is_union<const T> : public true_type{}; }
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template<typename T>
@@ -360,27 +360,27 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 	// is_class
 	//
-	// is_class<T>::value == true if and only if T is a class or struct 
+	// is_class<T>::value == true if and only if T is a class or struct
 	// type (and not a union type).
 	//
-	// Without specific compiler help, it is not possible to 
+	// Without specific compiler help, it is not possible to
 	// distinguish between unions and classes. As a result, is_class
 	// will erroneously evaluate to true for union types.
 	///////////////////////////////////////////////////////////////////////
 	#if EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(_MSC_VER) || defined(EA_COMPILER_GNUC) || (defined(__clang__) && EA_COMPILER_HAS_FEATURE(is_class)))
 		#define EASTL_TYPE_TRAIT_is_class_CONFORMANCE 1    // is_class is conforming.
 
-		template <typename T> 
+		template <typename T>
 		struct is_class : public integral_constant<bool, __is_class(T)>{};
 	#elif defined(__EDG__)
 		#define EASTL_TYPE_TRAIT_is_class_CONFORMANCE   EASTL_TYPE_TRAIT_is_union_CONFORMANCE
-	   
+
 		typedef char yes_array_type[1];
 		typedef char no_array_type[2];
 		template <typename U> static yes_array_type& is_class_helper(void (U::*)());
 		template <typename U> static no_array_type& is_class_helper(...);
 
-		template <typename T> 
+		template <typename T>
 		struct is_class : public integral_constant<bool,
 			sizeof(is_class_helper<T>(0)) == sizeof(yes_array_type) && !is_union<T>::value
 		>{};
@@ -390,7 +390,7 @@ namespace eastl
 		template <typename U> static yes_type is_class_helper(void (U::*)());
 		template <typename U> static no_type  is_class_helper(...);
 
-		template <typename T> 
+		template <typename T>
 		struct is_class : public integral_constant<bool,
 			sizeof(is_class_helper<T>(0)) == sizeof(yes_type) && !is_union<T>::value
 		>{};
@@ -398,7 +398,7 @@ namespace eastl
 		#define EASTL_TYPE_TRAIT_is_class_CONFORMANCE 0    // is_class is not fully conforming.
 
 		// GCC 2.x version, due to GCC being broken.
-		template <typename T> 
+		template <typename T>
 		struct is_class : public false_type{};
 	#endif
 
@@ -411,17 +411,17 @@ namespace eastl
 
 	///////////////////////////////////////////////////////////////////////
 	// is_polymorphic
-	// 
-	// is_polymorphic<T>::value == true if and only if T is a class or struct 
-	// that declares or inherits a virtual function. is_polymorphic may only 
+	//
+	// is_polymorphic<T>::value == true if and only if T is a class or struct
+	// that declares or inherits a virtual function. is_polymorphic may only
 	// be applied to complete types.
 	//
 	///////////////////////////////////////////////////////////////////////
 
 	#if EASTL_COMPILER_INTRINSIC_TYPE_TRAITS_AVAILABLE && (defined(_MSC_VER) || defined(EA_COMPILER_GNUC) || (defined(__clang__) && EA_COMPILER_HAS_FEATURE(is_polymorphic)))
-		#define EASTL_TYPE_TRAIT_is_polymorphic_CONFORMANCE 1    // is_polymorphic is conforming. 
+		#define EASTL_TYPE_TRAIT_is_polymorphic_CONFORMANCE 1    // is_polymorphic is conforming.
 
-		template <typename T> 
+		template <typename T>
 		struct is_polymorphic : public integral_constant<bool, __is_polymorphic(T)>{};
 	#else
 		#define EASTL_TYPE_TRAIT_is_polymorphic_CONFORMANCE 1    // is_polymorphic is conforming.
@@ -468,7 +468,7 @@ namespace eastl
 			static const bool value = imp_type::value;
 		};
 
-		template <typename T> 
+		template <typename T>
 		struct is_polymorphic : public integral_constant<bool, is_polymorphic_value<T>::value>{};
 	#endif
 
@@ -489,14 +489,14 @@ namespace eastl
 	//    is_void<T>::value == false
 	//
 	// The C++ standard, section 3.9p9, states: "An object type is a
-	// (possibly cv-qualified) type that is not a function type, not a 
+	// (possibly cv-qualified) type that is not a function type, not a
 	// reference type, and not incomplete (except for an incompletely
 	// defined object type).
 	///////////////////////////////////////////////////////////////////////
 
 	#define EASTL_TYPE_TRAIT_is_object_CONFORMANCE  (EASTL_TYPE_TRAIT_is_reference_CONFORMANCE && EASTL_TYPE_TRAIT_is_void_CONFORMANCE && EASTL_TYPE_TRAIT_is_function_CONFORMANCE)
 
-	template <typename T> 
+	template <typename T>
 	struct is_object : public integral_constant<bool,
 		!is_reference<T>::value && !is_void<T>::value && !is_function<T>::value
 	>{};
@@ -555,7 +555,7 @@ namespace eastl
 
 	#define EASTL_TYPE_TRAIT_is_compound_CONFORMANCE  EASTL_TYPE_TRAIT_is_fundamental_CONFORMANCE
 
-	template <typename T> 
+	template <typename T>
 	struct is_compound : public integral_constant<bool, !is_fundamental<T>::value>{};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
@@ -568,26 +568,26 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 	// decay
 	//
-	// Converts the type T to its decayed equivalent. That means doing 
+	// Converts the type T to its decayed equivalent. That means doing
 	// lvalue to rvalue, array to pointer, function to pointer conversions,
 	// and removal of const and volatile.
-	// This is the type conversion silently applied by the compiler to 
-	// all function arguments when passed by value. 
+	// This is the type conversion silently applied by the compiler to
+	// all function arguments when passed by value.
 
 	#define EASTL_TYPE_TRAIT_decay_CONFORMANCE 1    // decay is conforming.
 
 	template<typename T>
 	struct decay
 	{
-		typedef typename eastl::remove_reference<T>::type U;
+		typedef typename std::remove_reference<T>::type U;
 
-		typedef typename eastl::conditional< 
-			eastl::is_array<U>::value,
-			typename eastl::remove_extent<U>::type*,
-			typename eastl::conditional< 
-				eastl::is_function<U>::value,
-				typename eastl::add_pointer<U>::type,
-				typename eastl::remove_cv<U>::type
+		typedef typename std::conditional<
+			std::is_array<U>::value,
+			typename std::remove_extent<U>::type*,
+			typename std::conditional<
+				std::is_function<U>::value,
+				typename std::add_pointer<U>::type,
+				typename std::remove_cv<U>::type
 			>::type
 		>::type type;
 	};
@@ -607,8 +607,8 @@ namespace eastl
 
 	///////////////////////////////////////////////////////////////////////
 	// common_type
-	// 
-	// Determines the common type among all types T..., that is the type all T... 
+	//
+	// Determines the common type among all types T..., that is the type all T...
 	// can be implicitly converted to.
 	//
 	// It is intended that this be specialized by the user for cases where it
@@ -617,9 +617,9 @@ namespace eastl
 	//     struct common_type<MyClass1, MyClass2>{ typedef MyBaseClassB type; };
 	//
 	// The member typedef type shall be defined as set out in 20.9.7.6,p3. All types in
-	// the parameter pack T shall be complete or (possibly cv) void. A program may 
-	// specialize this trait if at least one template parameter in the specialization 
-	// is a user-defined type. Note: Such specializations are needed when only  
+	// the parameter pack T shall be complete or (possibly cv) void. A program may
+	// specialize this trait if at least one template parameter in the specialization
+	// is a user-defined type. Note: Such specializations are needed when only
 	// explicit conversions are desired among the template arguments.
 	///////////////////////////////////////////////////////////////////////
 
@@ -681,7 +681,7 @@ namespace eastl
 	// * class type (typically, struct or union), that has
 	//     * no private or protected non-static data members
 	//     * no user-provided constructors (explicitly defaulted or deleted constructors are allowed)
-	//     * no user-provided, inherited, or explicit constructors 
+	//     * no user-provided, inherited, or explicit constructors
 	//         * (explicitly defaulted or deleted constructors are allowed)
 	//     * no virtual, private, or protected (since C++17) base classes
 	//     * no virtual member functions
@@ -689,12 +689,12 @@ namespace eastl
 	//
 	///////////////////////////////////////////////////////////////////////
 	#if EASTL_IS_AGGREGATE_AVAILABLE == 1
-		#define EASTL_TYPE_TRAIT_is_aggregate_CONFORMANCE 1  
+		#define EASTL_TYPE_TRAIT_is_aggregate_CONFORMANCE 1
 
 		template <typename T>
 		struct is_aggregate : public integral_constant<bool, __is_aggregate(T)> {};
 	#else
-		#define EASTL_TYPE_TRAIT_is_aggregate_CONFORMANCE 0 
+		#define EASTL_TYPE_TRAIT_is_aggregate_CONFORMANCE 0
 
 		// no compiler support so we always return false
 		template <typename T>
@@ -705,7 +705,7 @@ namespace eastl
 		template <typename T>
 		EA_CONSTEXPR bool is_aggregate_v = is_aggregate<T>::value;
 	#endif
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

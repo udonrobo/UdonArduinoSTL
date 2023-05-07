@@ -3,18 +3,18 @@
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// This file implements a bitset much like the C++ std::bitset class. 
+// This file implements a bitset much like the C++ std::bitset class.
 // The primary distinctions between this list and std::bitset are:
 //    - bitset is more efficient than some other std::bitset implementations,
 //      notably the bitset that comes with Microsoft and other 1st party platforms.
 //    - bitset is savvy to an environment that doesn't have exception handling,
 //      as is sometimes the case with console or embedded environments.
-//    - bitset is savvy to environments in which 'unsigned long' is not the 
+//    - bitset is savvy to environments in which 'unsigned long' is not the
 //      most efficient integral data type. std::bitset implementations use
 //      unsigned long, even if it is an inefficient integer type.
 //    - bitset removes as much function calls as practical, in order to allow
 //      debug builds to run closer in speed and code footprint to release builds.
-//    - bitset doesn't support string functionality. We can add this if 
+//    - bitset doesn't support string functionality. We can add this if
 //      it is deemed useful.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ EA_DISABLE_VC_WARNING(4127); // Conditional expression is constant
 
 
 
-namespace eastl
+namespace std
 {
 	// To consider: Enable this for backwards compatibility with any user code that might be using BitsetWordType:
 	// #define BitsetWordType EASTL_BITSET_WORD_TYPE_DEFAULT
@@ -74,7 +74,7 @@ namespace eastl
 	/// difficult to evaluate.
 	/// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=45978
 	///
-	#if defined(__GNUC__) && (EA_COMPILER_VERSION > 4007) && defined(EA_PLATFORM_ANDROID) // Earlier than GCC 4.7 
+	#if defined(__GNUC__) && (EA_COMPILER_VERSION > 4007) && defined(EA_PLATFORM_ANDROID) // Earlier than GCC 4.7
 		#define EASTL_DISABLE_BITSET_ARRAYBOUNDS_WARNING 1
 	#else
 		#define EASTL_DISABLE_BITSET_ARRAYBOUNDS_WARNING 0
@@ -149,7 +149,7 @@ namespace eastl
 
 
 	/// BitsetBase<1, WordType>
-	/// 
+	///
 	/// This is a specialization for a bitset that fits within one word.
 	///
 	template <typename WordType>
@@ -215,7 +215,7 @@ namespace eastl
 
 
 	/// BitsetBase<2, WordType>
-	/// 
+	///
 	/// This is a specialization for a bitset that fits within two words.
 	/// The difference here is that we avoid branching (ifs and loops).
 	///
@@ -289,13 +289,13 @@ namespace eastl
 	/// As of this writing we don't implement a specialization of bitset<0>,
 	/// as it is deemed an academic exercise that nobody would actually
 	/// use and it would increase code space and provide little practical
-	/// benefit. Note that this doesn't mean bitset<0> isn't supported; 
-	/// it means that our version of it isn't as efficient as it would be 
+	/// benefit. Note that this doesn't mean bitset<0> isn't supported;
+	/// it means that our version of it isn't as efficient as it would be
 	/// if a specialization was made for it.
 	///
-	/// - N can be any unsigned (non-zero) value, though memory usage is 
+	/// - N can be any unsigned (non-zero) value, though memory usage is
 	///   linear with respect to N, so large values of N use large amounts of memory.
-	/// - WordType must be one of [uint16_t, uint32_t, uint64_t, uint128_t] 
+	/// - WordType must be one of [uint16_t, uint32_t, uint64_t, uint128_t]
 	///   and the compiler must support the type. By default the WordType is
 	///   the largest native register type that the target platform supports.
 	///
@@ -334,7 +334,7 @@ namespace eastl
 		/// reference
 		///
 		/// A reference is a reference to a specific bit in the bitset.
-		/// The C++ standard specifies that this be a nested class, 
+		/// The C++ standard specifies that this be a nested class,
 		/// though it is not clear if a non-nested reference implementation
 		/// would be non-conforming.
 		///
@@ -345,9 +345,9 @@ namespace eastl
 
 			word_type* mpBitWord;
 			size_type  mnBitIndex;
-		
+
 			reference(){} // The C++ standard specifies that this is private.
-	
+
 		public:
 			reference(const bitset& x, size_type i);
 
@@ -368,7 +368,7 @@ namespace eastl
 		bitset(uint32_t value);
 	  //bitset(uint64_t value); // Disabled because it causes conflicts with the 32 bit version with existing user code. Use from_uint64 instead.
 
-		// We don't define copy constructor and operator= because 
+		// We don't define copy constructor and operator= because
 		// the compiler-generated versions will suffice.
 
 		this_type& operator&=(const this_type& x);
@@ -383,7 +383,7 @@ namespace eastl
 
 		this_type& reset();
 		this_type& reset(size_type i);
-			
+
 		this_type& flip();
 		this_type& flip(size_type i);
 		this_type  operator~() const;
@@ -443,8 +443,8 @@ namespace eastl
 	///
 	inline uint32_t BitsetCountBits(uint64_t x)
 	{
-		// GCC 3.x's implementation of UINT64_C is broken and fails to deal with 
-		// the code below correctly. So we make a workaround for it. Earlier and 
+		// GCC 3.x's implementation of UINT64_C is broken and fails to deal with
+		// the code below correctly. So we make a workaround for it. Earlier and
 		// later versions of GCC don't have this bug.
 
 		#if defined(__GNUC__) && (__GNUC__ == 3)
@@ -647,7 +647,7 @@ namespace eastl
 			if(x)
 			{
 				uint32_t n = 0;
-				
+
 				eastl_uint128_t mask(UINT64_C(0xFFFFFFFF00000000)); // There doesn't seem to exist compiler support for INT128_C() by any compiler. EAStdC's int128_t supports it though.
 				mask <<= 64;
 
@@ -679,7 +679,7 @@ namespace eastl
 	//     for(size_t i = 0; i < NW; i++)
 	//         mWord[i] = ...
 	//
-	// For our tests (~NW < 16), the latter (using []) access resulted in faster code. 
+	// For our tests (~NW < 16), the latter (using []) access resulted in faster code.
 	///////////////////////////////////////////////////////////////////////////
 
 	template <size_t NW, typename WordType>
@@ -933,7 +933,7 @@ namespace eastl
 				if(mWord[i])
 					throw std::overflow_error("BitsetBase::to_uint32");
 			}
-			
+
 			#if(EA_PLATFORM_WORD_SIZE > 4) // if we have 64 bit words...
 				if(mWord[0] >> 32)
 					throw std::overflow_error("BitsetBase::to_uint32");
@@ -949,7 +949,7 @@ namespace eastl
 	{
 		#if EASTL_EXCEPTIONS_ENABLED
 			// Verify that high words are not set and thus that to_uint64 doesn't lose information.
-			
+
 			EASTL_CT_ASSERT(NW > 2); // We can assume this because we have specializations of BitsetBase for <1> and <2>.
 			for(size_t i = 2; i < NW; ++i)
 			{
@@ -984,7 +984,7 @@ namespace eastl
 
 
 	template <size_t NW, typename WordType>
-	inline typename BitsetBase<NW, WordType>::size_type 
+	inline typename BitsetBase<NW, WordType>::size_type
 	BitsetBase<NW, WordType>::DoFindFirst() const
 	{
 		for(size_type word_index = 0; word_index < NW; ++word_index)
@@ -1004,7 +1004,7 @@ EA_DISABLE_GCC_WARNING(-Warray-bounds)
 #endif
 
 	template <size_t NW, typename WordType>
-	inline typename BitsetBase<NW, WordType>::size_type 
+	inline typename BitsetBase<NW, WordType>::size_type
 	BitsetBase<NW, WordType>::DoFindNext(size_type last_find) const
 	{
 		// Start looking from the next bit.
@@ -1044,7 +1044,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <size_t NW, typename WordType>
-	inline typename BitsetBase<NW, WordType>::size_type 
+	inline typename BitsetBase<NW, WordType>::size_type
 	BitsetBase<NW, WordType>::DoFindLast() const
 	{
 		for(size_type word_index = (size_type)NW; word_index > 0; --word_index)
@@ -1060,7 +1060,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <size_t NW, typename WordType>
-	inline typename BitsetBase<NW, WordType>::size_type 
+	inline typename BitsetBase<NW, WordType>::size_type
 	BitsetBase<NW, WordType>::DoFindPrev(size_type last_find) const
 	{
 		if(last_find > 0)
@@ -1313,7 +1313,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <typename WordType>
-	inline typename BitsetBase<1, WordType>::size_type 
+	inline typename BitsetBase<1, WordType>::size_type
 	BitsetBase<1, WordType>::DoFindNext(size_type last_find) const
 	{
 		if(++last_find < kBitsPerWord)
@@ -1329,7 +1329,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <typename WordType>
-	inline typename BitsetBase<1, WordType>::size_type 
+	inline typename BitsetBase<1, WordType>::size_type
 	BitsetBase<1, WordType>::DoFindLast() const
 	{
 		return GetLastBit(mWord[0]);
@@ -1337,7 +1337,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <typename WordType>
-	inline typename BitsetBase<1, WordType>::size_type 
+	inline typename BitsetBase<1, WordType>::size_type
 	BitsetBase<1, WordType>::DoFindPrev(size_type last_find) const
 	{
 		if(last_find > 0)
@@ -1446,7 +1446,7 @@ EA_RESTORE_GCC_WARNING()
 				mWord[1] = 0;
 				n -= kBitsPerWord;
 			}
-			
+
 			mWord[0] = (mWord[0] >> n) | (mWord[1] << (kBitsPerWord - n)); // Intentionally use | instead of +.
 			mWord[1] >>= n;
 		}
@@ -1500,7 +1500,7 @@ EA_RESTORE_GCC_WARNING()
 	inline bool BitsetBase<2, WordType>::any() const
 	{
 		// Or with two branches: { return (mWord[0] != 0) || (mWord[1] != 0); }
-		return (mWord[0] | mWord[1]) != 0; 
+		return (mWord[0] | mWord[1]) != 0;
 	}
 
 	template <typename WordType>
@@ -1606,7 +1606,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <typename WordType>
-	inline typename BitsetBase<2, WordType>::size_type 
+	inline typename BitsetBase<2, WordType>::size_type
 	BitsetBase<2, WordType>::DoFindFirst() const
 	{
 		size_type fbiw = GetFirstBit(mWord[0]);
@@ -1624,7 +1624,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <typename WordType>
-	inline typename BitsetBase<2, WordType>::size_type 
+	inline typename BitsetBase<2, WordType>::size_type
 	BitsetBase<2, WordType>::DoFindNext(size_type last_find) const
 	{
 		// If the last find was in the first word, we must check it and then possibly the second.
@@ -1663,7 +1663,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <typename WordType>
-	inline typename BitsetBase<2, WordType>::size_type 
+	inline typename BitsetBase<2, WordType>::size_type
 	BitsetBase<2, WordType>::DoFindLast() const
 	{
 		size_type lbiw = GetLastBit(mWord[1]);
@@ -1681,7 +1681,7 @@ EA_RESTORE_GCC_WARNING()
 
 
 	template <typename WordType>
-	inline typename BitsetBase<2, WordType>::size_type 
+	inline typename BitsetBase<2, WordType>::size_type
 	BitsetBase<2, WordType>::DoFindPrev(size_type last_find) const
 	{
 		// If the last find was in the second word, we must check it and then possibly the first.
@@ -1935,7 +1935,7 @@ EA_RESTORE_GCC_WARNING()
 		return *this;
 	}
 
-		
+
 	template <size_t N, typename WordType>
 	inline typename bitset<N, WordType>::this_type&
 	bitset<N, WordType>::flip()
@@ -1968,7 +1968,7 @@ EA_RESTORE_GCC_WARNING()
 		}
 		return *this;
 	}
-		
+
 
 	template <size_t N, typename WordType>
 	inline typename bitset<N, WordType>::this_type
@@ -2226,7 +2226,7 @@ EA_RESTORE_GCC_WARNING()
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 EA_RESTORE_VC_WARNING();

@@ -17,12 +17,12 @@
 #include <EASTL/type_traits.h>
 
 
-namespace eastl
+namespace std
 {
 	// foward declaration for swap
 	template <typename T>
 	inline void swap(T& a, T& b)
-	    EA_NOEXCEPT_IF(eastl::is_nothrow_move_constructible<T>::value && eastl::is_nothrow_move_assignable<T>::value);
+	    EA_NOEXCEPT_IF(std::is_nothrow_move_constructible<T>::value && std::is_nothrow_move_assignable<T>::value);
 
 
 	/// invoke
@@ -41,50 +41,50 @@ namespace eastl
 	/// http://en.cppreference.com/w/cpp/utility/functional/invoke
 	///
 	template <typename R, typename C, typename T, typename... Args>
-	EA_CONSTEXPR auto invoke_impl(R C::*func, T&& obj, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR((eastl::forward<T>(obj).*func)(eastl::forward<Args>(args)...)))
+	EA_CONSTEXPR auto invoke_impl(R C::*func, T&& obj, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR((std::forward<T>(obj).*func)(std::forward<Args>(args)...)))
 		-> typename enable_if<is_base_of<C, decay_t<T>>::value,
-	                       decltype((eastl::forward<T>(obj).*func)(eastl::forward<Args>(args)...))>::type
+	                       decltype((std::forward<T>(obj).*func)(std::forward<Args>(args)...))>::type
 	{
-		return (eastl::forward<T>(obj).*func)(eastl::forward<Args>(args)...);
+		return (std::forward<T>(obj).*func)(std::forward<Args>(args)...);
 	}
 
 	template <typename F, typename... Args>
-	EA_CONSTEXPR auto invoke_impl(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(eastl::forward<F>(func)(eastl::forward<Args>(args)...)))
-		-> decltype(eastl::forward<F>(func)(eastl::forward<Args>(args)...))
+	EA_CONSTEXPR auto invoke_impl(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(std::forward<F>(func)(std::forward<Args>(args)...)))
+		-> decltype(std::forward<F>(func)(std::forward<Args>(args)...))
 	{
-		return eastl::forward<F>(func)(eastl::forward<Args>(args)...);
+		return std::forward<F>(func)(std::forward<Args>(args)...);
 	}
 
 
 	template <typename R, typename C, typename T, typename... Args>
-	EA_CONSTEXPR auto invoke_impl(R C::*func, T&& obj, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(((*eastl::forward<T>(obj)).*func)(eastl::forward<Args>(args)...)))
-		-> decltype(((*eastl::forward<T>(obj)).*func)(eastl::forward<Args>(args)...))
+	EA_CONSTEXPR auto invoke_impl(R C::*func, T&& obj, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(((*std::forward<T>(obj)).*func)(std::forward<Args>(args)...)))
+		-> decltype(((*std::forward<T>(obj)).*func)(std::forward<Args>(args)...))
 	{
-		return ((*eastl::forward<T>(obj)).*func)(eastl::forward<Args>(args)...);
+		return ((*std::forward<T>(obj)).*func)(std::forward<Args>(args)...);
 	}
 
 	template <typename M, typename C, typename T>
-	EA_CONSTEXPR auto invoke_impl(M C::*member, T&& obj) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(eastl::forward<T>(obj).*member))
+	EA_CONSTEXPR auto invoke_impl(M C::*member, T&& obj) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(std::forward<T>(obj).*member))
 		-> typename enable_if<
 			is_base_of<C, decay_t<T>>::value,
-			decltype(eastl::forward<T>(obj).*member)
+			decltype(std::forward<T>(obj).*member)
 	>::type
 	{
-		return eastl::forward<T>(obj).*member;
+		return std::forward<T>(obj).*member;
 	}
 
 	template <typename M, typename C, typename T>
-	EA_CONSTEXPR auto invoke_impl(M C::*member, T&& obj) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR((*eastl::forward<T>(obj)).*member))
-		-> decltype((*eastl::forward<T>(obj)).*member)
+	EA_CONSTEXPR auto invoke_impl(M C::*member, T&& obj) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR((*std::forward<T>(obj)).*member))
+		-> decltype((*std::forward<T>(obj)).*member)
 	{
-		return (*eastl::forward<T>(obj)).*member;
+		return (*std::forward<T>(obj)).*member;
 	}
 
 	template <typename F, typename... Args>
-	EA_CONSTEXPR auto invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...)))
-		-> decltype(invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...))
+	EA_CONSTEXPR auto invoke(F&& func, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(invoke_impl(std::forward<F>(func), std::forward<Args>(args)...)))
+		-> decltype(invoke_impl(std::forward<F>(func), std::forward<Args>(args)...))
 	{
-		return invoke_impl(eastl::forward<F>(func), eastl::forward<Args>(args)...);
+		return invoke_impl(std::forward<F>(func), std::forward<Args>(args)...);
 	}
 
 	template <typename F, typename = void, typename... Args>
@@ -92,9 +92,9 @@ namespace eastl
 	};
 
 	template <typename F, typename... Args>
-	struct invoke_result_impl<F, void_t<decltype(invoke_impl(eastl::declval<F>(), eastl::declval<Args>()...))>, Args...>
+	struct invoke_result_impl<F, void_t<decltype(invoke_impl(std::declval<F>(), std::declval<Args>()...))>, Args...>
 	{
-		typedef decltype(invoke_impl(eastl::declval<F>(), eastl::declval<Args>()...)) type;
+		typedef decltype(invoke_impl(std::declval<F>(), std::declval<Args>()...)) type;
 	};
 
 	template <typename F, typename... Args>
@@ -106,16 +106,16 @@ namespace eastl
 	#endif
 
 	template <typename F, typename = void, typename... Args>
-	struct is_invocable_impl : public eastl::false_type {};
+	struct is_invocable_impl : public std::false_type {};
 
 	template <typename F, typename... Args>
-	struct is_invocable_impl<F, void_t<typename eastl::invoke_result<F, Args...>::type>, Args...> : public eastl::true_type {};
+	struct is_invocable_impl<F, void_t<typename std::invoke_result<F, Args...>::type>, Args...> : public std::true_type {};
 
 	template <typename F, typename... Args>
 	struct is_invocable : public is_invocable_impl<F, void, Args...> {};
 
 	template <typename R, typename F, typename = void, typename... Args>
-	struct is_invocable_r_impl : public eastl::false_type {};
+	struct is_invocable_r_impl : public std::false_type {};
 
 	template <typename R, typename F, typename... Args>
 	struct is_invocable_r_impl<R, F, void_t<typename invoke_result<F, Args...>::type>, Args...>
@@ -132,23 +132,23 @@ namespace eastl
 	EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR bool is_invocable_r_v = is_invocable_r<R, F, Args...>::value;
 
 	template <typename F, typename = void, typename... Args>
-	struct is_nothrow_invocable_impl : public eastl::false_type	{};
+	struct is_nothrow_invocable_impl : public std::false_type	{};
 
 	template <typename F, typename... Args>
-	struct is_nothrow_invocable_impl<F, void_t<typename eastl::invoke_result<F, Args...>::type>, Args...>
-	    : public eastl::bool_constant<EA_NOEXCEPT_EXPR(eastl::invoke(eastl::declval<F>(), eastl::declval<Args>()...))>	{};
+	struct is_nothrow_invocable_impl<F, void_t<typename std::invoke_result<F, Args...>::type>, Args...>
+	    : public std::bool_constant<EA_NOEXCEPT_EXPR(std::invoke(std::declval<F>(), std::declval<Args>()...))>	{};
 
 	template <typename F, typename... Args>
 	struct is_nothrow_invocable : public is_nothrow_invocable_impl<F, void, Args...> {};
 
 	template <typename R, typename F, typename = void, typename... Args>
-	struct is_nothrow_invocable_r_impl : public eastl::false_type {};
+	struct is_nothrow_invocable_r_impl : public std::false_type {};
 
 	template <typename R, typename F, typename... Args>
-	struct is_nothrow_invocable_r_impl<R, F, void_t<typename eastl::invoke_result<F, Args...>::type>, Args...>
+	struct is_nothrow_invocable_r_impl<R, F, void_t<typename std::invoke_result<F, Args...>::type>, Args...>
 	{
-		static EA_CONSTEXPR_OR_CONST bool value = eastl::is_convertible<typename eastl::invoke_result<F, Args...>::type, R>::value
-										&& eastl::is_nothrow_invocable<F, Args...>::value;
+		static EA_CONSTEXPR_OR_CONST bool value = std::is_convertible<typename std::invoke_result<F, Args...>::type, R>::value
+										&& std::is_nothrow_invocable<F, Args...>::value;
 	};
 
 	template <typename R, typename F, typename... Args>
@@ -212,8 +212,8 @@ namespace eastl
 	{
 		template<typename A, typename B>
 		EA_CPP14_CONSTEXPR auto operator()(A&& a, B&& b) const
-			-> decltype(eastl::forward<A>(a) < eastl::forward<B>(b))
-			{ return eastl::forward<A>(a) < eastl::forward<B>(b); }
+			-> decltype(std::forward<A>(a) < std::forward<B>(b))
+			{ return std::forward<A>(a) < std::forward<B>(b); }
 	};
 
 
@@ -234,7 +234,7 @@ namespace eastl
 		T& get() const EA_NOEXCEPT;
 
 		template <typename... ArgTypes>
-		typename eastl::invoke_result<T&, ArgTypes...>::type operator() (ArgTypes&&...) const;
+		typename std::invoke_result<T&, ArgTypes...>::type operator() (ArgTypes&&...) const;
 
 	private:
 		T* val;
@@ -242,7 +242,7 @@ namespace eastl
 
 	template <typename T>
 	reference_wrapper<T>::reference_wrapper(T &v) EA_NOEXCEPT
-		: val(eastl::addressof(v))
+		: val(std::addressof(v))
 	{}
 
 	template <typename T>
@@ -271,16 +271,16 @@ namespace eastl
 
 	template <typename T>
 	template <typename... ArgTypes>
-	typename eastl::invoke_result<T&, ArgTypes...>::type reference_wrapper<T>::operator() (ArgTypes&&... args) const
+	typename std::invoke_result<T&, ArgTypes...>::type reference_wrapper<T>::operator() (ArgTypes&&... args) const
 	{
-		return eastl::invoke(*val, eastl::forward<ArgTypes>(args)...);
+		return std::invoke(*val, std::forward<ArgTypes>(args)...);
 	}
 
 	// reference_wrapper-specific utilties
 	template <typename T>
 	reference_wrapper<T> ref(T& t) EA_NOEXCEPT
 	{
-		return eastl::reference_wrapper<T>(t);
+		return std::reference_wrapper<T>(t);
 	}
 
 	template <typename T>
@@ -289,13 +289,13 @@ namespace eastl
 	template <typename T>
 	reference_wrapper<T> ref(reference_wrapper<T>t) EA_NOEXCEPT
 	{
-		return eastl::ref(t.get());
+		return std::ref(t.get());
 	}
 
 	template <typename T>
 	reference_wrapper<const T> cref(const T& t) EA_NOEXCEPT
 	{
-		return eastl::reference_wrapper<const T>(t);
+		return std::reference_wrapper<const T>(t);
 	}
 
 	template <typename T>
@@ -304,22 +304,22 @@ namespace eastl
 	template <typename T>
 	reference_wrapper<const T> cref(reference_wrapper<T> t) EA_NOEXCEPT
 	{
-		return eastl::cref(t.get());
+		return std::cref(t.get());
 	}
 
 
 	// reference_wrapper-specific type traits
 	template <typename T>
 	struct is_reference_wrapper_helper
-		: public eastl::false_type {};
+		: public std::false_type {};
 
 	template <typename T>
-	struct is_reference_wrapper_helper<eastl::reference_wrapper<T> >
-		: public eastl::true_type {};
+	struct is_reference_wrapper_helper<std::reference_wrapper<T> >
+		: public std::true_type {};
 
 	template <typename T>
 	struct is_reference_wrapper
-		: public eastl::is_reference_wrapper_helper<typename eastl::remove_cv<T>::type> {};
+		: public std::is_reference_wrapper_helper<typename std::remove_cv<T>::type> {};
 
 
 	// Helper which adds a reference to a type when given a reference_wrapper of that type.
@@ -328,27 +328,27 @@ namespace eastl
 		{ typedef T type; };
 
 	template <typename T>
-	struct remove_reference_wrapper< eastl::reference_wrapper<T> >
+	struct remove_reference_wrapper< std::reference_wrapper<T> >
 		{ typedef T& type; };
 
 	template <typename T>
-	struct remove_reference_wrapper< const eastl::reference_wrapper<T> >
+	struct remove_reference_wrapper< const std::reference_wrapper<T> >
 		{ typedef T& type; };
 
 	// reference_wrapper specializations of invoke
 	// These have to come after reference_wrapper is defined, but reference_wrapper needs to have a
 	// definition of invoke, so these specializations need to come after everything else has been defined.
 	template <typename R, typename C, typename T, typename... Args>
-	EA_CONSTEXPR auto invoke_impl(R C::*func, T&& obj, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR((obj.get().*func)(eastl::forward<Args>(args)...)))
-	   -> typename enable_if<is_reference_wrapper<eastl::decay_t<T>>::value,
-						   decltype((obj.get().*func)(eastl::forward<Args>(args)...))>::type
+	EA_CONSTEXPR auto invoke_impl(R C::*func, T&& obj, Args&&... args) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR((obj.get().*func)(std::forward<Args>(args)...)))
+	   -> typename enable_if<is_reference_wrapper<std::decay_t<T>>::value,
+						   decltype((obj.get().*func)(std::forward<Args>(args)...))>::type
 	{
-		return (obj.get().*func)(eastl::forward<Args>(args)...);
+		return (obj.get().*func)(std::forward<Args>(args)...);
 	}
 
 	template <typename M, typename C, typename T>
 	EA_CONSTEXPR auto invoke_impl(M C::*member, T&& obj) EA_NOEXCEPT_IF(EA_NOEXCEPT_EXPR(obj.get().*member))
-	   ->  typename enable_if<is_reference_wrapper<eastl::decay_t<T>>::value,
+	   ->  typename enable_if<is_reference_wrapper<std::decay_t<T>>::value,
 	                       decltype(obj.get().*member)>::type
 	{
 		return obj.get().*member;
@@ -416,6 +416,6 @@ namespace eastl
 		return binder2nd<Operation>(op, value(x));
 	}
 
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_INTERNAL_FUNCTIONAL_BASE_H

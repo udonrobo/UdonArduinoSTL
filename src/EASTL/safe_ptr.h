@@ -16,14 +16,14 @@
 
 
 
-namespace eastl
+namespace std
 {
 	class safe_ptr_base;
 
 
 	/// safe_object
 	///
-	/// In order for a class to be the template argument for safe_ptr, 
+	/// In order for a class to be the template argument for safe_ptr,
 	/// it must derive from safe_object.
 	///
 	/// Example usage:
@@ -45,7 +45,7 @@ namespace eastl
 		safe_object();
 	   ~safe_object();
 
-		void clear_references();                      /// Forcibly removes any references (by smart_ptrs) to this object. All safe_ptr mpObject values are set to NULL. 
+		void clear_references();                      /// Forcibly removes any references (by smart_ptrs) to this object. All safe_ptr mpObject values are set to NULL.
 
 	private:
 		friend class safe_ptr_base;
@@ -96,7 +96,7 @@ namespace eastl
 	/// safe_ptr
 	///
 	/// safe_ptr is an automatic, lightweight solution to the dangling pointer problem.
-	/// This class is an alternative to weak_ptr which has the primary benefit of not 
+	/// This class is an alternative to weak_ptr which has the primary benefit of not
 	/// allocating memory at the primary cost of being a tad slower and thread-unsafe.
 	///
 	/// During normal usage, safe_ptr<T> behaves exactly as a T*. When the
@@ -109,7 +109,7 @@ namespace eastl
 	/// object reference for each of its SafePtrs to NULL.
 	///
 	/// The overhead for this is light - a single pointer is added to the
-	/// size of the pointed to object, and a safePtr is the size of a raw 
+	/// size of the pointed to object, and a safePtr is the size of a raw
 	/// pointer plus one list pointer.
 	///
 	/// This class is not thread-safe. In particular, manipulation of safe_ptr
@@ -125,7 +125,7 @@ namespace eastl
 	///         Method();
 	///         ...
 	///     };
-	///     
+	///
 	///     safe_ptr<RandomLifetimeObject> pSafePtr(new RandomLifetimeObject);
 	///     safe_ptr<RandomLifetimeObject> pSafePtrCopy = pSafePtr;
 	///
@@ -167,7 +167,7 @@ namespace eastl
 		}
 	};
 
-} // namespace eastl
+} // namespace std
 
 
 
@@ -183,19 +183,19 @@ namespace eastl
 // safe_object
 ///////////////////////////////////////////////////////////////////////////////
 
-inline eastl::safe_object::safe_object()
+inline std::safe_object::safe_object()
   :  mpSafePtrList(0)
 {
 }
 
 
-inline bool eastl::safe_object::is_unreferenced() const
+inline bool std::safe_object::is_unreferenced() const
 {
 	return (mpSafePtrList == NULL);
 }
 
 
-inline void eastl::safe_object::clear_references()
+inline void std::safe_object::clear_references()
 {
 	while(mpSafePtrList != NULL)
 	{
@@ -207,7 +207,7 @@ inline void eastl::safe_object::clear_references()
 }
 
 
-inline eastl::safe_object::~safe_object()
+inline std::safe_object::~safe_object()
 {
 	safe_ptr_base* pIter = mpSafePtrList;
 
@@ -221,22 +221,22 @@ inline eastl::safe_object::~safe_object()
 }
 
 
-inline void eastl::safe_object::add(safe_ptr_base* pBase) const
+inline void std::safe_object::add(safe_ptr_base* pBase) const
 {
 	pBase->mpNext = mpSafePtrList;
 	mpSafePtrList = pBase;
 }
 
 
-inline void eastl::safe_object::remove(safe_ptr_base* pBase) const
+inline void std::safe_object::remove(safe_ptr_base* pBase) const
 {
-	// We have a singly-linked list (starting with mpSafePtrList) and need to 
+	// We have a singly-linked list (starting with mpSafePtrList) and need to
 	// remove an element from within it.
 	if(pBase == mpSafePtrList)
 		mpSafePtrList = mpSafePtrList->mpNext;
 	else
 	{
-		for(safe_ptr_base *pPrev = mpSafePtrList, *pCurrent = mpSafePtrList->mpNext; 
+		for(safe_ptr_base *pPrev = mpSafePtrList, *pCurrent = mpSafePtrList->mpNext;
 			pCurrent;
 			pPrev = pCurrent, pCurrent = pCurrent->mpNext)
 		{
@@ -254,9 +254,9 @@ inline void eastl::safe_object::remove(safe_ptr_base* pBase) const
 // safe_ptr_base
 ///////////////////////////////////////////////////////////////////////////////
 
-inline eastl::safe_ptr_base::safe_ptr_base(const safe_ptr_base& safePtrBase)
+inline std::safe_ptr_base::safe_ptr_base(const safe_ptr_base& safePtrBase)
   : mpObject(safePtrBase.mpObject),
-	mpNext(NULL)    
+	mpNext(NULL)
 {
 	EASTL_ASSERT(this != &safePtrBase);
 
@@ -265,14 +265,14 @@ inline eastl::safe_ptr_base::safe_ptr_base(const safe_ptr_base& safePtrBase)
 }
 
 
-inline eastl::safe_ptr_base::safe_ptr_base()
+inline std::safe_ptr_base::safe_ptr_base()
   : mpObject(NULL),
 	mpNext(NULL)
 {
 }
 
 
-inline eastl::safe_ptr_base::safe_ptr_base(const safe_object* pObject)
+inline std::safe_ptr_base::safe_ptr_base(const safe_object* pObject)
   : mpObject(pObject),
 	mpNext(NULL)
 {
@@ -281,14 +281,14 @@ inline eastl::safe_ptr_base::safe_ptr_base(const safe_object* pObject)
 }
 
 
-inline eastl::safe_ptr_base::~safe_ptr_base()
+inline std::safe_ptr_base::~safe_ptr_base()
 {
 	if(mpObject)
 		mpObject->remove(this);
 }
 
 
-inline void eastl::safe_ptr_base::reset()
+inline void std::safe_ptr_base::reset()
 {
 	if(mpObject)
 	{
@@ -298,13 +298,13 @@ inline void eastl::safe_ptr_base::reset()
 }
 
 
-inline bool eastl::safe_ptr_base::empty() const
+inline bool std::safe_ptr_base::empty() const
 {
 	return (mpObject == NULL);
 }
 
 
-inline void eastl::safe_ptr_base::reset(const safe_object* pNewObject)
+inline void std::safe_ptr_base::reset(const safe_object* pNewObject)
 {
 	if(mpObject != pNewObject)
 	{
@@ -319,7 +319,7 @@ inline void eastl::safe_ptr_base::reset(const safe_object* pNewObject)
 }
 
 
-inline bool eastl::safe_ptr_base::unique() const
+inline bool std::safe_ptr_base::unique() const
 {
 	return (mpNext == NULL) && ((mpObject == NULL) || (mpObject->mpSafePtrList == this));
 }
@@ -331,16 +331,16 @@ inline bool eastl::safe_ptr_base::unique() const
 ///////////////////////////////////////////////////////////////////////////////
 
 
-// This function is defined here below safe_ptr_base because some compilers 
-// (GCC in particular) generate warnings about inline functions (e.g. unique below) 
-// being used before their inline implementations. 
-inline bool eastl::safe_object::has_unique_reference() const
+// This function is defined here below safe_ptr_base because some compilers
+// (GCC in particular) generate warnings about inline functions (e.g. unique below)
+// being used before their inline implementations.
+inline bool std::safe_object::has_unique_reference() const
 {
 	return mpSafePtrList ? mpSafePtrList->unique() : false;
 }
 
 // Deprecated:
-inline bool eastl::safe_object::has_references() const
+inline bool std::safe_object::has_references() const
 {
 	return mpSafePtrList ? mpSafePtrList->unique() : false;
 }
@@ -351,28 +351,28 @@ inline bool eastl::safe_object::has_references() const
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class T>
-inline eastl::safe_ptr<T>::safe_ptr() 
+inline std::safe_ptr<T>::safe_ptr()
   : safe_ptr_base()
 {
 }
 
 
 template<class T>
-inline eastl::safe_ptr<T>::safe_ptr(T* pObject)
+inline std::safe_ptr<T>::safe_ptr(T* pObject)
   : safe_ptr_base(pObject)
 {
 }
 
 
 template<class T>
-inline eastl::safe_ptr<T>::safe_ptr(const this_type& safePtr)
+inline std::safe_ptr<T>::safe_ptr(const this_type& safePtr)
   : safe_ptr_base(safePtr)
 {
 }
 
 
 template<class T>
-inline typename eastl::safe_ptr<T>::this_type& eastl::safe_ptr<T>::operator=(const this_type& safePtr)
+inline typename std::safe_ptr<T>::this_type& std::safe_ptr<T>::operator=(const this_type& safePtr)
 {
 	if(this != &safePtr)
 		reset(safePtr.mpObject);
@@ -381,7 +381,7 @@ inline typename eastl::safe_ptr<T>::this_type& eastl::safe_ptr<T>::operator=(con
 
 
 template<class T>
-inline typename eastl::safe_ptr<T>::this_type& eastl::safe_ptr<T>::operator=(T* const pObject)
+inline typename std::safe_ptr<T>::this_type& std::safe_ptr<T>::operator=(T* const pObject)
 {
 	reset(pObject);
 	return *this;
@@ -389,49 +389,49 @@ inline typename eastl::safe_ptr<T>::this_type& eastl::safe_ptr<T>::operator=(T* 
 
 
 template<class T>
-inline bool eastl::safe_ptr<T>::operator==(const this_type& rhs) const
+inline bool std::safe_ptr<T>::operator==(const this_type& rhs) const
 {
 	return (mpObject == rhs.mpObject);
 }
 
 
 template<class T>
-inline T* eastl::safe_ptr<T>::get() const
+inline T* std::safe_ptr<T>::get() const
 {
 	return static_cast<T*>(const_cast<safe_object*>(mpObject));
 }
 
 
 template<class T>
-inline eastl::safe_ptr<T>::operator T*() const
+inline std::safe_ptr<T>::operator T*() const
 {
 	return static_cast<T*>(const_cast<safe_object*>(mpObject));
 }
 
 
 template<class T>
-inline T* eastl::safe_ptr<T>::operator->() const
+inline T* std::safe_ptr<T>::operator->() const
 {
 	return static_cast<T*>(const_cast<safe_object*>(mpObject));
 }
 
 
 template<class T>
-inline T& eastl::safe_ptr<T>::operator*() const
+inline T& std::safe_ptr<T>::operator*() const
 {
 	return *static_cast<T*>(const_cast<safe_object*>(mpObject));
 }
 
 
 template<class T>
-inline bool eastl::safe_ptr<T>::operator!() const
+inline bool std::safe_ptr<T>::operator!() const
 {
 	return (mpObject == NULL);
 }
 
 // A bug in the CodeWarrior compiler forces us to implement this inline in the class instead of here.
 // template<class T>
-// inline eastl::safe_ptr<T>::operator bool_() const
+// inline std::safe_ptr<T>::operator bool_() const
 // {
 //     if(mpObject)
 //         return &this_type::get;
@@ -445,21 +445,21 @@ inline bool eastl::safe_ptr<T>::operator!() const
 ///////////////////////////////////////////////////////////////////////////////
 
 template<class T>
-inline bool operator==(const eastl::safe_ptr<T>& safePtr, const T* pObject)
+inline bool operator==(const std::safe_ptr<T>& safePtr, const T* pObject)
 {
 	return (safePtr.get() == pObject);
 }
 
 
 template<class T>
-inline bool operator!=(const eastl::safe_ptr<T>& safePtr, const T* pObject)
+inline bool operator!=(const std::safe_ptr<T>& safePtr, const T* pObject)
 {
 	return (safePtr.get() != pObject);
 }
 
 
 template<class T>
-inline bool operator<(const eastl::safe_ptr<T>& safePtrA, const eastl::safe_ptr<T>& safePtrB)
+inline bool operator<(const std::safe_ptr<T>& safePtrA, const std::safe_ptr<T>& safePtrB)
 {
 	return (safePtrA.get() < safePtrB.get());
 }

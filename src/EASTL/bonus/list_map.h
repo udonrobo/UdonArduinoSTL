@@ -10,7 +10,7 @@
 #include <EASTL/map.h>
 
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_MAP_DEFAULT_NAME
@@ -30,12 +30,12 @@ namespace eastl
 
 	/// list_map_data_base
 	///
-	/// We define a list_map_data_base separately from list_map_data (below), because it 
-	/// allows us to have non-templated operations, and it makes it so that the 
-	/// list_map anchor node doesn't carry a T with it, which would waste space and 
-	/// possibly lead to surprising the user due to extra Ts existing that the user 
-	/// didn't explicitly create. The downside to all of this is that it makes debug 
-	/// viewing of an list_map harder, given that the node pointers are of type 
+	/// We define a list_map_data_base separately from list_map_data (below), because it
+	/// allows us to have non-templated operations, and it makes it so that the
+	/// list_map anchor node doesn't carry a T with it, which would waste space and
+	/// possibly lead to surprising the user due to extra Ts existing that the user
+	/// didn't explicitly create. The downside to all of this is that it makes debug
+	/// viewing of an list_map harder, given that the node pointers are of type
 	/// list_map_data_base and not list_map_data.
 	///
 	struct list_map_data_base
@@ -98,8 +98,8 @@ namespace eastl
 	/// use_value_first
 	///
 	/// operator()(x) simply returns x.mValue.first. Used in list_map.
-	/// This is similar to eastl::use_first, however it assumes that the input type is an object
-	/// whose mValue is an eastl::pair, and the first value in the pair is the desired return.
+	/// This is similar to std::use_first, however it assumes that the input type is an object
+	/// whose mValue is an std::pair, and the first value in the pair is the desired return.
 	///
 	template <typename Object>
 	struct use_value_first
@@ -115,39 +115,39 @@ namespace eastl
 	/// list_map
 	///
 	/// Implements a map like container, which also provides functionality similar to a list.
-	/// 
+	///
 	/// Note: Like a map, keys must still be unique.  As such, push_back() and push_front() operations
 	///       return a bool indicating success, or failure if the entry's key is already in use.
 	///
 	/// list_map is designed to improve performance for situations commonly implemented as:
 	///     A map, which must be iterated over to find the oldest entry, or purge expired entries.
 	///     A list, which must be iterated over to remove a player's record when they sign off.
-	/// 
+	///
 	/// list_map requires a little more memory per node than either a list or map alone,
 	/// and many of list_map's functions have a higher operational cost (CPU time) than their
 	/// counterparts in list and map.  However, as the node count increases, list_map quickly outperforms
 	/// either a list or a map when find [by-index] and front/back type operations are required.
-	/// 
+	///
 	/// In essence, list_map avoids O(n) iterations at the expense of additional costs to quick (O(1) and O(log n) operations:
 	///     push_front(), push_back(), pop_front() and pop_back() have O(log n) operation time, similar to map::insert(), rather than O(1) time like a list,
 	///     however, front() and back() maintain O(1) operation time.
-	/// 
+	///
 	/// As a canonical example, consider a large backlog of player group invites, which are removed when either:
 	///     The invitation times out - in main loop:  while( !listMap.empty() && listMap.front().IsExpired() ) { listMap.pop_front(); }
 	///     The player rejects the outstanding invitation - on rejection:  iter = listMap.find(playerId);  if (iter != listMap.end()) { listMap.erase(iter); }
-	/// 
+	///
 	/// For a similar example, consider a high volume pending request container which must:
 	///     Time out old requests (similar to invites timing out above)
 	///     Remove requests once they've been handled (similar to rejecting invites above)
-	/// 
+	///
 	/// For such usage patterns, the performance benefits of list_map become dramatic with
 	/// common O(n) operations once the node count rises to hundreds or more.
-	/// 
+	///
 	/// When high performance is a priority, Containers with thousands of nodes or more
 	/// can quickly result in unacceptable performance when executing even infrequenty O(n) operations.
-	/// 
+	///
 	/// In order to maintain strong performance, avoid iterating over list_map whenever possible.
-	/// 
+	///
 	///////////////////////////////////////////////////////////////////////
 	/// find_as
 	/// In order to support the ability to have a tree of strings but
@@ -159,7 +159,7 @@ namespace eastl
 	///
 	///////////////////////////////////////////////////////////////////////
 	/// Pool allocation
-	/// If you want to make a custom memory pool for a list_map container, your pool 
+	/// If you want to make a custom memory pool for a list_map container, your pool
 	/// needs to contain items of type list_map::node_type. So if you have a memory
 	/// pool that has a constructor that takes the size of pool items and the
 	/// count of pool items, you would do this (assuming that MemoryPool implements
@@ -168,29 +168,29 @@ namespace eastl
 	///     MemoryPool myPool(sizeof(WidgetMap::node_type), 100);               // Make a pool of 100 Widget nodes.
 	///     WidgetMap myMap(&myPool);                                           // Create a map that uses the pool.
 	///
-	template <typename Key, typename T, typename Compare = eastl::less<Key>, typename Allocator = EASTLAllocatorType>
+	template <typename Key, typename T, typename Compare = std::less<Key>, typename Allocator = EASTLAllocatorType>
 	class list_map
-		: protected rbtree<Key, eastl::list_map_data<eastl::pair<const Key, T> >, Compare, Allocator, eastl::use_value_first<eastl::list_map_data<eastl::pair<const Key, T> > >, true, true>
+		: protected rbtree<Key, std::list_map_data<std::pair<const Key, T> >, Compare, Allocator, std::use_value_first<std::list_map_data<std::pair<const Key, T> > >, true, true>
 	{
 	public:
-		typedef rbtree<Key, eastl::list_map_data<eastl::pair<const Key, T> >, Compare, Allocator,
-					   eastl::use_value_first<eastl::list_map_data<eastl::pair<const Key, T> > >, true, true>   base_type;
+		typedef rbtree<Key, std::list_map_data<std::pair<const Key, T> >, Compare, Allocator,
+					   std::use_value_first<std::list_map_data<std::pair<const Key, T> > >, true, true>   base_type;
 		typedef list_map<Key, T, Compare, Allocator>                                                            this_type;
 		typedef typename base_type::size_type                                                                   size_type;
 		typedef typename base_type::key_type                                                                    key_type;
 		typedef T                                                                                               mapped_type;
-		typedef typename eastl::pair<const Key, T>                                                              value_type;          // This is intentionally different from base_type::value_type
+		typedef typename std::pair<const Key, T>                                                              value_type;          // This is intentionally different from base_type::value_type
 		typedef value_type&                                                                                     reference;
 		typedef const value_type&                                                                               const_reference;
 		typedef typename base_type::node_type                                                                   node_type;           // Despite the internal and external values being different, we're keeping the node type the same as the base
 																																	 // in order to allow for pool allocation.  See EASTL/map.h for more information.
-		typedef typename eastl::list_map_iterator<value_type, value_type*, value_type&>                         iterator;            // This is intentionally different from base_type::iterator
-		typedef typename eastl::list_map_iterator<value_type, const value_type*, const value_type&>             const_iterator;      // This is intentionally different from base_type::const_iterator
-		typedef eastl::reverse_iterator<iterator>                                                               reverse_iterator;
-		typedef eastl::reverse_iterator<const_iterator>                                                         const_reverse_iterator;
+		typedef typename std::list_map_iterator<value_type, value_type*, value_type&>                         iterator;            // This is intentionally different from base_type::iterator
+		typedef typename std::list_map_iterator<value_type, const value_type*, const value_type&>             const_iterator;      // This is intentionally different from base_type::const_iterator
+		typedef std::reverse_iterator<iterator>                                                               reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>                                                         const_reverse_iterator;
 		typedef typename base_type::allocator_type                                                              allocator_type;
-		typedef typename eastl::pair<iterator, bool>                                                            insert_return_type;  // This is intentionally removed, as list_map doesn't support insert() functions, in favor of list like push_back and push_front
-		typedef typename eastl::use_first<value_type>                                                           extract_key;         // This is intentionally different from base_type::extract_key
+		typedef typename std::pair<iterator, bool>                                                            insert_return_type;  // This is intentionally removed, as list_map doesn't support insert() functions, in favor of list like push_back and push_front
+		typedef typename std::use_first<value_type>                                                           extract_key;         // This is intentionally different from base_type::extract_key
 
 		using base_type::get_allocator;
 		using base_type::set_allocator;
@@ -199,7 +199,7 @@ namespace eastl
 		using base_type::size;
 
 	protected:
-		typedef typename eastl::list_map_data<eastl::pair<const Key, T> >                                       internal_value_type;
+		typedef typename std::list_map_data<std::pair<const Key, T> >                                       internal_value_type;
 
 	protected:
 		// internal base node, acting as the sentinel for list like behaviors
@@ -289,8 +289,8 @@ namespace eastl
 	public:
 		// list like functionality which is in consideration for implementation:
 		// iterator insert(const_iterator position, const value_type& value);
-		// void remove(const mapped_type& x); 
-		 
+		// void remove(const mapped_type& x);
+
 	public:
 		// list like functionality which may be implemented, but is discouraged from implementation:
 		// due to the liklihood that they would require O(n) time to execute.
@@ -299,35 +299,35 @@ namespace eastl
 		// void reverse();
 		// void sort();
 		// template<typename Compare>
-		// void sort(Compare compare);          
+		// void sort(Compare compare);
 
 	public:
 		// map like functionality which list_map does not support, due to abmiguity with list like functionality:
 		#if !defined(EA_COMPILER_NO_DELETED_FUNCTIONS)
 		template <typename InputIterator>
 			list_map(InputIterator first, InputIterator last, const Compare& compare, const allocator_type& allocator = EASTL_RBTREE_DEFAULT_ALLOCATOR) = delete;
-		 
+
 			insert_return_type insert(const value_type& value) = delete;
 			iterator insert(const_iterator position, const value_type& value) = delete;
 
 			template <typename InputIterator>
 			void insert(InputIterator first, InputIterator last) = delete;
-				  
+
 			insert_return_type insert(const key_type& key) = delete;
-		 
+
 			iterator erase(const_iterator first, const_iterator last) = delete;
 			reverse_iterator erase(reverse_iterator first, reverse_iterator last) = delete;
-		 
+
 			void erase(const key_type* first, const key_type* last) = delete;
-		 
+
 			iterator       lower_bound(const key_type& key) = delete;
 			const_iterator lower_bound(const key_type& key) const = delete;
 
 			iterator       upper_bound(const key_type& key) = delete;
 			const_iterator upper_bound(const key_type& key) const = delete;
-		 
-			eastl::pair<iterator, iterator>             equal_range(const key_type& key) = delete;
-			eastl::pair<const_iterator, const_iterator> equal_range(const key_type& key) const = delete;
+
+			std::pair<iterator, iterator>             equal_range(const key_type& key) = delete;
+			std::pair<const_iterator, const_iterator> equal_range(const key_type& key) const = delete;
 
 			mapped_type& operator[](const key_type& key) = delete; // Of map, multimap, set, and multimap, only map has operator[].
 		#endif
@@ -342,15 +342,15 @@ namespace eastl
 			void*     push_back_uninitialized() = delete;
 
 			iterator insert(const_iterator position) = delete;
-		 
+
 			void insert(const_iterator position, size_type n, const value_type& value) = delete;
 
 		template <typename InputIterator>
 			void insert(const_iterator position, InputIterator first, InputIterator last) = delete;
-		 
+
 			iterator erase(const_iterator first, const_iterator last) = delete;
 			reverse_iterator erase(const_reverse_iterator first, const_reverse_iterator last) = delete;
-		 
+
 			void splice(const_iterator position, this_type& x) = delete
 			void splice(const_iterator position, this_type& x, const_iterator i) = delete;
 			void splice(const_iterator position, this_type& x, const_iterator first, const_iterator last) = delete;
@@ -359,7 +359,7 @@ namespace eastl
 
 		template <typename Compare>
 			void merge(this_type& x, Compare compare) = delete;
-		 
+
 			void unique() = delete;  // Uniqueness is enforced by map functionality
 
 		template <typename BinaryPredicate>
@@ -377,7 +377,7 @@ namespace eastl
 	inline list_map_data<Value>::list_map_data(const Value& value)
 	  : mValue(value)
 	{
-		mpNext = NULL; // GCC 4.8 is generating warnings about referencing these values in list_map::push_front unless we 
+		mpNext = NULL; // GCC 4.8 is generating warnings about referencing these values in list_map::push_front unless we
 		mpPrev = NULL; // initialize them here. The compiler seems to be mistaken, as our code isn't actually using them unintialized.
 	}
 
@@ -407,7 +407,7 @@ namespace eastl
 		: mpNode(const_cast<node_type*>(x.mpNode))
 	{
 		// Empty
-	} 
+	}
 
 
 	template <typename T, typename Pointer, typename Reference>
@@ -455,7 +455,7 @@ namespace eastl
 
 
 	template <typename T, typename Pointer, typename Reference>
-	inline typename list_map_iterator<T, Pointer, Reference>::this_type 
+	inline typename list_map_iterator<T, Pointer, Reference>::this_type
 	list_map_iterator<T, Pointer, Reference>::operator--(int)
 	{
 		this_type temp(*this);
@@ -467,7 +467,7 @@ namespace eastl
 	// We provide additional template paremeters here to support comparisons between const and non-const iterators.
 	// See C++ defect report #179, or EASTL/list.h for more information.
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB>
-	inline bool operator==(const list_map_iterator<T, PointerA, ReferenceA>& a, 
+	inline bool operator==(const list_map_iterator<T, PointerA, ReferenceA>& a,
 						   const list_map_iterator<T, PointerB, ReferenceB>& b)
 	{
 		return a.mpNode == b.mpNode;
@@ -475,17 +475,17 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB>
-	inline bool operator!=(const list_map_iterator<T, PointerA, ReferenceA>& a, 
+	inline bool operator!=(const list_map_iterator<T, PointerA, ReferenceA>& a,
 						   const list_map_iterator<T, PointerB, ReferenceB>& b)
 	{
 		return a.mpNode != b.mpNode;
 	}
 
 
-	// We provide a version of operator!= for the case where the iterators are of the 
+	// We provide a version of operator!= for the case where the iterators are of the
 	// same type. This helps prevent ambiguity errors in the presence of rel_ops.
 	template <typename T, typename Pointer, typename Reference>
-	inline bool operator!=(const list_map_iterator<T, Pointer, Reference>& a, 
+	inline bool operator!=(const list_map_iterator<T, Pointer, Reference>& a,
 						   const list_map_iterator<T, Pointer, Reference>& b)
 	{
 		return a.mpNode != b.mpNode;
@@ -513,84 +513,84 @@ namespace eastl
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::iterator
 	list_map<Key, T, Compare, Allocator>::begin() EA_NOEXCEPT
 	{
 		return iterator(mNode.mpNext);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_iterator
 	list_map<Key, T, Compare, Allocator>::begin() const EA_NOEXCEPT
 	{
 		return const_iterator(mNode.mpNext);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_iterator
 	list_map<Key, T, Compare, Allocator>::cbegin() const EA_NOEXCEPT
 	{
 		return const_iterator(mNode.mpNext);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::iterator
 	list_map<Key, T, Compare, Allocator>::end() EA_NOEXCEPT
 	{
 		return iterator(&mNode);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_iterator
 	list_map<Key, T, Compare, Allocator>::end() const EA_NOEXCEPT
 	{
 		return const_iterator(&mNode);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_iterator
 	list_map<Key, T, Compare, Allocator>::cend() const EA_NOEXCEPT
 	{
 		return const_iterator(&mNode);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::reverse_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::reverse_iterator
 	list_map<Key, T, Compare, Allocator>::rbegin() EA_NOEXCEPT
 	{
 		return reverse_iterator(&mNode);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator
 	list_map<Key, T, Compare, Allocator>::rbegin() const EA_NOEXCEPT
 	{
 		return const_reverse_iterator(&mNode);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator
 	list_map<Key, T, Compare, Allocator>::crbegin() const EA_NOEXCEPT
 	{
 		return const_reverse_iterator(&mNode);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::reverse_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::reverse_iterator
 	list_map<Key, T, Compare, Allocator>::rend() EA_NOEXCEPT
 	{
 		return reverse_iterator(mNode.mpNext);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator
 	list_map<Key, T, Compare, Allocator>::rend() const EA_NOEXCEPT
 	{
 		return const_reverse_iterator(mNode.mpNext);
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::const_reverse_iterator
 	list_map<Key, T, Compare, Allocator>::crend() const EA_NOEXCEPT
 	{
 		return const_reverse_iterator(mNode.mpNext);
@@ -705,13 +705,13 @@ namespace eastl
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	bool list_map<Key, T, Compare, Allocator>::push_front(const key_type& key, const mapped_type& value)
 	{
-		return push_front(eastl::make_pair(key, value));
+		return push_front(std::make_pair(key, value));
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	bool list_map<Key, T, Compare, Allocator>::push_back(const key_type& key, const mapped_type& value)
 	{
-		return push_back(eastl::make_pair(key, value));
+		return push_back(std::make_pair(key, value));
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
@@ -737,7 +737,7 @@ namespace eastl
 	}
 
 	template <typename Key, typename T, typename Compare, typename Allocator>
-	inline typename list_map<Key, T, Compare, Allocator>::iterator 
+	inline typename list_map<Key, T, Compare, Allocator>::iterator
 	list_map<Key, T, Compare, Allocator>::find(const key_type& key)
 	{
 		typename base_type::iterator baseIter = base_type::find(key);
@@ -750,7 +750,7 @@ namespace eastl
 			return end();
 		}
 	}
-	
+
 	template <typename Key, typename T, typename Compare, typename Allocator>
 	inline typename list_map<Key, T, Compare, Allocator>::const_iterator
 	list_map<Key, T, Compare, Allocator>::find(const key_type& key) const
@@ -916,13 +916,13 @@ namespace eastl
 		}
 
 		if (iter == end())
-			return (isf_valid | isf_current); 
+			return (isf_valid | isf_current);
 
 		return isf_none;
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

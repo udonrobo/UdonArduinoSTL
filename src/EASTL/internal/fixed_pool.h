@@ -39,7 +39,7 @@ EA_RESTORE_ALL_VC_WARNINGS();
 EA_DISABLE_VC_WARNING(4275);
 
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_FIXED_POOL_DEFAULT_NAME
@@ -506,7 +506,7 @@ namespace eastl
 				else
 				{
 					p = allocate_memory(mOverflowAllocator, mnNodeSize, alignment, alignmentOffset);
-					EASTL_ASSERT_MSG(p != nullptr, "the behaviour of eastl::allocators that return nullptr is not defined.");
+					EASTL_ASSERT_MSG(p != nullptr, "the behaviour of std::allocators that return nullptr is not defined.");
 				}
 
 			}
@@ -1622,7 +1622,7 @@ namespace eastl
 
 
 
-} // namespace eastl
+} // namespace std
 
 
 EA_RESTORE_VC_WARNING();

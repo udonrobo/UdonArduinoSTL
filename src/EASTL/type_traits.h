@@ -257,7 +257,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	///////////////////////////////////////////////////////////////////////
@@ -369,7 +369,7 @@ namespace eastl
 	//
 	//  Similar to type_select but unilaterally selects the first type.
 	//
-	template <typename T, typename = eastl::unused, typename = eastl::unused>
+	template <typename T, typename = std::unused, typename = std::unused>
 	struct first_type_select { typedef T type; };
 
 
@@ -492,7 +492,7 @@ namespace eastl
 	// http://en.cppreference.com/w/cpp/types/conjunction
 	//
 	template <class...>
-	struct conjunction : eastl::true_type {};
+	struct conjunction : std::true_type {};
 
 	template <class B>
 	struct conjunction<B> : B {};
@@ -516,7 +516,7 @@ namespace eastl
 	// http://en.cppreference.com/w/cpp/types/disjunction
 	//
 	template <class...>
-	struct disjunction : eastl::false_type {};
+	struct disjunction : std::false_type {};
 
 	template <class B>
 	struct disjunction<B> : B {};
@@ -540,7 +540,7 @@ namespace eastl
 	// http://en.cppreference.com/w/cpp/types/negation
 	//
 	template <class B>
-	struct negation : eastl::bool_constant<!bool(B::value)> {};
+	struct negation : std::bool_constant<!bool(B::value)> {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <typename B>
@@ -559,7 +559,7 @@ namespace eastl
 	// Dinkumware has an identity, but adds a member function to it:
 	//     const T& operator()(const T& t) const{ return t; }
 	//
-	// NOTE(rparolin): Use 'eastl::type_identity' it was included in the C++20
+	// NOTE(rparolin): Use 'std::type_identity' it was included in the C++20
 	// standard. This is a legacy EASTL type we continue to support for
 	// backwards compatibility.
 	//
@@ -598,10 +598,10 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_is_same_CONFORMANCE 1    // is_same is conforming; doesn't make mistakes.
 
 	template <typename T, typename U>
-	struct is_same : public eastl::false_type { };
+	struct is_same : public std::false_type { };
 
 	template <typename T>
-	struct is_same<T, T> : public eastl::true_type { };
+	struct is_same<T, T> : public std::true_type { };
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T, class U>
@@ -618,8 +618,8 @@ namespace eastl
 
 	#define EASTL_TYPE_TRAIT_is_const_CONFORMANCE 1    // is_const is conforming.
 
-	template <typename T> struct is_const : public eastl::false_type {};
-	template <typename T> struct is_const<const T> : public eastl::true_type {};
+	template <typename T> struct is_const : public std::false_type {};
+	template <typename T> struct is_const<const T> : public std::true_type {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -636,8 +636,8 @@ namespace eastl
 
 	#define EASTL_TYPE_TRAIT_is_volatile_CONFORMANCE 1    // is_volatile is conforming.
 
-	template <typename T> struct is_volatile : public eastl::false_type {};
-	template <typename T> struct is_volatile<volatile T> : public eastl::true_type {};
+	template <typename T> struct is_volatile : public std::false_type {};
+	template <typename T> struct is_volatile<volatile T> : public std::true_type {};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <class T>
@@ -655,9 +655,9 @@ namespace eastl
 
 	#define EASTL_TYPE_TRAIT_is_reference_CONFORMANCE 1    // is_reference is conforming; doesn't make mistakes.
 
-	template <typename T> struct is_reference      : public eastl::false_type{};
-	template <typename T> struct is_reference<T&>  : public eastl::true_type{};
-	template <typename T> struct is_reference<T&&> : public eastl::true_type{};
+	template <typename T> struct is_reference      : public std::false_type{};
+	template <typename T> struct is_reference<T&>  : public std::true_type{};
+	template <typename T> struct is_reference<T&&> : public std::true_type{};
 
 	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template<typename T>
@@ -686,7 +686,7 @@ namespace eastl
 #endif
 	template <typename T>
 	struct is_function
-		: public eastl::bool_constant<!eastl::is_reference<T>::value && !eastl::is_const<const T>::value>::type {};
+		: public std::bool_constant<!std::is_reference<T>::value && !std::is_const<const T>::value>::type {};
 #ifdef _MSC_VER
 	#pragma warning(pop)
 #endif
@@ -768,7 +768,7 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_remove_cv_CONFORMANCE 1    // remove_cv is conforming.
 
 	template <typename T>
-	struct remove_cv { typedef typename eastl::remove_volatile<typename eastl::remove_const<T>::type>::type type; };
+	struct remove_cv { typedef typename std::remove_volatile<typename std::remove_const<T>::type>::type type; };
 
 	template<typename T>
 	using remove_cv_t = typename remove_cv<T>::type;
@@ -838,7 +838,7 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_remove_cvref_CONFORMANCE 1    // remove_cvref is conforming.
 
 	template <typename T>
-	struct remove_cvref { typedef typename eastl::remove_volatile<typename eastl::remove_const<typename eastl::remove_reference<T>::type>::type>::type type; };
+	struct remove_cvref { typedef typename std::remove_volatile<typename std::remove_const<typename std::remove_reference<T>::type>::type>::type type; };
 
 	template<typename T>
 	using remove_cvref_t = typename remove_cvref<T>::type;
@@ -928,7 +928,7 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_declval_CONFORMANCE 1
 
 	template <typename T>
-	typename eastl::add_rvalue_reference<T>::type declval() EA_NOEXCEPT;
+	typename std::add_rvalue_reference<T>::type declval() EA_NOEXCEPT;
 
 	#if !defined(EA_COMPILER_NO_DECLTYPE) && !EASTL_TYPE_TRAIT_declval_CONFORMANCE
 		#error decltype is supported by the compiler but declval is not. A lot of our type trait code assumes that if the compiler supports decltype then it supports rvalue references.
@@ -995,7 +995,7 @@ namespace eastl
 	};
 	EA_RESTORE_VC_WARNING();
 
-} // namespace eastl
+} // namespace std
 
 
 // The following files implement the type traits themselves.

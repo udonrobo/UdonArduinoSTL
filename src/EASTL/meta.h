@@ -17,7 +17,7 @@
 // the right to change this file at any time as it is only intended to be used internally.
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace eastl
+namespace std
 {
 	namespace meta
 	{
@@ -242,6 +242,6 @@ namespace eastl
 
 
 	} // namespace meta
-} // namespace eastl
+} // namespace std
 
 #endif // EASTL_META_H

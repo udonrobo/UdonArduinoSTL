@@ -5,9 +5,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 // This file is based on the TR1 (technical report 1) reference implementation
 // of the unordered_set/unordered_map C++ classes as of about 4/2005. Most likely
-// many or all C++ library vendors' implementations of this classes will be 
+// many or all C++ library vendors' implementations of this classes will be
 // based off of the reference version and so will look pretty similar to this
-// file as well as other vendors' versions. 
+// file as well as other vendors' versions.
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -26,7 +26,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_HASH_SET_DEFAULT_NAME
@@ -64,7 +64,7 @@ namespace eastl
 	/// hash_set
 	///
 	/// Implements a hash_set, which is a hashed unique-item container.
-	/// Lookups are O(1) (that is, they are fast) but the container is 
+	/// Lookups are O(1) (that is, they are fast) but the container is
 	/// not sorted. Note that lookups are only O(1) if the hash table
 	/// is well-distributed (non-colliding). The lookup approaches
 	/// O(n) behavior as the table becomes increasingly poorly distributed.
@@ -74,17 +74,17 @@ namespace eastl
 	/// call set_max_load_factor with a very high value such as 100000.f.
 	///
 	/// bCacheHashCode
-	/// We provide the boolean bCacheHashCode template parameter in order 
-	/// to allow the storing of the hash code of the key within the map. 
-	/// When this option is disabled, the rehashing of the table will 
-	/// call the hash function on the key. Setting bCacheHashCode to true 
+	/// We provide the boolean bCacheHashCode template parameter in order
+	/// to allow the storing of the hash code of the key within the map.
+	/// When this option is disabled, the rehashing of the table will
+	/// call the hash function on the key. Setting bCacheHashCode to true
 	/// is useful for cases whereby the calculation of the hash value for
 	/// a contained object is very expensive.
 	///
 	/// find_as
 	/// In order to support the ability to have a hashtable of strings but
-	/// be able to do efficiently lookups via char pointers (i.e. so they 
-	/// aren't converted to string objects), we provide the find_as 
+	/// be able to do efficiently lookups via char pointers (i.e. so they
+	/// aren't converted to string objects), we provide the find_as
 	/// function. This function allows you to do a find with a key of a
 	/// type other than the hashtable key type.
 	///
@@ -96,15 +96,15 @@ namespace eastl
 	///     hash_set<string> hashSet;
 	///     i = hashSet.find_as("hello", hash<char*>(), equal_to_2<string, char*>());
 	///
-	template <typename Value, typename Hash = eastl::hash<Value>, typename Predicate = eastl::equal_to<Value>, 
+	template <typename Value, typename Hash = std::hash<Value>, typename Predicate = std::equal_to<Value>,
 			  typename Allocator = EASTLAllocatorType, bool bCacheHashCode = false>
 	class hash_set
-		: public hashtable<Value, Value, Allocator, eastl::use_self<Value>, Predicate,
-						   Hash, mod_range_hashing, default_ranged_hash, 
+		: public hashtable<Value, Value, Allocator, std::use_self<Value>, Predicate,
+						   Hash, mod_range_hashing, default_ranged_hash,
 						   prime_rehash_policy, bCacheHashCode, false, true>
 	{
 	public:
-		typedef hashtable<Value, Value, Allocator, eastl::use_self<Value>, Predicate, 
+		typedef hashtable<Value, Value, Allocator, std::use_self<Value>, Predicate,
 						  Hash, mod_range_hashing, default_ranged_hash,
 						  prime_rehash_policy, bCacheHashCode, false, true>       base_type;
 		typedef hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>       this_type;
@@ -130,7 +130,7 @@ namespace eastl
 		/// Constructor which creates an empty container with allocator.
 		///
 		explicit hash_set(const allocator_type& allocator)
-			: base_type(0, Hash(), mod_range_hashing(), default_ranged_hash(), Predicate(), eastl::use_self<Value>(), allocator)
+			: base_type(0, Hash(), mod_range_hashing(), default_ranged_hash(), Predicate(), std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -139,12 +139,12 @@ namespace eastl
 		/// hash_set
 		///
 		/// Constructor which creates an empty container, but start with nBucketCount buckets.
-		/// We default to a small nBucketCount value, though the user really should manually 
+		/// We default to a small nBucketCount value, though the user really should manually
 		/// specify an appropriate value in order to prevent memory from being reallocated.
 		///
-		explicit hash_set(size_type nBucketCount, const Hash& hashFunction = Hash(), const Predicate& predicate = Predicate(), 
+		explicit hash_set(size_type nBucketCount, const Hash& hashFunction = Hash(), const Predicate& predicate = Predicate(),
 						  const allocator_type& allocator = EASTL_HASH_SET_DEFAULT_ALLOCATOR)
-			: base_type(nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, eastl::use_self<Value>(), allocator)
+			: base_type(nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -157,25 +157,25 @@ namespace eastl
 
 
 		hash_set(this_type&& x)
-		  : base_type(eastl::move(x))
+		  : base_type(std::move(x))
 		{
 		}
 
 
 		hash_set(this_type&& x, const allocator_type& allocator)
-		  : base_type(eastl::move(x), allocator)
+		  : base_type(std::move(x), allocator)
 		{
 		}
 
 
 		/// hash_set
 		///
-		/// initializer_list-based constructor. 
+		/// initializer_list-based constructor.
 		/// Allows for initializing with brace values (e.g. hash_set<int> hs = { 3, 4, 5, }; )
-		///     
-		hash_set(std::initializer_list<value_type> ilist, size_type nBucketCount = 0, const Hash& hashFunction = Hash(), 
+		///
+		hash_set(std::initializer_list<value_type> ilist, size_type nBucketCount = 0, const Hash& hashFunction = Hash(),
 				   const Predicate& predicate = Predicate(), const allocator_type& allocator = EASTL_HASH_SET_DEFAULT_ALLOCATOR)
-			: base_type(ilist.begin(), ilist.end(), nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, eastl::use_self<Value>(), allocator)
+			: base_type(ilist.begin(), ilist.end(), nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -183,13 +183,13 @@ namespace eastl
 
 		/// hash_set
 		///
-		/// An input bucket count of <= 1 causes the bucket count to be equal to the number of 
+		/// An input bucket count of <= 1 causes the bucket count to be equal to the number of
 		/// elements in the input range.
 		///
 		template <typename FowardIterator>
-		hash_set(FowardIterator first, FowardIterator last, size_type nBucketCount = 0, const Hash& hashFunction = Hash(), 
+		hash_set(FowardIterator first, FowardIterator last, size_type nBucketCount = 0, const Hash& hashFunction = Hash(),
 				 const Predicate& predicate = Predicate(), const allocator_type& allocator = EASTL_HASH_SET_DEFAULT_ALLOCATOR)
-			: base_type(first, last, nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, eastl::use_self<Value>(), allocator)
+			: base_type(first, last, nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -209,7 +209,7 @@ namespace eastl
 
 		this_type& operator=(this_type&& x)
 		{
-			return static_cast<this_type&>(base_type::operator=(eastl::move(x)));
+			return static_cast<this_type&>(base_type::operator=(std::move(x)));
 		}
 
 	}; // hash_set
@@ -218,7 +218,7 @@ namespace eastl
 	///
 	/// https://en.cppreference.com/w/cpp/container/unordered_set/erase_if
 	template <typename Value, typename Hash, typename Predicate, typename Allocator, bool bCacheHashCode, typename UserPredicate>
-	typename eastl::hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>::size_type erase_if(eastl::hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& c, UserPredicate predicate)
+	typename std::hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>::size_type erase_if(std::hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& c, UserPredicate predicate)
 	{
 		auto oldSize = c.size();
 		// Erases all elements that satisfy the predicate pred from the container.
@@ -239,19 +239,19 @@ namespace eastl
 
 	/// hash_multiset
 	///
-	/// Implements a hash_multiset, which is the same thing as a hash_set 
-	/// except that contained elements need not be unique. See the documentation 
+	/// Implements a hash_multiset, which is the same thing as a hash_set
+	/// except that contained elements need not be unique. See the documentation
 	/// for hash_set for details.
 	///
-	template <typename Value, typename Hash = eastl::hash<Value>, typename Predicate = eastl::equal_to<Value>, 
+	template <typename Value, typename Hash = std::hash<Value>, typename Predicate = std::equal_to<Value>,
 			  typename Allocator = EASTLAllocatorType, bool bCacheHashCode = false>
 	class hash_multiset
-		: public hashtable<Value, Value, Allocator, eastl::use_self<Value>, Predicate,
+		: public hashtable<Value, Value, Allocator, std::use_self<Value>, Predicate,
 						   Hash, mod_range_hashing, default_ranged_hash,
 						   prime_rehash_policy, bCacheHashCode, false, false>
 	{
 	public:
-		typedef hashtable<Value, Value, Allocator, eastl::use_self<Value>, Predicate,
+		typedef hashtable<Value, Value, Allocator, std::use_self<Value>, Predicate,
 						  Hash, mod_range_hashing, default_ranged_hash,
 						  prime_rehash_policy, bCacheHashCode, false, false>          base_type;
 		typedef hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>      this_type;
@@ -264,9 +264,9 @@ namespace eastl
 		/// hash_multiset
 		///
 		/// Default constructor.
-		/// 
+		///
 		explicit hash_multiset(const allocator_type& allocator = EASTL_HASH_MULTISET_DEFAULT_ALLOCATOR)
-			: base_type(0, Hash(), mod_range_hashing(), default_ranged_hash(), Predicate(), eastl::use_self<Value>(), allocator)
+			: base_type(0, Hash(), mod_range_hashing(), default_ranged_hash(), Predicate(), std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -275,12 +275,12 @@ namespace eastl
 		/// hash_multiset
 		///
 		/// Constructor which creates an empty container, but start with nBucketCount buckets.
-		/// We default to a small nBucketCount value, though the user really should manually 
+		/// We default to a small nBucketCount value, though the user really should manually
 		/// specify an appropriate value in order to prevent memory from being reallocated.
 		///
-		explicit hash_multiset(size_type nBucketCount, const Hash& hashFunction = Hash(), 
+		explicit hash_multiset(size_type nBucketCount, const Hash& hashFunction = Hash(),
 							   const Predicate& predicate = Predicate(), const allocator_type& allocator = EASTL_HASH_MULTISET_DEFAULT_ALLOCATOR)
-			: base_type(nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, eastl::use_self<Value>(), allocator)
+			: base_type(nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -293,25 +293,25 @@ namespace eastl
 
 
 		hash_multiset(this_type&& x)
-		  : base_type(eastl::move(x))
+		  : base_type(std::move(x))
 		{
 		}
 
 
 		hash_multiset(this_type&& x, const allocator_type& allocator)
-		  : base_type(eastl::move(x), allocator)
+		  : base_type(std::move(x), allocator)
 		{
 		}
 
 
 		/// hash_multiset
 		///
-		/// initializer_list-based constructor. 
+		/// initializer_list-based constructor.
 		/// Allows for initializing with brace values (e.g. hash_set<int> hs = { 3, 3, 4, }; )
-		///     
-		hash_multiset(std::initializer_list<value_type> ilist, size_type nBucketCount = 0, const Hash& hashFunction = Hash(), 
+		///
+		hash_multiset(std::initializer_list<value_type> ilist, size_type nBucketCount = 0, const Hash& hashFunction = Hash(),
 				   const Predicate& predicate = Predicate(), const allocator_type& allocator = EASTL_HASH_MULTISET_DEFAULT_ALLOCATOR)
-			: base_type(ilist.begin(), ilist.end(), nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, eastl::use_self<Value>(), allocator)
+			: base_type(ilist.begin(), ilist.end(), nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -319,13 +319,13 @@ namespace eastl
 
 		/// hash_multiset
 		///
-		/// An input bucket count of <= 1 causes the bucket count to be equal to the number of 
+		/// An input bucket count of <= 1 causes the bucket count to be equal to the number of
 		/// elements in the input range.
 		///
 		template <typename FowardIterator>
-		hash_multiset(FowardIterator first, FowardIterator last, size_type nBucketCount = 0, const Hash& hashFunction = Hash(), 
+		hash_multiset(FowardIterator first, FowardIterator last, size_type nBucketCount = 0, const Hash& hashFunction = Hash(),
 					  const Predicate& predicate = Predicate(), const allocator_type& allocator = EASTL_HASH_MULTISET_DEFAULT_ALLOCATOR)
-			: base_type(first, last, nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, eastl::use_self<Value>(), allocator)
+			: base_type(first, last, nBucketCount, hashFunction, mod_range_hashing(), default_ranged_hash(), predicate, std::use_self<Value>(), allocator)
 		{
 			// Empty
 		}
@@ -345,7 +345,7 @@ namespace eastl
 
 		this_type& operator=(this_type&& x)
 		{
-			return static_cast<this_type&>(base_type::operator=(eastl::move(x)));
+			return static_cast<this_type&>(base_type::operator=(std::move(x)));
 		}
 
 	}; // hash_multiset
@@ -354,7 +354,7 @@ namespace eastl
 	///
 	/// https://en.cppreference.com/w/cpp/container/unordered_multiset/erase_if
 	template <typename Value, typename Hash, typename Predicate, typename Allocator, bool bCacheHashCode, typename UserPredicate>
-	typename eastl::hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>::size_type erase_if(eastl::hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& c, UserPredicate predicate)
+	typename std::hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>::size_type erase_if(std::hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& c, UserPredicate predicate)
 	{
 		auto oldSize = c.size();
 		// Erases all elements that satisfy the predicate pred from the container.
@@ -379,7 +379,7 @@ namespace eastl
 	///////////////////////////////////////////////////////////////////////
 
 	template <typename Value, typename Hash, typename Predicate, typename Allocator, bool bCacheHashCode>
-	inline bool operator==(const hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& a, 
+	inline bool operator==(const hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& a,
 						   const hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& b)
 	{
 		typedef typename hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>::const_iterator const_iterator;
@@ -395,7 +395,7 @@ namespace eastl
 			const_iterator bi = b.find(*ai);
 
 			if((bi == biEnd) || !(*ai == *bi)) // We have to compare values in addition to making sure the lookups succeeded. This is because the lookup is done via the user-supplised Predicate
-				return false;                  // which isn't strictly required to be identical to the Value operator==, though 99% of the time it will be so.  
+				return false;                  // which isn't strictly required to be identical to the Value operator==, though 99% of the time it will be so.
 		}
 
 		return true;
@@ -403,7 +403,7 @@ namespace eastl
 
 #if !defined(EA_COMPILER_HAS_THREE_WAY_COMPARISON)
 	template <typename Value, typename Hash, typename Predicate, typename Allocator, bool bCacheHashCode>
-	inline bool operator!=(const hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& a, 
+	inline bool operator!=(const hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& a,
 						   const hash_set<Value, Hash, Predicate, Allocator, bCacheHashCode>& b)
 	{
 		return !(a == b);
@@ -411,22 +411,22 @@ namespace eastl
 #endif
 
 	template <typename Value, typename Hash, typename Predicate, typename Allocator, bool bCacheHashCode>
-	inline bool operator==(const hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& a, 
+	inline bool operator==(const hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& a,
 						   const hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& b)
 	{
 		typedef typename hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>::const_iterator const_iterator;
-		typedef typename eastl::iterator_traits<const_iterator>::difference_type difference_type;
+		typedef typename std::iterator_traits<const_iterator>::difference_type difference_type;
 
 		// We implement branching with the assumption that the return value is usually false.
 		if(a.size() != b.size())
 			return false;
 
-		// We can't simply search for each element of a in b, as it may be that the bucket for 
-		// two elements in a has those same two elements in b but in different order (which should 
-		// still result in equality). Also it's possible that one bucket in a has two elements which 
+		// We can't simply search for each element of a in b, as it may be that the bucket for
+		// two elements in a has those same two elements in b but in different order (which should
+		// still result in equality). Also it's possible that one bucket in a has two elements which
 		// both match a solitary element in the equivalent bucket in b (which shouldn't result in equality).
-		eastl::pair<const_iterator, const_iterator> aRange;
-		eastl::pair<const_iterator, const_iterator> bRange;
+		std::pair<const_iterator, const_iterator> aRange;
+		std::pair<const_iterator, const_iterator> bRange;
 
 		for(const_iterator ai = a.begin(), aiEnd = a.end(); ai != aiEnd; ai = aRange.second) // For each element in a...
 		{
@@ -434,8 +434,8 @@ namespace eastl
 			bRange = b.equal_range(*ai); // Get the range of elements in b that are equal to ai.
 
 			// We need to verify that aRange == bRange. First make sure the range sizes are equivalent...
-			const difference_type aDistance = eastl::distance(aRange.first, aRange.second);
-			const difference_type bDistance = eastl::distance(bRange.first, bRange.second);
+			const difference_type aDistance = std::distance(aRange.first, aRange.second);
+			const difference_type bDistance = std::distance(bRange.first, bRange.second);
 
 			if(aDistance != bDistance)
 				return false;
@@ -449,9 +449,9 @@ namespace eastl
 			}
 			else
 			{
-				// Check to see if these aRange and bRange are any permutation of each other. 
+				// Check to see if these aRange and bRange are any permutation of each other.
 				// This check gets slower as there are more elements in the range.
-				if(!eastl::is_permutation(aRange.first, aRange.second, bRange.first))
+				if(!std::is_permutation(aRange.first, aRange.second, bRange.first))
 					return false;
 			}
 		}
@@ -461,14 +461,14 @@ namespace eastl
 
 #if !defined(EA_COMPILER_HAS_THREE_WAY_COMPARISON)
 	template <typename Value, typename Hash, typename Predicate, typename Allocator, bool bCacheHashCode>
-	inline bool operator!=(const hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& a, 
+	inline bool operator!=(const hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& a,
 						   const hash_multiset<Value, Hash, Predicate, Allocator, bCacheHashCode>& b)
 	{
 		return !(a == b);
 	}
 #endif
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

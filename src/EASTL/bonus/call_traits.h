@@ -4,12 +4,12 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 // The design for call_traits here is very similar to that found in template
-// metaprogramming libraries such as Boost, GCC, and Metrowerks, given that  
-// these libraries have established this interface as a defacto standard for 
-// solving this problem. Also, these are described in various books on the 
+// metaprogramming libraries such as Boost, GCC, and Metrowerks, given that
+// these libraries have established this interface as a defacto standard for
+// solving this problem. Also, these are described in various books on the
 // topic of template metaprogramming, such as "Modern C++ Design".
 //
-// See http://www.boost.org/libs/utility/call_traits.htm or search for 
+// See http://www.boost.org/libs/utility/call_traits.htm or search for
 // call_traits in Google for a description of call_traits.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +19,7 @@
 
 
 #include <EASTL/internal/config.h>
-#include <EASTL/type_traits.h>     
+#include <EASTL/type_traits.h>
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)
 	#pragma once // Some compilers (e.g. VC++) benefit significantly from using this. We've measured 3-4% build speed improvements in apps as a result.
@@ -27,7 +27,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -97,7 +97,7 @@ namespace eastl
 	};
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

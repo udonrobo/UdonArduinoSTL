@@ -1,8 +1,8 @@
 ///////////////////////////////////////////////////////////////////////////////
 // Copyright (c) Electronic Arts Inc. All rights reserved.
 //
-// This file #includes <initializer_list> if it's available, else it defines 
-// its own version of std::initializer_list. It does not define eastl::initializer_list
+// This file #includes <initializer_list> if it's available, else it defines
+// its own version of std::initializer_list. It does not define std::initializer_list
 // because that would not provide any use, due to how the C++11 Standard works.
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -21,7 +21,7 @@
 
 #if defined(EA_HAVE_CPP11_INITIALIZER_LIST) // If the compiler can generate calls to std::initializer_list...
 
-	// The initializer_list type must be declared in the std namespace, as that's the 
+	// The initializer_list type must be declared in the std namespace, as that's the
 	// namespace the compiler uses when generating code to use it.
 	EA_DISABLE_ALL_VC_WARNINGS()
 	#include <initializer_list>
@@ -33,7 +33,7 @@
 	namespace std
 	{
 		// See the C++11 Standard, section 18.9.
-		template<class E> 
+		template<class E>
 		class initializer_list
 		{
 		public:
@@ -53,7 +53,7 @@
 			  : mpArray(pArray), mArraySize(arraySize) { }
 
 		public:
-			initializer_list() EA_NOEXCEPT  // EA_NOEXCEPT requires a recent version of EABase.  
+			initializer_list() EA_NOEXCEPT  // EA_NOEXCEPT requires a recent version of EABase.
 			  : mpArray(NULL), mArraySize(0) { }
 
 			size_type      size()  const EA_NOEXCEPT { return mArraySize; }

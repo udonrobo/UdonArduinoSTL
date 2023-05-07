@@ -15,7 +15,7 @@
 #include <limits.h>
 
 
-namespace eastl
+namespace std
 {
 
 	///////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ namespace eastl
 
 	#define EASTL_TYPE_TRAIT_add_const_CONFORMANCE 1    // add_const is conforming.
 
-	template <typename T, bool = eastl::is_const<T>::value || eastl::is_reference<T>::value || eastl::is_function<T>::value>
+	template <typename T, bool = std::is_const<T>::value || std::is_reference<T>::value || std::is_function<T>::value>
 	struct add_const_helper
 		{ typedef T type; };
 
@@ -44,7 +44,7 @@ namespace eastl
 
 	template <typename T>
 	struct  add_const
-		{ typedef typename eastl::add_const_helper<T>::type type; };
+		{ typedef typename std::add_const_helper<T>::type type; };
 
 	// add_const_t is the C++17 using typedef for typename add_const<T>::type.
 	// We provide a backwards-compatible means to access it through a macro for pre-C++11 compilers.
@@ -73,7 +73,7 @@ namespace eastl
 
 	#define EASTL_TYPE_TRAIT_add_volatile_CONFORMANCE 1    // add_volatile is conforming.
 
-	template <typename T, bool = eastl::is_volatile<T>::value || eastl::is_reference<T>::value || eastl::is_function<T>::value>
+	template <typename T, bool = std::is_volatile<T>::value || std::is_reference<T>::value || std::is_function<T>::value>
 	struct add_volatile_helper
 		{ typedef T type; };
 
@@ -82,7 +82,7 @@ namespace eastl
 		{ typedef volatile T type; };
 
 	template <typename T> struct add_volatile
-		{ typedef typename eastl::add_volatile_helper<T>::type type; };
+		{ typedef typename std::add_volatile_helper<T>::type type; };
 
 	template <class T> using add_volatile_t = typename add_volatile<T>::type;
 
@@ -123,7 +123,7 @@ namespace eastl
 
 	namespace internal
 	{
-		template <typename T, bool = eastl::is_enum<T>::value || eastl::is_integral<T>::value>
+		template <typename T, bool = std::is_enum<T>::value || std::is_integral<T>::value>
 		struct make_signed_helper_0
 		{
 			struct char_helper
@@ -163,13 +163,13 @@ namespace eastl
 			};
 
 			typedef typename
-			eastl::conditional<sizeof(T) <= sizeof(signed char), char_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(signed short), short_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(signed int), int_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(signed long), long_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(signed long long), longlong_helper,
+			std::conditional<sizeof(T) <= sizeof(signed char), char_helper,
+			std::conditional_t<sizeof(T) <= sizeof(signed short), short_helper,
+			std::conditional_t<sizeof(T) <= sizeof(signed int), int_helper,
+			std::conditional_t<sizeof(T) <= sizeof(signed long), long_helper,
+			std::conditional_t<sizeof(T) <= sizeof(signed long long), longlong_helper,
 			#if EASTL_GCC_STYLE_INT128_SUPPORTED
-				eastl::conditional_t<sizeof(T) <= sizeof(__int128_t), int128_helper,
+				std::conditional_t<sizeof(T) <= sizeof(__int128_t), int128_helper,
 					no_type_helper
 				>
 			#else
@@ -201,7 +201,7 @@ namespace eastl
 		template <typename T>
 		struct make_signed_helper
 		{
-			typedef typename eastl::internal::make_signed_helper_1<typename eastl::internal::make_signed_helper_0<T>::type>::type type;
+			typedef typename std::internal::make_signed_helper_1<typename std::internal::make_signed_helper_0<T>::type>::type type;
 		};
 
 	} // namespace internal
@@ -209,7 +209,7 @@ namespace eastl
 	template <typename T>
 	struct make_signed
 	{
-		typedef typename eastl::internal::make_signed_helper<T>::type type;
+		typedef typename std::internal::make_signed_helper<T>::type type;
 	};
 
 	template <> struct make_signed<bool> {};
@@ -236,19 +236,19 @@ namespace eastl
 	template <typename T>
 	struct make_signed<const T>
 	{
-		typedef eastl::add_const_t<typename eastl::make_signed<T>::type> type;
+		typedef std::add_const_t<typename std::make_signed<T>::type> type;
 	};
 
 	template <typename T>
 	struct make_signed<volatile T>
 	{
-		typedef eastl::add_volatile_t<typename eastl::make_signed<T>::type> type;
+		typedef std::add_volatile_t<typename std::make_signed<T>::type> type;
 	};
 
 	template <typename T>
 	struct make_signed<const volatile T>
 	{
-		typedef eastl::add_cv_t<typename eastl::make_signed<T>::type> type;
+		typedef std::add_cv_t<typename std::make_signed<T>::type> type;
 	};
 
 	template <typename T>
@@ -264,7 +264,7 @@ namespace eastl
 
 	template<class T>
 	struct add_signed : public make_signed<T>
-	{ typedef typename eastl::make_signed<T>::type type; };
+	{ typedef typename std::make_signed<T>::type type; };
 
 
 
@@ -286,7 +286,7 @@ namespace eastl
 	namespace internal
 	{
 
-		template <typename T, bool = eastl::is_enum<T>::value || eastl::is_integral<T>::value>
+		template <typename T, bool = std::is_enum<T>::value || std::is_integral<T>::value>
 		struct make_unsigned_helper_0
 		{
 			struct char_helper
@@ -327,13 +327,13 @@ namespace eastl
 
 
 			typedef typename
-			eastl::conditional<sizeof(T) <= sizeof(unsigned char), char_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(unsigned short), short_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(unsigned int), int_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(unsigned long), long_helper,
-			eastl::conditional_t<sizeof(T) <= sizeof(unsigned long long), longlong_helper,
+			std::conditional<sizeof(T) <= sizeof(unsigned char), char_helper,
+			std::conditional_t<sizeof(T) <= sizeof(unsigned short), short_helper,
+			std::conditional_t<sizeof(T) <= sizeof(unsigned int), int_helper,
+			std::conditional_t<sizeof(T) <= sizeof(unsigned long), long_helper,
+			std::conditional_t<sizeof(T) <= sizeof(unsigned long long), longlong_helper,
 			#if EASTL_GCC_STYLE_INT128_SUPPORTED
-				eastl::conditional_t<sizeof(T) <= sizeof(__uint128_t), int128_helper,
+				std::conditional_t<sizeof(T) <= sizeof(__uint128_t), int128_helper,
 					no_type_helper
 				>
 			#else
@@ -366,7 +366,7 @@ namespace eastl
 		template <typename T>
 		struct make_unsigned_helper
 		{
-			typedef typename eastl::internal::make_unsigned_helper_1<typename eastl::internal::make_unsigned_helper_0<T>::type>::type type;
+			typedef typename std::internal::make_unsigned_helper_1<typename std::internal::make_unsigned_helper_0<T>::type>::type type;
 		};
 
 	} // namespace internal
@@ -374,7 +374,7 @@ namespace eastl
 	template <typename T>
 	struct make_unsigned
 	{
-		typedef typename eastl::internal::make_unsigned_helper<T>::type type;
+		typedef typename std::internal::make_unsigned_helper<T>::type type;
 	};
 
 	template <> struct make_unsigned<bool> {};
@@ -404,19 +404,19 @@ namespace eastl
 	template <typename T>
 	struct make_unsigned<const T>
 	{
-		typedef eastl::add_const_t<typename eastl::make_unsigned<T>::type> type;
+		typedef std::add_const_t<typename std::make_unsigned<T>::type> type;
 	};
 
 	template <typename T>
 	struct make_unsigned<volatile T>
 	{
-		typedef eastl::add_volatile_t<typename eastl::make_unsigned<T>::type> type;
+		typedef std::add_volatile_t<typename std::make_unsigned<T>::type> type;
 	};
 
 	template <typename T>
 	struct make_unsigned<const volatile T>
 	{
-		typedef eastl::add_cv_t<typename eastl::make_unsigned<T>::type> type;
+		typedef std::add_cv_t<typename std::make_unsigned<T>::type> type;
 	};
 
 	template <typename T>
@@ -439,7 +439,7 @@ namespace eastl
 
 	template<class T>
 	struct add_unsigned : public make_unsigned<T>
-	{ typedef typename eastl::make_signed<T>::type type; };
+	{ typedef typename std::make_signed<T>::type type; };
 
 
 
@@ -491,7 +491,7 @@ namespace eastl
 	namespace internal
 	{
 		template <typename T>
-		auto try_add_pointer(int) -> type_identity<eastl::remove_reference_t<T>*>;
+		auto try_add_pointer(int) -> type_identity<std::remove_reference_t<T>*>;
 		template <typename T>
 		auto try_add_pointer(...) -> type_identity<T>;
 	}
@@ -539,8 +539,8 @@ namespace eastl
 	#define EASTL_TYPE_TRAIT_remove_all_extents_CONFORMANCE 1    // remove_all_extents is conforming.
 
 	template<typename T>           struct remove_all_extents       { typedef T type; };
-	template<typename T, size_t N> struct remove_all_extents<T[N]> { typedef typename eastl::remove_all_extents<T>::type type; };
-	template<typename T>           struct remove_all_extents<T[]>  { typedef typename eastl::remove_all_extents<T>::type type; };
+	template<typename T, size_t N> struct remove_all_extents<T[N]> { typedef typename std::remove_all_extents<T>::type type; };
+	template<typename T>           struct remove_all_extents<T[]>  { typedef typename std::remove_all_extents<T>::type type; };
 
 	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
 		template <typename T>
@@ -632,11 +632,11 @@ namespace eastl
 	#endif
 
 	#if defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
-		#define EASTL_ALIGNED_STORAGE_T(N, Align) typename eastl::aligned_storage_t<N, Align>::type
+		#define EASTL_ALIGNED_STORAGE_T(N, Align) typename std::aligned_storage_t<N, Align>::type
 	#else
 		template <size_t N, size_t Align = EASTL_ALIGN_OF(double)>
 		using aligned_storage_t = typename aligned_storage<N, Align>::type;
-		#define EASTL_ALIGNED_STORAGE_T(N, Align) eastl::aligned_storage_t<N, Align>
+		#define EASTL_ALIGNED_STORAGE_T(N, Align) std::aligned_storage_t<N, Align>
 	#endif
 
 
@@ -676,16 +676,16 @@ namespace eastl
 		template <size_t minSize, typename Type0, typename Type1 = char, typename Type2 = char, typename Type3 = char>
 		struct aligned_union
 		{
-			static const size_t size0           = eastl::static_max<minSize, sizeof(Type0)>::value;
-			static const size_t size1           = eastl::static_max<size0,   sizeof(Type1)>::value;
-			static const size_t size2           = eastl::static_max<size1,   sizeof(Type2)>::value;
-			static const size_t size            = eastl::static_max<size2,   sizeof(Type3)>::value;
+			static const size_t size0           = std::static_max<minSize, sizeof(Type0)>::value;
+			static const size_t size1           = std::static_max<size0,   sizeof(Type1)>::value;
+			static const size_t size2           = std::static_max<size1,   sizeof(Type2)>::value;
+			static const size_t size            = std::static_max<size2,   sizeof(Type3)>::value;
 
-			static const size_t alignment0      = eastl::static_max<EA_ALIGN_OF(Type0), EA_ALIGN_OF(Type1)>::value;
-			static const size_t alignment1      = eastl::static_max<alignment0,         EA_ALIGN_OF(Type2)>::value;
-			static const size_t alignment_value = eastl::static_max<alignment1,         EA_ALIGN_OF(Type3)>::value;
+			static const size_t alignment0      = std::static_max<EA_ALIGN_OF(Type0), EA_ALIGN_OF(Type1)>::value;
+			static const size_t alignment1      = std::static_max<alignment0,         EA_ALIGN_OF(Type2)>::value;
+			static const size_t alignment_value = std::static_max<alignment1,         EA_ALIGN_OF(Type3)>::value;
 
-			typedef typename eastl::aligned_storage<size, alignment_value>::type type;
+			typedef typename std::aligned_storage<size, alignment_value>::type type;
 		};
 
 		#if defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
@@ -700,10 +700,10 @@ namespace eastl
 		template <size_t minSize, typename Type0, typename ...TypeN>
 		struct aligned_union
 		{
-			static const size_t size            = eastl::static_max<minSize, sizeof(Type0), sizeof(TypeN)...>::value;
-			static const size_t alignment_value = eastl::static_max<EA_ALIGN_OF(Type0), EA_ALIGN_OF(TypeN)...>::value;
+			static const size_t size            = std::static_max<minSize, sizeof(Type0), sizeof(TypeN)...>::value;
+			static const size_t alignment_value = std::static_max<EA_ALIGN_OF(Type0), EA_ALIGN_OF(TypeN)...>::value;
 
-			typedef typename eastl::aligned_storage<size, alignment_value>::type type;
+			typedef typename std::aligned_storage<size, alignment_value>::type type;
 		};
 
 		#if defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
@@ -757,7 +757,7 @@ namespace eastl
 		return u.destValue;
 	}
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

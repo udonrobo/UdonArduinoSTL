@@ -3,26 +3,26 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// Note (March 2014): shared_array is not a full implementation of an array version 
+// Note (March 2014): shared_array is not a full implementation of an array version
 // of C++11 shared_ptr, and there currently are no plans to make it so. A future
 // version of shared_ptr would likely take on the ability to store arrays,
 // same as unique_ptr has array support. This class isn't deprecated, but it
 // is frozen until some future decision is made on what to do about arrays.
 //
 ///////////////////////////////////////////////////////////////////////////////
-// This class implements a shared_array template. This is a class which is 
+// This class implements a shared_array template. This is a class which is
 // similar to the C++ shared_ptr template, except that it works with arrays
 // instead of individual objects.
 //
 // Important notice:
-// As of this writing (9/2003), the implementation provided here has 
+// As of this writing (9/2003), the implementation provided here has
 // limitations that you should be aware of. These limitations will be shortly
-// rectified. Most significantly, this implementation has the following 
+// rectified. Most significantly, this implementation has the following
 // weaknesses:
-//     - It cannot safely deal with exceptions that occur during the 
-//       construction of shared_ptr objects. 
-//     - It cannot safely deal with recursive shared_ptr objects. 
-//       If a shared_ptr<A> holds a pointer to an instance of A and 
+//     - It cannot safely deal with exceptions that occur during the
+//       construction of shared_ptr objects.
+//     - It cannot safely deal with recursive shared_ptr objects.
+//       If a shared_ptr<A> holds a pointer to an instance of A and
 //       class A owns an instance of shared_ptr<A> that refers to,
 //       the original instance, the memory will leak.
 //     - A template of type shared_ptr<void> will not call the destructor
@@ -36,19 +36,19 @@
 // The rectification of the above issues are discussed in the C++ standardization
 // documents for the next C++ standard (as of 2003):
 //     http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1450.html#Implementation-difficulty
-// 
-// This current implementation will be eventually (hopefully by 1/2004) rectified 
+//
+// This current implementation will be eventually (hopefully by 1/2004) rectified
 // to be in line with the second generation C++ standard proposal.
 //
 // The intended design of this class is based somewhat on the design of the Boost
-// shared_array template. This design is also being considered for the next C++ 
+// shared_array template. This design is also being considered for the next C++
 // standard (as of 2003). The C++ standard update proposal is currently available at:
 //     http://std.dkuug.dk/jtc1/sc22/wg21/docs/papers/2003/n1450.html
 // Boost smart pointers, including shared_array are documented at:
 //     http://www.boost.org/libs/smart_ptr/
 //
 // As of this writing (10/2003), this class has received approval from EA legal
-// for use. The potential issue is the similarity of the class name and class 
+// for use. The potential issue is the similarity of the class name and class
 // interface to existing open source code.
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ EA_RESTORE_ALL_VC_WARNINGS();
 
 
 
-namespace eastl
+namespace std
 {
 
 	/// EASTL_SHARED_ARRAY_DEFAULT_NAME
@@ -96,7 +96,7 @@ namespace eastl
 
 
 	/// class shared_array
-	/// A shared_array is the same as shared_ptr but for arrays. 
+	/// A shared_array is the same as shared_ptr but for arrays.
 	template <typename T, typename Allocator = EASTLAllocatorType, typename Deleter = smart_array_deleter<T> >
 	class shared_array
 	{
@@ -127,7 +127,7 @@ namespace eastl
 		/// Takes ownership of the pointer and sets the reference count
 		/// to the pointer to 1. It is OK if the input pointer is null.
 		/// The shared reference count is allocated on the heap via operator new.
-		/// If an exception occurs during the allocation of the shared 
+		/// If an exception occurs during the allocation of the shared
 		/// reference count, the owned pointer is deleted and the exception
 		/// is rethrown. A null pointer is given a reference count of 1.
 		explicit shared_array(T* pArray = NULL, const allocator_type& allocator = EASTL_SHARED_ARRAY_DEFAULT_ALLOCATOR)
@@ -146,7 +146,7 @@ namespace eastl
 		/// Shares ownership of a pointer with another instance of shared_array.
 		/// This function increments the shared reference count on the pointer.
 		/// If we want a shared_array constructor that is templated on shared_array<U>,
-		/// then we need to make it in addition to this function, as otherwise 
+		/// then we need to make it in addition to this function, as otherwise
 		/// the compiler will generate this function and things will go wrong.
 		shared_array(const shared_array& sharedArray)
 			: mpArray(sharedArray.mpArray),
@@ -158,12 +158,12 @@ namespace eastl
 
 
 		/// ~shared_array
-		/// Decrements the reference count for the owned pointer. If the 
+		/// Decrements the reference count for the owned pointer. If the
 		/// reference count goes to zero, the owned pointer is deleted and
 		/// the shared reference count is deleted.
 		~shared_array()
 		{
-			const ref_count newRefCount(--*mpRefCount); 
+			const ref_count newRefCount(--*mpRefCount);
 			// assert(newRefCount >= 0);
 			if(newRefCount == 0)
 			{
@@ -179,17 +179,17 @@ namespace eastl
 		/// may already own a shared pointer with another different pointer
 		/// (but still of the same type) before this call. In that case,
 		/// this function releases the old pointer, decrementing its reference
-		/// count and deleting it if zero, takes shared ownership of the new 
+		/// count and deleting it if zero, takes shared ownership of the new
 		/// pointer and increments its reference count.
 		/// If we want a shared_array operator= that is templated on shared_array<U>,
-		/// then we need to make it in addition to this function, as otherwise 
+		/// then we need to make it in addition to this function, as otherwise
 		/// the compiler will generate this function and things will go wrong.
 		shared_array& operator=(const shared_array& sharedArray)
 		{
 			if(mpArray != sharedArray.mpArray)
 			{
-				// The easiest thing to do is to create a temporary and 
-				// copy ourselves ourselves into it. This is a standard 
+				// The easiest thing to do is to create a temporary and
+				// copy ourselves ourselves into it. This is a standard
 				// method for switching pointer ownership in systems like this.
 				shared_array(sharedArray).swap(*this);
 			}
@@ -210,7 +210,7 @@ namespace eastl
 
 
 		/// reset
-		/// Releases the owned pointer and takes ownership of the 
+		/// Releases the owned pointer and takes ownership of the
 		/// passed in pointer. If the passed in pointer is the same
 		/// as the owned pointer, nothing is done. The passed in pointer
 		/// can be null, in which case the use count is set to 1.
@@ -218,8 +218,8 @@ namespace eastl
 		{
 			if(pArray != mpArray)
 			{
-				// The easiest thing to do is to create a temporary and 
-				// copy ourselves ourselves into it. This is a standard 
+				// The easiest thing to do is to create a temporary and
+				// copy ourselves ourselves into it. This is a standard
 				// method for switching pointer ownership in systems like this.
 				shared_array(pArray, mAllocator).swap(*this);
 			}
@@ -232,12 +232,12 @@ namespace eastl
 		{
 			// We leave mAllocator as-is.
 
-			// eastl::swap(mpArray, sharedArray.mpArray);
+			// std::swap(mpArray, sharedArray.mpArray);
 			T* const pArray     = sharedArray.mpArray;
 			sharedArray.mpArray = mpArray;
 			mpArray             = pArray;
 
-			// eastl::swap(mpRefCount, sharedArray.mpRefCount);
+			// std::swap(mpRefCount, sharedArray.mpRefCount);
 			ref_count* const pRefCount = sharedArray.mpRefCount;
 			sharedArray.mpRefCount     = mpRefCount;
 			mpRefCount                 = pRefCount;
@@ -246,7 +246,7 @@ namespace eastl
 
 		/// operator[]
 		/// Returns a reference to the specified item in the owned pointer
-		/// array. 
+		/// array.
 		/// Example usage:
 		///    shared_array<int> ptr = new int[6];
 		///    int x = ptr[2];
@@ -270,7 +270,7 @@ namespace eastl
 		/// operator->
 		/// Allows access to the owned pointer via operator->()
 		/// Example usage:
-		///    struct X{ void DoSomething(); }; 
+		///    struct X{ void DoSomething(); };
 		///    shared_array<int> ptr = new X;
 		///    ptr->DoSomething();
 		T* operator->() const EA_NOEXCEPT
@@ -280,11 +280,11 @@ namespace eastl
 		}
 
 		/// get
-		/// Returns the owned pointer. Note that this class does 
+		/// Returns the owned pointer. Note that this class does
 		/// not provide an operator T() function. This is because such
 		/// a thing (automatic conversion) is deemed unsafe.
 		/// Example usage:
-		///    struct X{ void DoSomething(); }; 
+		///    struct X{ void DoSomething(); };
 		///    shared_array<int> ptr = new X;
 		///    X* pX = ptr.get();
 		///    pX->DoSomething();
@@ -312,12 +312,12 @@ namespace eastl
 		}
 
 		/// Implicit operator bool
-		/// Allows for using a scoped_ptr as a boolean. 
+		/// Allows for using a scoped_ptr as a boolean.
 		/// Example usage:
 		///    shared_array<int> ptr = new int(3);
 		///    if(ptr)
 		///        ++*ptr;
-		///     
+		///
 		/// Note that below we do not use operator bool(). The reason for this
 		/// is that booleans automatically convert up to short, int, float, etc.
 		/// The result is that this: if(sharedArray == 1) would yield true (bad).
@@ -330,7 +330,7 @@ namespace eastl
 		}
 
 		/// operator!
-		/// This returns the opposite of operator bool; it returns true if 
+		/// This returns the opposite of operator bool; it returns true if
 		/// the owned pointer is null. Some compilers require this and some don't.
 		///    shared_array<int> ptr = new int(3);
 		///    if(!ptr)
@@ -363,7 +363,7 @@ namespace eastl
 
 
 	/// get_pointer
-	/// returns shared_array::get() via the input shared_array. 
+	/// returns shared_array::get() via the input shared_array.
 	template <typename T, typename A, typename D>
 	inline T* get_pointer(const shared_array<T, A, D>& sharedArray)
 	{
@@ -382,7 +382,7 @@ namespace eastl
 
 
 	/// operator!=
-	/// Compares two shared_array objects for equality. Equality is defined as 
+	/// Compares two shared_array objects for equality. Equality is defined as
 	/// being true when the pointer shared between two shared_array objects is equal.
 	/// It is debatable what the appropriate definition of equality is between two
 	/// shared_array objects, but we follow the current 2nd generation C++ standard proposal.
@@ -395,7 +395,7 @@ namespace eastl
 
 
 	/// operator!=
-	/// Compares two shared_array objects for inequality. Equality is defined as 
+	/// Compares two shared_array objects for inequality. Equality is defined as
 	/// being true when the pointer shared between two shared_array objects is equal.
 	/// It is debatable what the appropriate definition of equality is between two
 	/// shared_array objects, but we follow the current 2nd generation C++ standard proposal.
@@ -417,7 +417,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard

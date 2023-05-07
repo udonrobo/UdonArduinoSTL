@@ -3,7 +3,7 @@
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////////////////
-// intrusive_sdlist is a special kind of intrusive list which we say is 
+// intrusive_sdlist is a special kind of intrusive list which we say is
 // "singly-doubly" linked. Instead of having a typical intrusive list node
 // which looks like this:
 //
@@ -18,7 +18,7 @@
 //         intrusive_sdlist_node*  mpNext;
 //         intrusive_sdlist_node** mppPrevNext;
 //     };
-// 
+//
 // This may seem to be suboptimal, but it has one specific advantage: it allows
 // the intrusive_sdlist class to be the size of only one pointer instead of two.
 // This may seem like a minor optimization, but some users have wanted to create
@@ -28,13 +28,13 @@
 //     class intrusive_list {
 //         intrusive_list_node mBaseNode;
 //     };
-//     
+//
 // an intrusive_sdlist class looks like this:
 //
 //     class intrusive_sdlist {
 //         intrusive_sdlist_node* mpNext;
 //     };
-//  
+//
 // So here we make a list of plusses and minuses of intrusive sdlists
 // compared to intrusive_lists and intrusive_slists:
 //
@@ -44,7 +44,7 @@
 //      node size           |    8     |     4     |     8
 //      anonymous erase     |   yes    |     no    |     yes
 //      reverse iteration   |   yes    |     no    |     no
-//    
+//
 ///////////////////////////////////////////////////////////////////////////////
 
 
@@ -62,7 +62,7 @@
 
 
 
-namespace eastl
+namespace std
 {
 
 
@@ -157,8 +157,8 @@ namespace eastl
 		typedef const T*                                        const_pointer;
 		typedef IntrusiveSDListIterator<T, T*, T&>              iterator;
 		typedef IntrusiveSDListIterator<T, const T*, const T&>  const_iterator;
-		typedef eastl::reverse_iterator<iterator>               reverse_iterator;
-		typedef eastl::reverse_iterator<const_iterator>         const_reverse_iterator;
+		typedef std::reverse_iterator<iterator>               reverse_iterator;
+		typedef std::reverse_iterator<const_iterator>         const_reverse_iterator;
 
 	public:
 		intrusive_sdlist();                       ///< Creates an empty list.
@@ -271,7 +271,7 @@ namespace eastl
 	// Thus we provide additional template paremeters here to support this. The defect report does not
 	// require us to support comparisons between reverse_iterators and const_reverse_iterators.
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB>
-	inline bool operator==(const IntrusiveSDListIterator<T, PointerA, ReferenceA>& a, 
+	inline bool operator==(const IntrusiveSDListIterator<T, PointerA, ReferenceA>& a,
 						   const IntrusiveSDListIterator<T, PointerB, ReferenceB>& b)
 	{
 		return a.mpNode == b.mpNode;
@@ -279,17 +279,17 @@ namespace eastl
 
 
 	template <typename T, typename PointerA, typename ReferenceA, typename PointerB, typename ReferenceB>
-	inline bool operator!=(const IntrusiveSDListIterator<T, PointerA, ReferenceA>& a, 
+	inline bool operator!=(const IntrusiveSDListIterator<T, PointerA, ReferenceA>& a,
 						   const IntrusiveSDListIterator<T, PointerB, ReferenceB>& b)
 	{
 		return a.mpNode != b.mpNode;
 	}
 
 
-	// We provide a version of operator!= for the case where the iterators are of the 
+	// We provide a version of operator!= for the case where the iterators are of the
 	// same type. This helps prevent ambiguity errors in the presence of rel_ops.
 	template <typename T, typename Pointer, typename Reference>
-	inline bool operator!=(const IntrusiveSDListIterator<T, Pointer, Reference>& a, 
+	inline bool operator!=(const IntrusiveSDListIterator<T, Pointer, Reference>& a,
 						   const IntrusiveSDListIterator<T, Pointer, Reference>& b)
 	{
 		return a.mpNode != b.mpNode;
@@ -301,7 +301,7 @@ namespace eastl
 	// intrusive_sdlist_base
 	///////////////////////////////////////////////////////////////////////
 
-	inline intrusive_sdlist_base::intrusive_sdlist_base() 
+	inline intrusive_sdlist_base::intrusive_sdlist_base()
 		{ mpNext = NULL; }
 
 
@@ -351,7 +351,7 @@ namespace eastl
 
 	template <typename T>
 	inline typename intrusive_sdlist<T>::this_type& intrusive_sdlist<T>::operator=(const this_type& /*x*/)
-	{ 
+	{
 		return *this; // We intentionally ignore argument x.
 	}
 
@@ -598,7 +598,7 @@ namespace eastl
 		}
 
 		if(i == end())
-			return (isf_valid | isf_current); 
+			return (isf_valid | isf_current);
 
 		return isf_none;
 	}
@@ -630,7 +630,7 @@ namespace eastl
 	template <typename T>
 	bool operator<(const intrusive_sdlist<T>& a, const intrusive_sdlist<T>& b)
 	{
-		return eastl::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
+		return std::lexicographical_compare(a.begin(), a.end(), b.begin(), b.end());
 	}
 
 	template <typename T>
@@ -664,7 +664,7 @@ namespace eastl
 	}
 
 
-} // namespace eastl
+} // namespace std
 
 
 #endif // Header include guard
