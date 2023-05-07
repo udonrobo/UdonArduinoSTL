@@ -1367,7 +1367,7 @@ namespace std
 		//
 		// The previous implementation violated the following requirements of vector::swap so the fall-back code has
 		// been removed.  EASTL implicitly defines 'propagate_on_container_swap = false' therefore the fall-back case is
-		 behaviour.  We simply swap the contents and the allocator as that is the common expectation of
+		// behaviour.  We simply swap the contents and the allocator as that is the common expectation of
 		// users and does not put the container into an invalid state since it can not free its memory via its current
 		// allocator instance.
 		//

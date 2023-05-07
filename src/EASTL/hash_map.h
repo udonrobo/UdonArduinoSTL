@@ -249,7 +249,7 @@ namespace std
 					EASTL_ASSERT_MSG(false, "invalid hash_map<K, T> key");
 				#endif
 			}
-			 behaviour if exceptions and asserts are disabled and it == end()
+			// behaviour if exceptions and asserts are disabled and it == end()
 			return it->second;
 		}
 
@@ -268,7 +268,7 @@ namespace std
 					EASTL_ASSERT_MSG(false, "invalid hash_map<K, T> key");
 				#endif
 			}
-			 behaviour if exceptions and asserts are disabled and it == end()
+			// behaviour if exceptions and asserts are disabled and it == end()
 			return it->second;
 		}
 
