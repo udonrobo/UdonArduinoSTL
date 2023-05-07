@@ -1,0 +1,10 @@
+#pragma once
+
+#ifdef ARDUINO
+
+namespace std
+{
+    using string = ::String;  // 🫠
+}    // namespace std
+
+#endif

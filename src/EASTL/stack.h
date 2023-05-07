@@ -115,7 +115,7 @@ namespace std
 		void push(value_type&& x);
 
 		template <class... Args> void emplace_back(Args&&... args); // backwards compatibility
-		template <class... Args> decltype(auto) emplace(Args&&... args);
+		template <class... Args> auto emplace(Args&&... args) -> decltype(c.emplace_back(std::forward<Args>(args)...));
 
 		void pop();
 
@@ -229,7 +229,8 @@ namespace std
 
 	template <typename T, typename Container>
 	template <class... Args>
-	inline decltype(auto) stack<T, Container>::emplace(Args&&... args)
+	inline auto stack<T, Container>::emplace(Args&&... args)
+		-> decltype(c.emplace_back(std::forward<Args>(args)...))
 	{
 		return c.emplace_back(std::forward<Args>(args)...);
 	}

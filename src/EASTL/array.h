@@ -458,12 +458,14 @@ namespace std
 	{
 		template<class T, size_t N, size_t... I>
 		EA_CONSTEXPR auto to_array(T (&a)[N], index_sequence<I...>)
+			-> decltype(std::array<std::remove_cv_t<T>, N>{{a[I]...}})
 		{
 			return std::array<std::remove_cv_t<T>, N>{{a[I]...}};
 		}
 
 		template<class T, size_t N, size_t... I>
 		EA_CONSTEXPR auto to_array(T (&&a)[N], index_sequence<I...>)
+			-> decltype(std::array<std::remove_cv_t<T>, N>{{std::move(a[I])...}})
 		{
 			return std::array<std::remove_cv_t<T>, N>{{std::move(a[I])...}};
 		}

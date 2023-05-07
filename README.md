@@ -45,6 +45,10 @@ GNU libstdc++ から移植された Arduino 用 C++ STL
         > }
         > ```
 
+-   chrono を使用して時間を取得できるよう変更
+
+    [./src/EASTL/chrono.h](./src/EASTL/chrono.h) L567 GetTicks メンバに `micros()` を使用した時間取得処理を追加
+
 ## Usage
 
 ```cpp

@@ -928,14 +928,17 @@ inline EA_CONSTEXPR tuple<Ts&...> tie(Ts&... ts) EA_NOEXCEPT
 namespace detail
 {
 	template <class F, class Tuple, size_t... I>
-	EA_CONSTEXPR decltype(auto) apply_impl(F&& f, Tuple&& t, index_sequence<I...>)
+	EA_CONSTEXPR auto apply_impl(F&& f, Tuple&& t, index_sequence<I...>)
+		-> decltype(invoke(std::forward<F>(f), get<I>(std::forward<Tuple>(t))...))
 	{
 		return invoke(std::forward<F>(f), get<I>(std::forward<Tuple>(t))...);
 	}
 } // namespace detail
 
 template <class F, class Tuple>
-EA_CONSTEXPR decltype(auto) apply(F&& f, Tuple&& t)
+EA_CONSTEXPR auto apply(F&& f, Tuple&& t)
+	-> decltype(detail::apply_impl(std::forward<F>(f), std::forward<Tuple>(t),
+	                               make_index_sequence<tuple_size<remove_reference_t<Tuple>>::value>{}))
 {
 	return detail::apply_impl(std::forward<F>(f), std::forward<Tuple>(t),
 		                      make_index_sequence<tuple_size<remove_reference_t<Tuple>>::value>{});

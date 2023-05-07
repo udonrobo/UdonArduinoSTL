@@ -125,7 +125,7 @@ namespace std
 		EA_DEPRECATED void emplace_back(Args&&... args); // backwards compatibility
 
 		template <class... Args>
-		decltype(auto) emplace(Args&&... args);
+		auto emplace(Args&&... args) -> decltype(c.emplace_back(std::forward<Args>(args)...));
 
 		void pop();
 
@@ -255,7 +255,8 @@ namespace std
 
 	template <typename T, typename Container>
 	template <class... Args>
-	inline decltype(auto) queue<T, Container>::emplace(Args&&... args)
+	inline auto queue<T, Container>::emplace(Args&&... args)
+		-> decltype(c.emplace_back(std::forward<Args>(args)...))
 	{
 		return c.emplace_back(std::forward<Args>(args)...);
 	}

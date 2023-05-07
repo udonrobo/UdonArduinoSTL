@@ -106,7 +106,7 @@ EA_DISABLE_ALL_VC_WARNINGS()
 #include <ctype.h>              // toupper, etc.
 
 EA_DISABLE_GCC_WARNING(-Wtype-limits)
-#include <wchar.h>
+// #include <wchar.h>
 EA_RESTORE_GCC_WARNING()
 
 #include <string.h> // strlen, etc.

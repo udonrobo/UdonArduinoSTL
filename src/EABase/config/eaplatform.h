@@ -588,20 +588,17 @@
 // __i386 is defined by the Sun and GCC compilers.
 // __sparc is defined by the Sun and GCC compilers.
 
-// CaseyNelson314によって追加
 #elif defined(__AVR_ATmega328P__) // arduino nano
-	#undef  EA_PLATFORM_ARDUINO
-	#define EA_PLATFORM_ARDUINO 1
+	#undef  EA_PLATFORM_ARDUINO_ATmega328P
+	#define EA_PLATFORM_ARDUINO_ATmega328P 1
 	#define EA_PLATFORM_NAME "Arduino ATmega328P"
 	#define EA_PLATFORM_DESCRIPTION "Arduino on AVR ATmega328P"
 	#define EA_PLATFORM_PTR_SIZE 2
 	#define EA_PLATFORM_WORD_SIZE 2
 	#define EA_PROCESSOR_ARM32 1
 	#define EA_SYSTEM_LITTLE_ENDIAN 1
-	#define EA_PLATFORM_NAME "Arduino"
 	#define EA_COMPILER_NO_VARIABLE_TEMPLATES
 	#define EA_COMPILER_NO_NULLPTR
-	// #define EASTL_USER_DEFINED_ALLOCATOR
 #else
 	#error Unknown platform
 	#error Unknown processor

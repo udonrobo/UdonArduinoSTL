@@ -1,0 +1,7 @@
+#pragma once
+
+#if __cplusplus >= 201703L
+
+#include <EASTL/variant.h>
+
+#endif

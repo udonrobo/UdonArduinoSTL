@@ -617,6 +617,8 @@ namespace chrono
 				const uint64_t nMicroseconds = (uint64_t)tv.tv_usec + ((uint64_t)tv.tv_sec * 1000000);
 				return nMicroseconds;
 			#endif
+		#elif defined(ARDUINO)
+			return micros() * 10;  // 10 is magic number to convert microseconds to nanoseconds 🫠🫠
         #else
 			#error "chrono not implemented for platform"
 		#endif
