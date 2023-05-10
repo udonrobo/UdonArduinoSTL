@@ -100,7 +100,7 @@ namespace std
 	template <typename F, typename... Args>
 	struct invoke_result : public invoke_result_impl<F, void, Args...> {};
 
-	#if EA_COMPILER_NO_TEMPLATE_ALIASES
+	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
 		template <typename F, typename... Args>
 		using invoke_result_t = typename invoke_result<F, Args...>::type;
 	#endif
@@ -125,11 +125,13 @@ namespace std
 	template <typename R, typename F, typename... Args>
 	struct is_invocable_r : public is_invocable_r_impl<R, F, void, Args...> {};
 
+	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 	template <typename F, typename... Args>
 	EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR bool is_invocable_v = is_invocable<F, Args...>::value;
 
 	template <typename R, typename F, typename... Args>
 	EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR bool is_invocable_r_v = is_invocable_r<R, F, Args...>::value;
+	#endif
 
 	template <typename F, typename = void, typename... Args>
 	struct is_nothrow_invocable_impl : public std::false_type	{};
@@ -154,11 +156,13 @@ namespace std
 	template <typename R, typename F, typename... Args>
 	struct is_nothrow_invocable_r : public is_nothrow_invocable_r_impl<R, F, void, Args...> {};
 
+	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 	template <typename F, typename... Args>
 	EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR bool is_no_throw_invocable_v = is_nothrow_invocable<F, Args...>::value;
 
 	template <typename R, typename F, typename... Args>
 	EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR bool is_nothrow_invocable_r_v = is_nothrow_invocable_r<R, F, Args...>::value;
+	#endif
 
 	/// allocator_arg_t
 	///

@@ -542,7 +542,7 @@ namespace std
 	template<typename T, size_t N> struct remove_all_extents<T[N]> { typedef typename std::remove_all_extents<T>::type type; };
 	template<typename T>           struct remove_all_extents<T[]>  { typedef typename std::remove_all_extents<T>::type type; };
 
-	#if EA_COMPILER_NO_TEMPLATE_ALIASES
+	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
 		template <typename T>
 		using remove_all_extents_t = typename remove_all_extents<T>::type;
 	#endif

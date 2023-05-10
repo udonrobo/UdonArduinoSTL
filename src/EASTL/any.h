@@ -70,12 +70,6 @@ namespace std
 				throw bad_any_cast();
 			#else
 				EASTL_ASSERT_MSG(false, "bad_any_cast\n");
-
-				// NOTE(rparolin): CRASH!
-				// You crashed here because you requested a type that was not contained in the object.
-				// We choose to intentionally crash here instead of returning invalid data to the calling
-				// code which could cause hard to track down bugs.
-				*((volatile int*)0) = 0xDEADC0DE;
 			#endif
 		}
 

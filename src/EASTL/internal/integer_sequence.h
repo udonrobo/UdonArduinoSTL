@@ -102,12 +102,13 @@ struct index_sequence_size : public integer_sequence_size_helper<std::remove_cv_
 {
 };
 
+#if EASTL_VARIABLE_TEMPLATES_ENABLED
 template <typename T>
 EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR size_t integer_sequence_size_v = integer_sequence_size<T>::value;
 
 template <typename T>
 EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR size_t index_sequence_size_v = index_sequence_size<T>::value;
-
+#endif
 
 } // namespace internal
 

@@ -41,7 +41,7 @@ namespace std
 		struct underlying_type{ typedef int type; };    // This is of course wrong, but we emulate libstdc++ and typedef it as int.
 	#endif
 
-	#if EA_COMPILER_NO_TEMPLATE_ALIASES
+	#if !defined(EA_COMPILER_NO_TEMPLATE_ALIASES)
 		template <typename T>
 		using underlying_type_t = typename underlying_type<T>::type;
 	#endif
@@ -445,8 +445,10 @@ namespace std
 		template<typename T>
 		struct is_complete_type<T, std::enable_if_t<std::is_function<T>::value>> : public true_type {};
 
+	#if EASTL_VARIABLE_TEMPLATES_ENABLED
 		template <typename T>
 		EASTL_CPP17_INLINE_VARIABLE EA_CONSTEXPR bool is_complete_type_v = is_complete_type<T, void>::value;
+	#endif
 	}
 
 } // namespace std

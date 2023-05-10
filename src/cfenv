@@ -1,5 +1,7 @@
 #pragma once
 
+#if __has_include(<fenv.h>)
+
 #include <fenv.h>
 
 namespace std
@@ -21,3 +23,5 @@ namespace std
     using ::feupdateenv;
 
 }    // namespace std
+
+#endif    // __has_include(<fenv.h>)
