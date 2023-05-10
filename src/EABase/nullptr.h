@@ -53,9 +53,9 @@
 			return n;
 		}
 
-		#if !defined(nullptr) // If somebody hasn't already defined nullptr in a custom way...
-			#define nullptr nullptr_get()
-		#endif
+		// #if !defined(nullptr) // If somebody hasn't already defined nullptr in a custom way...
+		// 	#define nullptr nullptr_get()
+		// #endif
 
 	} // namespace std
 
