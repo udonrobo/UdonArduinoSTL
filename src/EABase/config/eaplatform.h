@@ -600,6 +600,7 @@
 	#define EA_COMPILER_NO_VARIABLE_TEMPLATES
 	#define EA_COMPILER_NO_NULLPTR
 	#define EASTL_EXCEPTIONS_ENABLED 0
+	// #define EA_CPP14_CONSTEXPR constexpr
 #else
 	#error Unknown platform
 	#error Unknown processor

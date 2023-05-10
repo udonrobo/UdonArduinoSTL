@@ -10,6 +10,7 @@
 #include <EASTL/internal/config.h>
 #include <EABase/nullptr.h>
 #include <stddef.h>
+#include <stdlib.h>
 
 
 #if defined(EA_PRAGMA_ONCE_SUPPORTED)

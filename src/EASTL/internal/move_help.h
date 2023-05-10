@@ -85,14 +85,14 @@ namespace std
 	// http://en.cppreference.com/w/cpp/utility/forward
 	//
 	template <typename T>
-	EA_CPP14_CONSTEXPR T&& forward(typename std::remove_reference<T>::type& x) EA_NOEXCEPT
+	constexpr T&& forward(typename std::remove_reference<T>::type& x) EA_NOEXCEPT
 	{
 		return static_cast<T&&>(x);
 	}
 
 
 	template <typename T>
-	EA_CPP14_CONSTEXPR T&& forward(typename std::remove_reference<T>::type&& x) EA_NOEXCEPT
+	constexpr T&& forward(typename std::remove_reference<T>::type&& x) EA_NOEXCEPT
 	{
 		static_assert(!is_lvalue_reference<T>::value, "forward T isn't lvalue reference");
 		return static_cast<T&&>(x);
@@ -109,7 +109,7 @@ namespace std
 	// http://en.cppreference.com/w/cpp/utility/move
 	//
 	template <typename T>
-	EA_CPP14_CONSTEXPR typename std::remove_reference<T>::type&&
+	constexpr typename std::remove_reference<T>::type&&
 	move(T&& x) EA_NOEXCEPT
 	{
 		return static_cast<typename std::remove_reference<T>::type&&>(x);
@@ -127,7 +127,7 @@ namespace std
 	//
 	#if EASTL_EXCEPTIONS_ENABLED
 		template <typename T>
-		EA_CPP14_CONSTEXPR typename std::conditional<!std::is_nothrow_move_constructible<T>::value &&
+		constexpr typename std::conditional<!std::is_nothrow_move_constructible<T>::value &&
 														std::is_copy_constructible<T>::value, const T&, T&&>::type
 		move_if_noexcept(T& x) EA_NOEXCEPT
 		{
@@ -135,7 +135,7 @@ namespace std
 		}
 	#else
 		template <typename T>
-		EA_CPP14_CONSTEXPR T&&
+		constexpr T&&
 		move_if_noexcept(T& x) EA_NOEXCEPT
 		{
 			return std::move(x);
