@@ -14,11 +14,10 @@
 #endif
 
 
-#if defined(EA_COMPILER_CPP11_ENABLED) && !defined(EA_COMPILER_NO_NULLPTR) && !defined(EA_HAVE_nullptr_t_IMPL)
+#if defined(EA_COMPILER_CPP11_ENABLED) && !defined(EA_COMPILER_NO_NULLPTR)
 	// The compiler supports nullptr, but the standard library doesn't implement a declaration for std::nullptr_t. So we provide one.
 	namespace std { typedef decltype(nullptr) nullptr_t; }
 #endif
-
 
 
 #if defined(EA_COMPILER_NO_NULLPTR) // If the compiler lacks a native version...
