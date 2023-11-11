@@ -358,7 +358,7 @@ namespace std
 		// The view of memory when the string data is able to store the string data locally (without a heap allocation).
 		struct SSOLayout
 		{
-			static EA_CONSTEXPR_OR_CONST size_type SSO_CAPACITY = (sizeof(HeapLayout) - sizeof(char)) / sizeof(value_type);
+			static EA_CONSTEXPR_OR_CONST size_type SSO_CAPACITY = (sizeof(HeapLayout) - sizeof(value_type)) / sizeof(value_type);
 
 			// mnSize must correspond to the last byte of HeapLayout.mnCapacity, so we don't want the compiler to insert
 			// padding after mnSize if sizeof(value_type) != 1; Also ensures both layouts are the same size.
@@ -377,6 +377,7 @@ namespace std
 			char mBuffer[sizeof(HeapLayout)];
 		};
 
+		static_assert(sizeof(SSOLayout)  == 6, "heap and sso layout structures must be the same size");
 		static_assert(sizeof(SSOLayout)  == sizeof(HeapLayout), "heap and sso layout structures must be the same size");
 		static_assert(sizeof(HeapLayout) == sizeof(RawLayout),  "heap and raw layout structures must be the same size");
 
@@ -4067,12 +4068,18 @@ namespace std
 	/// custom string8 / string16 / string32
 	typedef basic_string<char>     string8;
 	typedef basic_string<char16_t> string16;
+
+	#ifndef	ARDUINO
 	typedef basic_string<char32_t> string32;
+	#endif
 
 	/// ISO mandated string types
 	typedef basic_string<char8_t>  u8string;    // Actually not a C++11 type, but added for consistency.
 	typedef basic_string<char16_t> u16string;
+
+	#ifndef	ARDUINO
 	typedef basic_string<char32_t> u32string;
+	#endif
 
 
 	/// hash<string>
@@ -4126,6 +4133,7 @@ namespace std
 		}
 	};
 
+	#ifndef	ARDUINO
 	template <>
 	struct hash<string32>
 	{
@@ -4138,6 +4146,7 @@ namespace std
 			return (size_t)result;
 		}
 	};
+	#endif
 
 	#if defined(EA_WCHAR_UNIQUE) && EA_WCHAR_UNIQUE
 		template <>
@@ -4233,7 +4242,11 @@ namespace std
 		    {
 				inline string operator"" s(const char* str, size_t len) EA_NOEXCEPT { return {str, string::size_type(len)}; }
 				inline u16string operator"" s(const char16_t* str, size_t len) EA_NOEXCEPT { return {str, u16string::size_type(len)}; }
+				
+				#ifndef	ARDUINO
 				inline u32string operator"" s(const char32_t* str, size_t len) EA_NOEXCEPT { return {str, u32string::size_type(len)}; }
+				#endif
+				
 				inline wstring operator"" s(const wchar_t* str, size_t len) EA_NOEXCEPT { return {str, wstring::size_type(len)}; }
 
 				// C++20 char8_t support.

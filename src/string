@@ -1,10 +1,11 @@
 #pragma once
 
-#ifdef ARDUINO
+#include "EASTL/string.h"
+// #ifdef ARDUINO
 
-namespace std
-{
-    using string = ::String;  // 🫠
-}    // namespace std
+// namespace std
+// {
+//     using string = ::String;  // 🫠
+// }    // namespace std
 
-#endif
+// #endif
