@@ -335,7 +335,7 @@ namespace std
         pNodeRootRef->mColor = kRBTreeColorBlack;
 
     }    // RBTreeInsert
-    EASTL_API void RBTreeErase(rbtree_node_base* pNode,
+    EASTL_API inline void RBTreeErase(rbtree_node_base* pNode,
                                rbtree_node_base* pNodeAnchor)
     {
         rbtree_node_base*& pNodeRootRef      = pNodeAnchor->mpNodeParent;
