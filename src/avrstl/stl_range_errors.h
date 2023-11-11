@@ -22,7 +22,7 @@
 // __STL_DONT_THROW_RANGE_ERRORS is a hook so that users can disable
 // this exception throwing.
 
-#include <stl_config.h>
+#include "stl_config.h"
 
 #if defined(__STL_CAN_THROW_RANGE_ERRORS) && \
     defined(__STL_USE_EXCEPTIONS) && \
@@ -45,7 +45,7 @@ __STL_END_NAMESPACE
 // stdexcept header and throw the appropriate exceptions directly.
 #elif defined(__STL_THROW_RANGE_ERRORS)
 
-#include <stdexcept>
+#include "stdexcept"
 
 __STL_BEGIN_NAMESPACE
 inline void __stl_throw_range_error(const char* __msg) 

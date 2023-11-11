@@ -14,15 +14,15 @@
 #ifndef __SGI_STL_CHAR_TRAITS_H
 #define __SGI_STL_CHAR_TRAITS_H
 
-#include <string.h>
+#include "string.h"
 
 #ifndef __AVR__
-#include <wchar.h>
+#include "wchar.h"
 #endif
 
 #ifndef __AVR__
 #if defined(__STL_USE_NEW_IOSTREAMS) && !defined(__SGI_STL_IOSFWD)
-#include <iosfwd>
+#include "iosfwd"
 #endif /* use new iostreams */
 #endif
 

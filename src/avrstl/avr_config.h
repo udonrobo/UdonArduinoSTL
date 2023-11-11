@@ -9,7 +9,7 @@
 #ifndef __C4BCBBDE_67BC_4bb4_A5E1_7745E49AF0B6
 #define __C4BCBBDE_67BC_4bb4_A5E1_7745E49AF0B6
 
-#include <stdlib.h>
+#include "stdlib.h"
 
 
 namespace avrstl {

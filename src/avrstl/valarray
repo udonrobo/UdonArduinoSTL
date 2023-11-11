@@ -15,18 +15,18 @@
 #define __SGI_STL_VALARRAY
 
 #ifdef __AVR__
-#include <new.h>
+#include "new.h"
 #undef round
 #undef abs
 #else
-#include <new>
+#include "new"
 #endif
 
-#include <type_traits.h>
-#include <math.h>
-#include <algorithm>
-#include <numeric>
-#include <limits>
+#include "type_traits.h"
+#include "math.h"
+#include "algorithm"
+#include "numeric"
+#include "limits"
 
 
 __STL_BEGIN_NAMESPACE

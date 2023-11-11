@@ -18,10 +18,10 @@
 */
 
 #ifndef __AVR__
-#include <exception>
+#include "exception"
 #endif
 
-#include <ios>
+#include "ios"
 
 #ifndef __STD_IOMANIP
 #define __STD_IOMANIP 1

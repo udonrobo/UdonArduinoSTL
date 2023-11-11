@@ -31,7 +31,7 @@
 #ifndef __SGI_STL_HASH_FUN_H
 #define __SGI_STL_HASH_FUN_H
 
-#include <stddef.h>
+#include "stddef.h"
 
 __STL_BEGIN_NAMESPACE
 

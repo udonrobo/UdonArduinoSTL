@@ -14,25 +14,25 @@
 #ifndef __SGI_STL_STRING
 #define __SGI_STL_STRING
 
-#include <stl_config.h>
-#include <stl_string_fwd.h>
-#include <ctype.h>        
-#include <functional>
-#include <stl_ctraits_fns.h>
+#include "stl_config.h"
+#include "stl_string_fwd.h"
+#include "ctype.h"        
+#include "functional"
+#include "stl_ctraits_fns.h"
 
 #ifndef __AVR__
-#include <stdexcept>
+#include "stdexcept"
 #endif
 
-#include <stl_iterator_base.h>
-#include <memory>
-#include <algorithm>
+#include "stl_iterator_base.h"
+#include "memory"
+#include "algorithm"
 
 #ifdef __STL_USE_NEW_IOSTREAMS
-#include <ios>
-#include <istream>
+#include "ios"
+#include "istream"
 #else /* __STL_USE_NEW_IOSTREAMS */
-#include <char_traits.h>
+#include "char_traits.h"
 #endif /* __STL_USE_NEW_IOSTREAMS */
 
 // Standard C++ string class.  This class has performance
@@ -2053,7 +2053,7 @@ inline void swap(basic_string<_CharT,_Traits,_Alloc>& __x,
 
 #ifndef __STL_USE_NEW_IOSTREAMS 
 __STL_END_NAMESPACE
-#include <iostream.h>
+#include "iostream.h"
 __STL_BEGIN_NAMESPACE
 #endif /* __STL_USE_NEW_IOSTREAMS */
 
@@ -2406,7 +2406,7 @@ inline const char* __get_c_string(const string& __s) { return __s.c_str(); }
 
 __STL_END_NAMESPACE
 
-#include <stl_hash_fun.h>
+#include "stl_hash_fun.h"
 
 __STL_BEGIN_NAMESPACE
 

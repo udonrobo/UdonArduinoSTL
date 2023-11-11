@@ -53,10 +53,10 @@
 #endif
 #endif
 
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
+#include "stddef.h"
+#include "stdlib.h"
+#include "string.h"
+#include "assert.h"
 #ifndef __RESTRICT
 #  define __RESTRICT
 #endif

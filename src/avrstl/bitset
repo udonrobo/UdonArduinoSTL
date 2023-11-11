@@ -30,18 +30,18 @@
 // returns a reference to a bit, again without doing any range checking.
 
 
-#include <stddef.h>     // for size_t
-#include <string.h>     // for memset
-#include <string>
+#include "stddef.h"     // for size_t
+#include "string.h"     // for memset
+#include "string"
 
 #ifndef __AVR__
-#include <stdexcept>    // for invalid_argument, out_of_range, overflow_error
+#include "stdexcept"    // for invalid_argument, out_of_range, overflow_error
 #endif
 
 #ifdef __STL_USE_NEW_IOSTREAMS 
-#include <iostream>
+#include "iostream"
 #else
-#include <iostream.h>   // for istream, ostream
+#include "iostream.h"   // for istream, ostream
 #endif
 
 #define __BITS_PER_WORD (CHAR_BIT*sizeof(unsigned long))

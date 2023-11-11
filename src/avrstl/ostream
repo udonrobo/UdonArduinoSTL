@@ -17,17 +17,17 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <basic_definitions>
+#include "basic_definitions"
 
 #ifndef STD_HEADER_OSTREAM
 #define STD_HEADER_OSTREAM 1
 
-#include <iosfwd>
-#include <streambuf>
+#include "iosfwd"
+#include "streambuf"
 #ifndef __AVR__
-#include <cstdio>
+#include "cstdio"
 #endif
-#include <ostream_helpers>
+#include "ostream_helpers"
 
 #pragma GCC visibility push(default)
 

@@ -17,11 +17,11 @@
 	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <basic_definitions>
-#include <cstddef>
-#include <locale>
-#include <iosfwd>
-#include <new>
+#include "basic_definitions"
+#include "cstddef"
+#include "locale"
+#include "iosfwd"
+#include "new"
 
 #ifndef __HEADER_STD_IOS
 #define __HEADER_STD_IOS 1

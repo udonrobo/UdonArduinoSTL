@@ -12,13 +12,13 @@
 #ifndef __65B857C4_2BD5_4044_8D08C067F4A032DC
 #define __65B857C4_2BD5_4044_8D08C067F4A032DC
 
-#include <basic_definitions>
+#include "basic_definitions"
 
-#include <stl_config.h>
-#include <iosfwd>
-#include <ios>
-#include <ostream>
-#include <LiquidCrystal.h>
+#include "stl_config.h"
+#include "iosfwd"
+#include "ios"
+#include "ostream"
+#include "LiquidCrystal.h"
 
 
 namespace std

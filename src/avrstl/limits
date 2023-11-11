@@ -19,9 +19,9 @@
 #ifndef __SGI_CPP_LIMITS
 #define __SGI_CPP_LIMITS
 
-#include <limits.h>
-#include <float.h>
-#include <stl_config.h>
+#include "limits.h"
+#include "float.h"
+#include "stl_config.h"
 
 __STL_BEGIN_NAMESPACE
 

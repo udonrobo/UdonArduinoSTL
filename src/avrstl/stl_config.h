@@ -143,7 +143,7 @@
 
 #if defined(__AVR__)
 
-#include <avr_config.h>
+#include "avr_config.h"
 
 // don't change these
 

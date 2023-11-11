@@ -31,7 +31,7 @@
 #ifndef __SGI_STL_INTERNAL_CONSTRUCT_H
 #define __SGI_STL_INTERNAL_CONSTRUCT_H
 
-#include <new>
+#include "new"
 
 __STL_BEGIN_NAMESPACE
 
