@@ -4098,7 +4098,7 @@ namespace std
 		size_t operator()(const string& x) const
 		{
 			const unsigned char* p = (const unsigned char*)x.c_str(); // To consider: limit p to at most 256 chars.
-			unsigned int c, result = 2166136261U; // We implement an FNV-like string hash.
+			unsigned int c, result = (unsigned int)2166136261U; // We implement an FNV-like string hash.
 			while((c = *p++) != 0) // Using '!=' disables compiler warnings.
 				result = (result * 16777619) ^ c;
 			return (size_t)result;
@@ -4126,7 +4126,7 @@ namespace std
 		size_t operator()(const string16& x) const
 		{
 			const char16_t* p = x.c_str();
-			unsigned int c, result = 2166136261U;
+			unsigned int c, result = (unsigned int)2166136261U;
 			while((c = *p++) != 0)
 				result = (result * 16777619) ^ c;
 			return (size_t)result;
@@ -4155,7 +4155,7 @@ namespace std
 			size_t operator()(const wstring& x) const
 			{
 				const wchar_t* p = x.c_str();
-				unsigned int c, result = 2166136261U;
+				unsigned int c, result = (unsigned int)2166136261U;
 				while((c = (unsigned int)*p++) != 0)
 					result = (result * 16777619) ^ c;
 				return (size_t)result;
