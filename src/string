@@ -1,10 +1,18 @@
 #pragma once
 
-#ifdef ARDUINO
+#include "EASTL/string.h"
+#include "avrstl/char_traits.h"
 
-namespace std
+#include <stdlib.h>
+
+namespace stl
 {
-    using string = ::String;  // 🫠
-}    // namespace std
 
-#endif
+    using ::atof;
+    using ::atoi;
+    using ::atol;
+    using ::strtod;
+    using ::strtol;
+    using ::strtoul;
+
+}    // namespace stl
