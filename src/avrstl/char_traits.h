@@ -14,6 +14,8 @@
 #ifndef __SGI_STL_CHAR_TRAITS_H
 #define __SGI_STL_CHAR_TRAITS_H
 
+#include "stl_config.h"
+
 #include "string.h"
 
 #ifndef __AVR__

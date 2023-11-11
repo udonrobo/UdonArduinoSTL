@@ -1,11 +1,49 @@
 #pragma once
 
 #include "EASTL/string.h"
-// #ifdef ARDUINO
+#include "avrstl/char_traits.h"
 
-// namespace std
-// {
-//     using string = ::String;  // 🫠
-// }    // namespace std
+namespace stl
+{
 
-// #endif
+    inline long strtol(char const* _String, char** _EndPtr, int _Radix)
+    {
+        long ret = 0;
+        bool neg = false;
+        if (*_String == '-')
+        {
+            neg = true;
+            ++_String;
+        }
+        while (true)
+        {
+            char c = *_String;
+            if (c >= '0' && c <= '9')
+            {
+                ret *= _Radix;
+                ret += c - '0';
+            }
+            else if (c >= 'a' && c <= 'f')
+            {
+                ret *= _Radix;
+                ret += c - 'a' + 10;
+            }
+            else if (c >= 'A' && c <= 'F')
+            {
+                ret *= _Radix;
+                ret += c - 'A' + 10;
+            }
+            else
+            {
+                break;
+            }
+            ++_String;
+        }
+        if (_EndPtr)
+        {
+            *_EndPtr = const_cast<char*>(_String);
+        }
+        return neg ? -ret : ret;
+    }
+
+}    // namespace stl
