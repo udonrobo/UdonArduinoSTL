@@ -21,12 +21,6 @@ jobs:
         board:
           - fqbn: arduino:avr:nano
             platform: arduino:avr
-          - fqbn: teensy:avr:teensy40
-            platform: teensy:avr
-            url: https://www.pjrc.com/teensy/td_156/package_teensy_index.json
-          - fqbn: rp2040:rp2040:rpipico
-            platform: rp2040:rp2040
-            url: https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
 
     steps:
       - name: Checkout
